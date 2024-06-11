@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-<<<<<<< HEAD
-=======
 asgiref = "*"
 django = "*"
 django-cors-headers = "*"
@@ -13,13 +11,8 @@ djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 pyjwt = "*"
 python-dotenv = "*"
->>>>>>> dd8411c0271422b1200f1f75be8be3d83875446c
 
 [dev-packages]
 
 [requires]
-<<<<<<< HEAD
-python_version = "3.10"
-=======
 python_version = "3.12"
->>>>>>> dd8411c0271422b1200f1f75be8be3d83875446c
