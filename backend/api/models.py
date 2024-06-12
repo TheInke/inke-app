@@ -16,7 +16,7 @@ class UserProfile(AbstractUser):
         country (str): Country of the user.
     """
     pronouns = models.CharField(max_length=50, blank=True)
-    phone_number = models.CharField(max_length=15, blank=True)
+    phone_number = models.CharField(max_length=15, blank=False)
     pfp_image = models.ImageField(upload_to='profile_pics', null=True, blank=True)
     links = models.TextField(blank=True)
     bio = models.TextField(max_length=500, blank=True)
