@@ -1,11 +1,24 @@
-from django.shortcuts import render
-from django.contrib.auth.models import User
-from rest_framework import generics
-from .serializers import UserSerializer, NoteSerializer
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from .models import UserProfile
+from .serializers import UserProfileSerializer
 
 class CreateUserView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.AllowAny]
+
+class UserProfileListView(generics.ListAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
