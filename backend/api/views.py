@@ -1,5 +1,6 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 
@@ -17,6 +18,13 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        obj = super().get_object()
+        if obj != self.request.user:
+            raise PermissionDenied('Please login to access your profile')
+        
+        return obj
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()

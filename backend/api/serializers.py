@@ -8,35 +8,31 @@ class UserProfileSerializer(serializers.ModelSerializer):
                   'links', 'bio', 'city', 'state', 'country']
         extra_kwargs = {
             'password': {'write_only': True},  # Password field is write only
-            'phone_number': {'required': True},  # Phone number field is required
         }
 
     def create(self, validated_data):
-        print(validated_data)
+        password = validated_data.pop('password', None)
         user = UserProfile.objects.create_user(**validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
         return user
     
     def update(self, instance, validated_data):
-        """
-        Update and return an existing UserProfile instance, given the validated data.
-        """
-        # Update each field in the instance with the validated data
-        instance.username = validated_data.get('username', instance.username)
-        instance.password = validated_data.get('password', instance.password)
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        instance.city = validated_data.get('city', instance.city)
-        instance.state = validated_data.get('state', instance.state)
-        instance.country = validated_data.get('country', instance.country)
-        instance.pronouns = validated_data.get('pronouns', instance.pronouns)
-        instance.links = validated_data.get('links', instance.links)
-        instance.bio = validated_data.get('bio', instance.bio)
-        instance.pfp_image = validated_data.get('pfp_image', instance.pfp_image)
-
+        password = validated_data.pop('password', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
         instance.save()
         return instance
+    
+    def validate(self, data):
+        email = data.get('email', None)
+        phone_number = data.get('phone_number', None)
+        if not email and not phone_number:
+            raise serializers.ValidationError("Either email or phone number must be provided.")
+        return data
     
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class PostSerializer(serializers.ModelSerializer):
