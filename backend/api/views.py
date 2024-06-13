@@ -12,7 +12,7 @@ class CreateUserView(generics.CreateAPIView):
 class UserProfileListView(generics.ListAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [] #[permissions.IsAuthenticated]
 
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = UserProfile.objects.all()
