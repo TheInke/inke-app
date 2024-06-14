@@ -1,24 +1,30 @@
-import { Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import api from '../api';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import jwtDecode from 'jwt-decode';
+import api from '../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants';
-import { useState, useEffect } from 'react';
 
-function ProtectedRoute({ children }) {
+
+const ProtectedRoute = ({children}) => 
+{
     const [isAuthorized, setIsAuthorized] = useState(null);
+    const navigation = useNavigation();
 
-    useEffect(() => {
-        auth().catch(() => setIsAuthorized(false));
+    useEffect( () => {
+        auth().catch( () => setIsAuthorized(false));
     }, []);
 
-    const refreshToken = async () => {
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+    const refreshToken = async () => 
+    {
+        const refreshToken = await AsyncStorage.getItem(REFRESH_TOKEN);
         try {
-            const res = await api.post('/api/token/refresh/', {
-                refresh: refreshToken,
+            const res = await api.post('/api/token/refresh', {
+                refresh: refreshToken
             });
-            if (res.status === 200) {
-                localStorage.setItem(ACCESS_TOKEN, res.data.access);
+            if (res.status === 200){
+                await AsyncStorage.setItem(ACCESS_TOKEN, res.data.access);
                 setIsAuthorized(true);
             } else {
                 setIsAuthorized(false);
@@ -29,12 +35,15 @@ function ProtectedRoute({ children }) {
         }
     };
 
-    const auth = async () => {
-        const token = localStorage.getItem(ACCESS_TOKEN);
+
+    const auth = async () => 
+    {
+        const token = await AsyncStorage.getItem(ACCESS_TOKEN);
         if (!token) {
             setIsAuthorized(false);
             return;
         }
+
         const decoded = jwtDecode(token);
         const tokenExpiration = decoded.exp;
         const now = Date.now() / 1000;
@@ -42,15 +51,30 @@ function ProtectedRoute({ children }) {
         if (tokenExpiration < now) {
             await refreshToken();
         } else {
-            setIsAuthorized(true);
+            setIsAuthorized(true)
         }
     };
 
-    if (isAuthorized === null) {
-        return <div>Loading...</div>;
-    }
 
-    return isAuthorized ? children : <Navigate to="/index" />;
-}
+    if (isAuthorized === null){
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff"/>
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+    
+    if (!isAuthorized) {
+        navigation.navigate('LoginPage');
+        return null
+    }
+    
+    return (
+        <View style={{ flex: 1}}>
+            {children}
+        </View>
+    );
+};
 
 export default ProtectedRoute;
