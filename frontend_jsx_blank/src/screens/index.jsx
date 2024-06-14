@@ -8,5 +8,6 @@
     in App.jsx
 */
 
-export { default as HomePage } from './HomePage';
-export { default as ExamplePage } from './ExamplePage';
+export { default as EditProfileScreen } from './EditProfileScreen';
+export { default as LoginScreen } from './LoginScreen';
+export { default as AuthStatusScreen } from './AuthStatusScreen';
