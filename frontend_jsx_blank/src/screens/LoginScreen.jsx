@@ -25,6 +25,7 @@ const LoginScreen = ({ navigation }) => {
             // Navigate to the main screen or perform other actions
             navigation.navigate('Main');
         } catch (error) {
+            console.log(error.response.data);
             console.error('Login failed:', error);
         }
     };
