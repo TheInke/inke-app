@@ -65,7 +65,7 @@ const ProtectedRoute = ({ children }) => {
     }
 
     if (!isAuthorized) {
-        navigation.navigate('LoginPage');
+        navigation.navigate('LoginScreen');
         return null;
     }
 
