@@ -12,10 +12,8 @@ const api = axios.create({
 export const login = async (username, password) => {
     try {
         const response = await api.post('/api/token/', { username, password });
-        const { access, refresh } = response.data;
-        await AsyncStorage.setItem(ACCESS_TOKEN, access);
-        await AsyncStorage.setItem(REFRESH_TOKEN, refresh);
-        return response.data;
+        // Return the entire response object, which includes the data property
+        return response;
     } catch (error) {
         throw error;
     }
@@ -30,6 +28,41 @@ export const refreshToken = async () => {
         const { access } = response.data;
         await AsyncStorage.setItem(ACCESS_TOKEN, access);
         return access;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const auth = async () => {
+    try {
+        const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+
+        if (!accessToken) {
+            return false; // If no access token found, not authenticated
+        }
+
+        const response = await api.get('/api/users/', {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        return true; // If request succeeds, user is authenticated
+    } catch (error) {
+        console.error('Authentication check failed:', error);
+        return false; // If request fails, not authenticated
+    }
+};
+
+export const fetchUserData = async (userId) => {
+    try {
+        const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+        const response = await api.get(`/api/users/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        return response.data; // Return user data fetched from the API
     } catch (error) {
         throw error;
     }

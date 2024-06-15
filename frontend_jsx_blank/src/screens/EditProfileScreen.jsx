@@ -1,176 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, Button, ScrollView, StyleSheet } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import { API_URL, ACCESS_TOKEN } from '@env';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { fetchUserData, updateUserProfile } from '../services/api'; // Import fetchUserData and updateUserProfile functions from api.js
+import { API_URL, ACCESS_TOKEN } from '../constants'; // Ensure API_URL and ACCESS_TOKEN are correctly imported
 
 const EditProfileScreen = () => {
-    const [profileData, setProfileData] = useState({
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState({
+        id: null,
         first_name: '',
         last_name: '',
         phone_number: '',
         email: '',
         username: '',
-        password: '',
         pronouns: '',
-        pfp_image: '',
+        pfp_image: null,
         links: '',
         bio: '',
         city: '',
         state: '',
         country: '',
     });
-    const [userId, setUserId] = useState(null); // Set this appropriately if known
+    const [newUser, setNewUser] = useState({ ...user });
+    const navigation = useNavigation();
 
     useEffect(() => {
-        fetchProfile();
+        fetchUserProfile();
     }, []);
 
-    const fetchProfile = async () => {
+    const fetchUserProfile = async () => {
         try {
-            const token = await AsyncStorage.getItem(ACCESS_TOKEN);
-            const storedUserId = await AsyncStorage.getItem('userId'); // Adjust according to how userId is stored
-            if (token) {
-                const response = await axios.get(
-                    `${API_URL}/api/users/`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                setProfileData(response.data);
-                setUserId(storedUserId);
-            }
+            const userData = await fetchUserData(); // Fetch user data using the api.js function
+            setUser(userData); // Set user state with fetched user data
+            setLoading(false);
         } catch (error) {
-            console.error('Failed to fetch profile:', error);
+            console.error('Error fetching user profile:', error);
+            setLoading(false); // Ensure loading state is set to false on error
         }
     };
 
-    const handleUpdateProfile = async () => {
+    const handleSave = async () => {
         try {
-            const token = await AsyncStorage.getItem(ACCESS_TOKEN);
-            if (token && userId) {
-                const response = await axios.put(
-                    `${API_URL}/api/users/${userId}/`,
-                    profileData,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                console.log('Profile updated successfully:', response.data);
-            }
+            const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+            const response = await updateUserProfile(newUser, accessToken); // Update user profile using the api.js function
+            console.log('User updated successfully:', response.data);
+            navigation.goBack(); // Navigate back after successful update
         } catch (error) {
-            console.error('Failed to update profile:', error);
+            console.error('Error updating user profile:', error);
         }
     };
 
     const handleChange = (key, value) => {
-        setProfileData({
-            ...profileData,
-            [key]: value,
-        });
+        setNewUser({ ...newUser, [key]: value });
     };
 
+    if (loading) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}>
+                <ActivityIndicator size="large" color="blue" />
+            </View>
+        );
+    }
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={{ flex: 1, padding: 20 }}>
+            <Text>Edit Profile</Text>
             <TextInput
-                style={styles.input}
+                style={{
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    marginBottom: 10,
+                }}
                 placeholder="First Name"
-                value={profileData.first_name}
-                onChangeText={(value) => handleChange('first_name', value)}
+                value={newUser.first_name}
+                onChangeText={(text) => handleChange('first_name', text)}
             />
             <TextInput
-                style={styles.input}
+                style={{
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    marginBottom: 10,
+                }}
                 placeholder="Last Name"
-                value={profileData.last_name}
-                onChangeText={(value) => handleChange('last_name', value)}
+                value={newUser.last_name}
+                onChangeText={(text) => handleChange('last_name', text)}
             />
             <TextInput
-                style={styles.input}
+                style={{
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    marginBottom: 10,
+                }}
                 placeholder="Phone Number"
-                value={profileData.phone_number}
-                onChangeText={(value) => handleChange('phone_number', value)}
+                value={newUser.phone_number}
+                onChangeText={(text) => handleChange('phone_number', text)}
             />
             <TextInput
-                style={styles.input}
+                style={{
+                    height: 40,
+                    borderColor: 'gray',
+                    borderWidth: 1,
+                    marginBottom: 10,
+                }}
                 placeholder="Email"
-                value={profileData.email}
-                onChangeText={(value) => handleChange('email', value)}
+                value={newUser.email}
+                onChangeText={(text) => handleChange('email', text)}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={profileData.username}
-                onChangeText={(value) => handleChange('username', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry
-                value={profileData.password}
-                onChangeText={(value) => handleChange('password', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Pronouns"
-                value={profileData.pronouns}
-                onChangeText={(value) => handleChange('pronouns', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Profile Image URL"
-                value={profileData.pfp_image}
-                onChangeText={(value) => handleChange('pfp_image', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Links"
-                value={profileData.links}
-                onChangeText={(value) => handleChange('links', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Bio"
-                value={profileData.bio}
-                onChangeText={(value) => handleChange('bio', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="City"
-                value={profileData.city}
-                onChangeText={(value) => handleChange('city', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="State"
-                value={profileData.state}
-                onChangeText={(value) => handleChange('state', value)}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Country"
-                value={profileData.country}
-                onChangeText={(value) => handleChange('country', value)}
-            />
-            <Button title="Update Profile" onPress={handleUpdateProfile} />
-        </ScrollView>
+            {/* Add more TextInput components for other fields as needed */}
+
+            <Button title="Save Changes" onPress={handleSave} />
+        </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    input: {
-        height: 40,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginBottom: 12,
-        paddingHorizontal: 8,
-        width: '100%',
-    },
-});
 
 export default EditProfileScreen;

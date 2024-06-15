@@ -1,56 +1,39 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import jwtDecode from 'jwt-decode';
-import axios from 'axios';
+// ProtectedRoute.jsx
+
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL, REFRESH_TOKEN, ACCESS_TOKEN } from '@env';
+import { useNavigation } from '@react-navigation/native';
+import { ACCESS_TOKEN } from '../constants';
 
 const ProtectedRoute = ({ children }) => {
-    const [isAuthorized, setIsAuthorized] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigation = useNavigation();
 
     useEffect(() => {
-        auth().catch(() => setIsAuthorized(false));
+        checkAuthStatus();
     }, []);
 
-    const refreshToken = async () => {
-        const refreshToken = await AsyncStorage.getItem(REFRESH_TOKEN);
+    const checkAuthStatus = async () => {
         try {
-            const res = await axios.post(`${API_URL}/api/token/refresh/`, {
-                refresh: refreshToken,
-            });
-            if (res.status === 200) {
-                await AsyncStorage.setItem(ACCESS_TOKEN, res.data.access);
-                setIsAuthorized(true);
+            const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+            if (accessToken) {
+                setIsLoggedIn(true);
+                setLoading(false);
             } else {
-                setIsAuthorized(false);
+                setIsLoggedIn(false);
+                setLoading(false);
+                navigation.navigate('LoginScreen'); // Redirect to login screen if not authenticated
             }
         } catch (error) {
-            console.log(error);
-            setIsAuthorized(false);
+            setIsLoggedIn(false);
+            setLoading(false);
+            console.error('Error checking authentication status:', error);
         }
     };
 
-    const auth = async () => {
-        const token = await AsyncStorage.getItem(ACCESS_TOKEN);
-        if (!token) {
-            setIsAuthorized(false);
-            return;
-        }
-
-        const decoded = jwtDecode(token);
-        const tokenExpiration = decoded.exp;
-        const now = Date.now() / 1000;
-
-        if (tokenExpiration < now) {
-            await refreshToken();
-        } else {
-            setIsAuthorized(true);
-        }
-    };
-
-    if (isAuthorized === null) {
+    if (loading) {
         return (
             <View
                 style={{
@@ -58,18 +41,12 @@ const ProtectedRoute = ({ children }) => {
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading...</Text>
+                <ActivityIndicator size="large" color="blue" />
             </View>
         );
     }
 
-    if (!isAuthorized) {
-        navigation.navigate('LoginScreen');
-        return null;
-    }
-
-    return <View style={{ flex: 1 }}>{children}</View>;
+    return isLoggedIn ? <>{children}</> : null;
 };
 
 export default ProtectedRoute;

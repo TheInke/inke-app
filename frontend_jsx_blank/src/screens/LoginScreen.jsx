@@ -1,8 +1,10 @@
+// LoginScreen.jsx
+
 import React, { useState } from 'react';
 import { View, TextInput, Button } from 'react-native';
-import axios from 'axios';
+import { login } from '../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL, ACCESS_TOKEN } from '@env';
+import { ACCESS_TOKEN } from '../constants';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -10,18 +12,15 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post(`${API_URL}/api/token/`, {
-                username,
-                password,
-            });
+            const response = await login(username, password);
+            console.log('LOGIN SUCCESS | ln16');    //testing login
 
-            // Assuming response.data contains the access token
             const accessToken = response.data.access;
+            // console.log("THIS IS ACCESS TOKEN", accessToken);  //printing accessToken from the data
 
-            // Save access token to AsyncStorage
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-            const storedToken = await AsyncStorage.getItem(ACCESS_TOKEN);
-            console.log('Access token saved successfully:', storedToken);
+            // const storedToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+            // console.log('TOKEN STORED IN ASYNC STORAGE:', storedToken);
 
             // Navigate to the main screen or perform other actions
             navigation.navigate('Main');

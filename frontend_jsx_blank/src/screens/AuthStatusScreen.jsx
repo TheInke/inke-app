@@ -1,9 +1,10 @@
+// AuthStatusScreen.jsx
+
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
-import { API_URL, ACCESS_TOKEN } from '@env';
+import { auth, logout } from '../services/api'; // Import auth and logout from api.js
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthStatusScreen = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,21 +16,14 @@ const AuthStatusScreen = () => {
 
     const checkAuthStatus = async () => {
         try {
-            const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+            const authenticated = await auth();
 
-            if (accessToken) {
-                const response = await axios.get(`${API_URL}/api/users/`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                });
+            if (authenticated) {
                 setIsLoggedIn(true);
-                console.log('Authenticated:', response.data);
+                console.log('Authenticated');
             } else {
                 setIsLoggedIn(false);
-                console.log(
-                    'Not Authenticated: No access token or user ID found'
-                );
+                console.log('Not Authenticated');
             }
         } catch (error) {
             setIsLoggedIn(false);
@@ -39,7 +33,7 @@ const AuthStatusScreen = () => {
 
     const handleLogout = async () => {
         try {
-            await AsyncStorage.removeItem(ACCESS_TOKEN);
+            await logout();
             setIsLoggedIn(false);
             console.log('Logged out successfully');
             navigation.navigate('LoginScreen'); // Navigate to LoginScreen on logout
