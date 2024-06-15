@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import { API_URL, ACCESS_TOKEN } from '@env';
 
 const AuthStatusScreen = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userId, setUserId] = useState(null); // Store user ID here
+    const navigation = useNavigation(); // Initialize navigation
 
     useEffect(() => {
         checkAuthStatus();
@@ -15,16 +16,13 @@ const AuthStatusScreen = () => {
     const checkAuthStatus = async () => {
         try {
             const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
-            const storedUserId = await AsyncStorage.getItem('userId'); // Adjust according to how userId is stored
-            if (accessToken && storedUserId) {
-                const response = await axios.get(
-                    `${API_URL}/api/users/${storedUserId}/`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                        },
-                    }
-                );
+
+            if (accessToken) {
+                const response = await axios.get(`${API_URL}/api/users/`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
                 setIsLoggedIn(true);
                 console.log('Authenticated:', response.data);
             } else {
@@ -44,6 +42,7 @@ const AuthStatusScreen = () => {
             await AsyncStorage.removeItem(ACCESS_TOKEN);
             setIsLoggedIn(false);
             console.log('Logged out successfully');
+            navigation.navigate('LoginScreen'); // Navigate to LoginScreen on logout
         } catch (error) {
             console.error('Logout failed:', error);
         }

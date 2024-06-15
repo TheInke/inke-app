@@ -21,7 +21,7 @@ const MainTab = () => (
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
         <Tab.Screen
             name="EditProfileScreen"
-            component={EditProfileScreenWrapper} // Use EditProfileScreenWrapper with ProtectedRoute
+            component={EditProfileScreenWrapper}
             options={{
                 tabBarLabel: 'Edit Profile',
             }}

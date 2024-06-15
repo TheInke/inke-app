@@ -30,9 +30,9 @@ const EditProfileScreen = () => {
         try {
             const token = await AsyncStorage.getItem(ACCESS_TOKEN);
             const storedUserId = await AsyncStorage.getItem('userId'); // Adjust according to how userId is stored
-            if (token && storedUserId) {
+            if (token) {
                 const response = await axios.get(
-                    `${API_URL}/api/users/${storedUserId}/`,
+                    `${API_URL}/api/users/`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }

@@ -20,7 +20,8 @@ const LoginScreen = ({ navigation }) => {
 
             // Save access token to AsyncStorage
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-            console.log('Access token saved successfully:', accessToken);
+            const storedToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+            console.log('Access token saved successfully:', storedToken);
 
             // Navigate to the main screen or perform other actions
             navigation.navigate('Main');
