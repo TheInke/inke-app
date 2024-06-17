@@ -1,28 +1,55 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { HomePage, ExamplePage } from './pages'
+import LoginScreen from './screens/LoginScreen';
+import AuthStatusScreen from './screens/AuthStatusScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
-export default function App() {
-  return (
+const AuthStack = () => (
+    <Stack.Navigator>
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    </Stack.Navigator>
+);
+
+const MainTab = () => (
+    <Tab.Navigator>
+        <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
+        <Tab.Screen
+            name="EditProfileScreen"
+            component={EditProfileScreenWrapper}
+            options={{
+                tabBarLabel: 'Edit Profile',
+            }}
+        />
+    </Tab.Navigator>
+);
+
+const EditProfileScreenWrapper = () => (
+    <ProtectedRoute>
+        <EditProfileScreen />
+    </ProtectedRoute>
+);
+
+const App = () => (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomePage} />
-        <Stack.Screen name="Example" component={ExamplePage} />
-      </Stack.Navigator>
+        <Stack.Navigator initialRouteName="Auth">
+            <Stack.Screen
+                name="Auth"
+                component={AuthStack}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Main"
+                component={MainTab}
+                options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
     </NavigationContainer>
-  );
-}
+);
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
