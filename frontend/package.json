@@ -1,7 +1,7 @@
 {
-  "name": "frontend_jsx_blank",
+  "name": "frontend",
   "version": "1.0.0",
-  "main": "expo/AppEntry.js",
+  "main": "src/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
