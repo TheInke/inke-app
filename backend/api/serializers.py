@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites
+from django.contrib.auth import get_user_model
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,9 +57,27 @@ class ConnectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class SocialCirclesSerializer(serializers.ModelSerializer):
+    created_by = serializers.CharField(source='created_by.username', read_only=True)
+    members_count = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
+
     class Meta:
         model = SocialCircles
-        fields = '__all__'
+        fields = ['group_id', 'group_name', 'group_pic', 'desc', 'members', 'created_by', 'created_at', 'updated_at', 'members_count']
+        read_only_fields = ['created_at', 'updated_at']
+
+    def validate(self, attrs):
+        if self.instance:
+            # Update case: ensure created_by is not modified
+            attrs.pop('created_by', None)
+        return attrs
+    
+    def get_members(self, obj):
+        return [member.username for member in obj.members.all()]
+
+    def get_members_count(self, obj):
+        return obj.members.count()
+    
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
