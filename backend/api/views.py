@@ -4,6 +4,14 @@ from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 
+# post import 
+from rest_framework import viewsets
+from .models import Post
+from .serializers import PostSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+
+
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
@@ -30,3 +38,12 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+    
+# post views 
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    

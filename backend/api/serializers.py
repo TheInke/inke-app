@@ -64,3 +64,11 @@ class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
         fields = '__all__'
+        
+        
+
+# post serializers 
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+       fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at']
