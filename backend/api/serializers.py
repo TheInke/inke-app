@@ -33,6 +33,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if not email and not phone_number:
             raise serializers.ValidationError("Either email or phone number must be provided.")
         return data
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
     
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class PostSerializer(serializers.ModelSerializer):
