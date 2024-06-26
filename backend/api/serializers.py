@@ -105,10 +105,9 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
         if request.user != instance.created_by:
             raise PermissionDenied("You do not have permission to perform this action.")
         
-        # Allow optional updating of group_name
-        group_name = validated_data.pop('group_name', None)
-        if group_name is not None:
-            instance.group_name = group_name
+        # Partial update: handle fields only if they are present in validated_data
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         
         # Handle members separately if provided
         if 'members' in validated_data:
@@ -147,12 +146,6 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         # Custom representation for SocialCircles
         representation = super().to_representation(instance)
-        
-        # Only include fields that are not None
-        for field in self.Meta.fields:
-            if field in representation and representation[field] is None:
-                del representation[field]
-        
         representation['members'] = self.get_members(instance)
         return representation
     
