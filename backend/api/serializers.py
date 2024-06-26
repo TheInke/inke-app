@@ -9,6 +9,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},  # Password field is write only
         }
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        
+        if not instance.show_location:
+            representation.pop('city', None)
+            representation.pop('state', None)
+            representation.pop('country', None)
+
+        # Check if the account is private and the requesting user is not the same as the instance user
+        if instance.is_private and self.context.get('request').user != instance:
+            return {
+                'id': instance.id,
+                'username': instance.username,
+            }
+
+        return representation
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)

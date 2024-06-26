@@ -15,6 +15,9 @@ class UserProfile(AbstractUser):
         state (str): State of the user.
         country (str): Country of the user.
     """
+    show_location = models.BooleanField(default=True) #HIDE LOCATION IF FALSE
+    is_private = models.BooleanField(default=False) #HANDLE PRIVATE ACCOUNTS
+    
     pronouns = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
     pfp_image = models.ImageField(upload_to='profile_pics', null=True, blank=True)
