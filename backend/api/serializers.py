@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 class UserProfileSerializer(serializers.ModelSerializer):
     # serializer for UserProfile model
