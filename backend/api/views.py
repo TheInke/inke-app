@@ -39,7 +39,24 @@ class SocialCirclesListCreateView(generics.ListCreateAPIView):
     serializer_class = SocialCirclesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
+    #serializes and saves 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
 class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SocialCircles.objects.all()
     serializer_class = SocialCirclesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Check if the requesting user is the creator of the instance
+        if request.user != instance.created_by:
+            raise PermissionDenied("You do not have permission to perform this action.")
+
+        self.perform_destroy(instance)
+        return self.get_response()
+
+    def get_response(self):
+        return Response(status=status.HTTP_204_NO_CONTENT)
