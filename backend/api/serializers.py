@@ -38,12 +38,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['id', 'user', 'text_content', 'image', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ['id', 'user', 'post', 'text_content', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'post', 'created_at', 'updated_at']
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
