@@ -1,8 +1,8 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-from .models import UserProfile
-from .serializers import UserProfileSerializer
+from .models import UserProfile, JournalEntry
+from .serializers import UserProfileSerializer, JournalEntrySerializer
 
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
@@ -30,3 +30,20 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+class JournalEntryListCreateView(generics.ListCreateAPIView):
+    serializer_class = JournalEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return JournalEntry.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class JournalEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = JournalEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return JournalEntry.objects.filter(user=self.request.user)

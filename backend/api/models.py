@@ -133,3 +133,15 @@ class Favorites(models.Model):
     """
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+
+#Adding a model for Journal page
+class JournalEntry(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='journal_entries')
+    title = models.CharField(max_length=255, default="Untitled")
+    text_content = models.TextField(blank=True)
+    image = models.ImageField(upload_to='journal_images/', blank=True, null=True)
+    video = models.FileField(upload_to='journal_videos/', blank=True, null=True)
+    audio = models.FileField(upload_to='journal_audios/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

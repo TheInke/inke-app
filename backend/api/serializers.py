@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites
+from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites, JournalEntry
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,3 +64,10 @@ class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
         fields = '__all__'
+
+# JOURNAL SERIALIZER
+class JournalEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JournalEntry
+        fields = ['id', 'user', 'title', 'text_content', 'image', 'video', 'audio', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']
