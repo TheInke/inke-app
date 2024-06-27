@@ -35,10 +35,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
     
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
-class PostSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Post
-        fields = '__all__'
+# class PostSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         fields = '__all__'
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
