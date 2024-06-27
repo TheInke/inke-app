@@ -76,6 +76,7 @@ class CommentCreateView(generics.CreateAPIView):
 
 # viewing the comment for specified post id 
 
+
 class PostCommentsListView(generics.ListAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.AllowAny]
