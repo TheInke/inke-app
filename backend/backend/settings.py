@@ -165,7 +165,9 @@ CORS_ALLOWS_CREDENTIALS = True
 
 # Email configurations for "forgot password" feature:
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'api.backends.NonsecureEmailBackend'
+# 'django.core.mail.backends.smtp.EmailBackend' -- the proper one to use once we can figure out SSL certification for using SMTP from Gmail
+
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

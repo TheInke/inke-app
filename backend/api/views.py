@@ -54,14 +54,16 @@ class ForgotPasswordRequestView(APIView):
             # reset_link = f"https://your-frontend-url/reset-password?uid={uid}&token={token}"
             reset_link = "google.com"
 
+            """
             message = render_to_string('password_reset_email.html', {
                 'user': user,
                 'reset_link': reset_link,
             })
-
+            """
+            
             send_mail(
                 'Password Reset Request',
-                message,
+                f"{reset_link}",
                 'inketest8@gmail.com',
                 [email],
                 fail_silently=False,
