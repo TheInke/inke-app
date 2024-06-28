@@ -38,7 +38,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at']
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,7 +60,9 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
         model = SocialCircles
         fields = '__all__'
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
-class FavoritesSerializer(serializers.ModelSerializer):
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
-        fields = '__all__'
+        fields = ['id', 'user', 'post']
