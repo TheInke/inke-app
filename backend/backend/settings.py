@@ -162,3 +162,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+# Email configurations for "forgot password" feature:
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Email and password should be environment variables when we use the actual email
+# Hard coding it here is not secure!
+EMAIL_HOST_USER = 'inketest8@gmail.com'
+EMAIL_HOST_PASSWORD = 'guqxeb-xoxqo5-Fitcij'

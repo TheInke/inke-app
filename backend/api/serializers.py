@@ -34,6 +34,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Either email or phone number must be provided.")
         return data
     
+# PasswordReset serializer:
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
