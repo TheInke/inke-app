@@ -2,7 +2,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile
-from .serializers import UserProfileSerializer, PasswordResetRequestSerializer
+from .serializers import UserProfileSerializer, ForgotPasswordRequestViewSerializer
 
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -38,9 +38,9 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class PasswordResetRequestView(APIView):
+class ForgotPasswordRequestView(APIView):
     def post(self, request):
-        serializer = PasswordResetRequestSerializer(data=request.data)
+        serializer = ForgotPasswordRequestViewSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
             try:

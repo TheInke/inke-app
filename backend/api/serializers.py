@@ -35,7 +35,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
     
 # PasswordReset serializer:
-class PasswordResetRequestSerializer(serializers.Serializer):
+class ForgotPasswordRequestViewSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
