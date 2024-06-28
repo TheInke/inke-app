@@ -81,10 +81,24 @@ class FavoritePostView(APIView):
             return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
         
         # Check if the post is already favorited
-        if Favorites.objects.filter(user=user, post=post).exists():
-            return Response({'error': 'Post already favorited'}, status=status.HTTP_400_BAD_REQUEST)
+        # if Favorites.objects.filter(user=user, post=post).exists():
+        #     return Response({'error': 'Post already favorited'}, status=status.HTTP_400_BAD_REQUEST)
         
         favorite = Favorites.objects.create(user=user, post=post)
         return Response({'message': 'Post favorited successfully'}, status=status.HTTP_201_CREATED)
+    
+    def delete(self, request, post_id):
+        user = request.user
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        favorite = Favorites.objects.filter(user=user, post=post)
+        if favorite.exists():
+            favorite.delete()
+            return Response({"status": "Favorite removed."}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"error": "Favorite not found."}, status=status.HTTP_404_NOT_FOUND)
 
 # favorite feature
