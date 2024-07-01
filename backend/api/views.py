@@ -39,7 +39,16 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ForgotPasswordRequestView(APIView):
+    def get_object(self):
+        obj = super().get_object()
+        if obj != self.request.user:
+            return Response({'message': 'Endpoint is working'}, status=status.HTTP_200_OK)
+            raise PermissionDenied('something wrong dawg')
+        
+        return obj
+
     def post(self, request):
+
         serializer = ForgotPasswordRequestViewSerializer(data=request.data)
         if serializer.is_valid():
             email = serializer.validated_data['email']
@@ -50,6 +59,7 @@ class ForgotPasswordRequestView(APIView):
 
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
+
             # Reset link will redirect to a React Native page that should open up the app. Placeholder for now.
             # reset_link = f"https://your-frontend-url/reset-password?uid={uid}&token={token}"
             reset_link = "google.com"
@@ -71,3 +81,5 @@ class ForgotPasswordRequestView(APIView):
 
             return Response({'message': 'Password reset link has been sent to your email.'}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        

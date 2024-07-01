@@ -165,8 +165,8 @@ CORS_ALLOWS_CREDENTIALS = True
 
 # Email configurations for "forgot password" feature:
 
-EMAIL_BACKEND = 'api.backends.NonsecureEmailBackend'
-# 'django.core.mail.backends.smtp.EmailBackend' -- the proper one to use once we can figure out SSL certification for using SMTP from Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# 'api.backends.NonsecureEmailBackend' -- the proper one to use once we can figure out SSL certification for using SMTP from Gmail
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -175,4 +175,4 @@ EMAIL_USE_TLS = True
 # Email and password should be environment variables when we use the actual email
 # Hard coding it here is not secure!
 EMAIL_HOST_USER = 'inketest8@gmail.com'
-EMAIL_HOST_PASSWORD = 'guqxeb-xoxqo5-Fitcij'
+EMAIL_HOST_PASSWORD = 'kxcb qfjb kbtj bgdv'
