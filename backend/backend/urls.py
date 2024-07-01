@@ -18,15 +18,7 @@ urlpatterns = [
     path("api/", include("api.urls")),
 ]
 
-# post urls 
-
-router = DefaultRouter()
-router.register(r'posts', views.PostViewSet)
-
-urlpatterns = [
-    path('', include(router.urls)),
-]
-
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 

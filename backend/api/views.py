@@ -6,9 +6,12 @@ from .serializers import UserProfileSerializer
 
 # post import 
 from rest_framework import viewsets
-from .models import Post
+from .models import Post, Like
 from .serializers import PostSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+
+# like imports 
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -70,3 +73,27 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
+        
+
+# like views 
+class LikePostView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        post_id = self.kwargs.get('post_id')
+        post = Post.objects.get(id=post_id)
+        user = request.user
+        
+        if Like.objects.filter(post=post, user=user).exists():
+            return Response({'detail': 'Already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        like = Like.objects.create(post=post, user=user)
+        return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
+
+class TotalLikesView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        total_likes = Like.objects.filter(user=user).count()
+        return Response({'total_likes': total_likes}, status=status.HTTP_200_OK)
