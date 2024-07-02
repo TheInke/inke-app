@@ -64,6 +64,9 @@ import { login } from '../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../constants';
 
+// Correctly import the image from the local assets folder
+import inkeLogo from '../assets/images/inke_logo.png';
+
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -85,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={'../assets/images/inke_logo.png'} style={styles.logo} />
+            <Image source={inkeLogo} style={styles.logo} />
             <Text style={styles.title}>Inke</Text>
 
             <Text style={styles.label}>LOGIN</Text>
@@ -140,9 +143,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#000',    //#000  og: #fff
     },
     logo: {
-        width: 60,
-        height: 80,
-        marginBottom: -5,
+        width: 100, // Make the logo larger
+        height: 150, // Make the logo larger
+        borderRadius: 75, // Make the logo circular
+        marginBottom: -15,
     },
     title: {
         fontSize: 50,
