@@ -168,7 +168,6 @@ CORS_ALLOWS_CREDENTIALS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # 'api.backends.NonsecureEmailBackend' -- the proper one to use once we can figure out SSL certification for using SMTP from Gmail
 
-EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
