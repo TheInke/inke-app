@@ -56,11 +56,16 @@ export default LoginScreen;
 
 
 
+
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { login } from '../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../constants';
+
+// Correctly import the image from the local assets folder
+import inkeLogo from '../assets/images/inke_logo.png';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -83,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={'../assets/images/inke_logo.png'} style={styles.logo} />
+            <Image source={inkeLogo} style={styles.logo} />
             <Text style={styles.title}>Inke</Text>
 
             <Text style={styles.label}>LOGIN</Text>
@@ -91,12 +96,14 @@ const LoginScreen = ({ navigation }) => {
             <TextInput
                 style={styles.input}
                 placeholder="Username"
+                placeholderTextColor="#d3d3d3"
                 value={username}
                 onChangeText={setUsername}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
+                placeholderTextColor="#d3d3d3"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -133,20 +140,22 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#000',    //#000  og: #fff
     },
     logo: {
-        width: 80,
+        width: 60,
         height: 80,
-        marginBottom: 20,
+        marginBottom: -5,
     },
     title: {
-        fontSize: 32,
+        fontSize: 50,
+        color: '#fff',  //added
         fontWeight: 'bold',
         marginBottom: 20,
     },
     label: {
         fontSize: 18,
+        color: 'white', //added
         fontWeight: 'bold',
         alignSelf: 'flex-start',
         marginBottom: 10,
@@ -163,14 +172,15 @@ const styles = StyleSheet.create({
     loginButton: {
         width: '100%',
         height: 40,
-        backgroundColor: '#000',
+        backgroundColor: '#fff',    //#fff  og: #000
+        borderColor: '#ddd',    //added
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,
     },
     loginButtonText: {
-        color: '#fff',
+        color: '#000',  //#000  og: #fff
         fontSize: 16,
     },
     socialButton: {
@@ -185,6 +195,7 @@ const styles = StyleSheet.create({
     },
     socialButtonText: {
         fontSize: 16,
+        color: '#fff',   //added
     },
     link: {
         color: '#007BFF',
@@ -198,15 +209,20 @@ export default LoginScreen;
 
 
 
+
+
+
+
+
+
+
+
 /*
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { login } from '../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../constants';
-
-// Correctly import the image from the local assets folder
-import inkeLogo from '../assets/images/inke_logo.png';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -229,7 +245,7 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={inkeLogo} style={styles.logo} />
+            <Image source={'../assets/images/inke_logo.png'} style={styles.logo} />
             <Text style={styles.title}>Inke</Text>
 
             <Text style={styles.label}>LOGIN</Text>
