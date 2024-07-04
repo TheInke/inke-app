@@ -70,6 +70,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_destroy(self, instance):
         instance.delete()
 
+# favorite feature
 class FavoritePostView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -81,8 +82,8 @@ class FavoritePostView(APIView):
             return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
         
         # Check if the post is already favorited
-        # if Favorites.objects.filter(user=user, post=post).exists():
-        #     return Response({'error': 'Post already favorited'}, status=status.HTTP_400_BAD_REQUEST)
+        if Favorites.objects.filter(user=user, post=post).exists():
+            return Response({'error': 'Post already favorited'}, status=status.HTTP_400_BAD_REQUEST)
         
         favorite = Favorites.objects.create(user=user, post=post)
         return Response({'message': 'Post favorited successfully'}, status=status.HTTP_201_CREATED)
@@ -101,4 +102,15 @@ class FavoritePostView(APIView):
         else:
             return Response({"error": "Favorite not found."}, status=status.HTTP_404_NOT_FOUND)
 
-# favorite feature
+
+# listing favorites for a user
+class ListFavoritePostsView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        #get user
+        user = self.request.user
+        # get all the favorited post ids for a user
+        favorite_posts_ids = Favorites.objects.filter(user=user).values_list('post_id', flat=True) 
+        return Post.objects.filter(id__in=favorite_posts_ids)
