@@ -63,10 +63,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import LoginScreen from './components/LoginPage/LoginScreen';
 import AuthStatusScreen from './components/LoginPage/AuthStatusScreen';
 import EditProfileScreen from './components/LoginPage/EditProfileScreen';
 import ProtectedRoute from './components/LoginPage/ProtectedRoute';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
