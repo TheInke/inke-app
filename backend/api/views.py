@@ -1,33 +1,23 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-from .models import UserProfile
-from .serializers import UserProfileSerializer
-
-# post import 
-from rest_framework import viewsets
+from django.conf import settings
 from .models import Post, Like
-from .serializers import PostSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-
-# like imports 
-from rest_framework.permissions import IsAuthenticated
-from .serializers import LikeSerializer
-
-
+from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 class CreateUserView(generics.CreateAPIView):
-    queryset = UserProfile.objects.all()
+    queryset = settings.AUTH_USER_MODEL.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.AllowAny]
 
 class UserProfileListView(generics.ListAPIView):
-    queryset = UserProfile.objects.all()
+    queryset = settings.AUTH_USER_MODEL.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [] #[permissions.IsAuthenticated]
 
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = UserProfile.objects.all()
+    queryset = settings.AUTH_USER_MODEL.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -43,9 +33,6 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    
-    
-# post views 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -54,7 +41,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)  # Ensure user is saved with the post
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,9 +61,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
-        
 
-# like views 
 class LikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 

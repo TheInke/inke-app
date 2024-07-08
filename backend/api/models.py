@@ -98,8 +98,8 @@ class Connection(models.Model):
         ('rejected', 'Rejected'),  # Request has been rejected
     ]
 
-    from_user = models.ForeignKey(UserProfile, related_name='sent_connections', on_delete=models.CASCADE)
-    to_user = models.ForeignKey(UserProfile, related_name='received_connections', on_delete=models.CASCADE)
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_connections', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='received_connections', on_delete=models.CASCADE)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -122,7 +122,7 @@ class SocialCircles(models.Model):
     group_id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=255, unique=True)
     group_pic = models.ImageField(upload_to='group_pics', null=True, blank=True)
-    members = models.ManyToManyField(UserProfile, related_name='social_circles')
+    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='social_circles')
 
 class Favorites(models.Model):
     """
@@ -132,9 +132,8 @@ class Favorites(models.Model):
         user (ForeignKey): User who favorited the post.
         post (ForeignKey): Post that was favorited by the user.
     """
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
 
 # post model 
 class Post(models.Model):
@@ -149,12 +148,9 @@ class Post(models.Model):
     
 # like model 
 class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         unique_together = ('user', 'post')
-    
-
-
