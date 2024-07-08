@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
-import { auth, logout } from '../services/api'; // Import auth and logout from api.js
+import { auth, logout } from '../../services/api'; // Import auth and logout from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AuthStatusScreen = () => {
