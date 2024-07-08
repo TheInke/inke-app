@@ -23,7 +23,7 @@ const LoginScreen = ({ navigation }) => {
             // console.log('TOKEN STORED IN ASYNC STORAGE:', storedToken);
 
             // Navigate to the main screen or perform other actions
-            navigation.navigate('Main');
+            navigation.navigate('HomepageScreen');
         } catch (error) {
             console.error('Login failed:', error);
         }

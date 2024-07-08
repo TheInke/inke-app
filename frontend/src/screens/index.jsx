@@ -11,3 +11,4 @@
 export { default as EditProfileScreen } from './EditProfileScreen';
 export { default as LoginScreen } from './LoginScreen';
 export { default as AuthStatusScreen } from './AuthStatusScreen';
+export { default as HomepageScreen } from './HomepageScreen';

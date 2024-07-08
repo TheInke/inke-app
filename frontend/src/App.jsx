@@ -6,6 +6,7 @@ import LoginScreen from './screens/LoginScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import HomepageScreen from './screens/HomepageScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -13,11 +14,13 @@ const Tab = createBottomTabNavigator();
 const AuthStack = () => (
     <Stack.Navigator>
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="Homepage" component={HomepageScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
 );
 
 const MainTab = () => (
     <Tab.Navigator>
+        <Tab.Screen name="HomepageScreen" component={HomepageScreen} />
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
         <Tab.Screen
             name="EditProfileScreen"
