@@ -61,13 +61,13 @@ const styles = StyleSheet.create({
         marginBottom: -15,
     },
     title: {
-        fontSize: 30,
+        fontSize: 45,
         color: '#fff',
         fontWeight: 'bold',
         marginBottom: 20,
     },
     label: {
-        fontSize: 15,
+        fontSize: 14,
         color: 'white',
         fontWeight: 'bold',
         alignSelf: 'center',
