@@ -70,7 +70,7 @@ class CommentCreateView(generics.CreateAPIView):
         Comment.objects.create(
             post=post,
             user=request.user,
-            text=serializer.data['text']
+            text=serializer.validated_data['text']
         )
         return Response({"detail": "Comment added successfully."}, status=status.HTTP_201_CREATED)
 
@@ -84,3 +84,17 @@ class PostCommentsListView(generics.ListAPIView):
     def get_queryset(self):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post_id=post_id)
+    
+class CommentDetailView(generics.RetrieveAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        post_id = self.kwargs['post_id']
+        comment_id = self.kwargs['comment_id']
+        try:
+            comment = Comment.objects.get(post_id=post_id, id=comment_id)
+        except Comment.DoesNotExist:
+            return Response({"detail": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
+        return comment

@@ -48,6 +48,11 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'post', 'text', 'created_at']
         read_only_fields = ['id', 'user', 'post', 'created_at']
 
+    def validate_text(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Comment text cannot be empty.")
+        return value
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:

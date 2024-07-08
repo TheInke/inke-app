@@ -16,5 +16,6 @@ urlpatterns = [
     # url links for comment creation and listing
     path('posts/<int:post_id>/comments/', views.PostCommentsListView.as_view(), name='post-comments'), # List comments for a post
     path('posts/<int:post_id>/comments/create/', views.CommentCreateView.as_view(), name='comment-create'), # Create a new comment
+    path('posts/<int:post_id>/comments/<int:comment_id>/', views.CommentDetailView.as_view(), name='comment-detail'), #view specific comment of post
 
 ]
