@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 import { fetchUserData } from '../services/api'; // Import fetchUserData function from api.js
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -23,7 +23,7 @@ const HomepageScreen = ({ navigation }) => {
 
     const renderPost = ({ item }) => (
         <View style={styles.postContainer}>
-            <Image source={{ uri: item.image }} style={styles.postImage } />
+            <Image source={{ uri: item.image }} style={styles.postImage} />
             <Text style={styles.postDescription}>{item.description}</Text>
             {item.comments.map(comment => (
                 <Text key={comment.id} style={styles.commentText}>- {comment.text}</Text>
@@ -38,7 +38,7 @@ const HomepageScreen = ({ navigation }) => {
                 renderItem={renderPost}
                 keyExtractor={item => item.id}
                 numColumns={2}
-                contentCVontainerStyle={styles.grid}
+                contentContainerStyle={styles.grid}
             />
         </View>
     );
