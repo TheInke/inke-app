@@ -65,6 +65,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+//import statements for auth
+import * as Google from 'expo-google-app-auth';
+import * as Facebook from 'expo-facebook';
+import * as AppleAuthentication from 'expo-apple-authentication';
+
 // Correctly import the image from the local assets folder
 import inkeLogo from '../../assets/images/inke_logo.png';
 
@@ -75,15 +80,75 @@ const LoginScreen = ({ navigation }) => {
     const handleLogin = async () => {
         try {
             const response = await login(username, password);
-            console.log('LOGIN SUCCESS | ln16');    // Testing login
+            console.log('LOGIN SUCCESS | inke');    // Testing login og: ln16
 
-            const accessToken = response.data.access;
+            const accessToken = response.data.accessToken;
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
 
             // Navigate to the main screen or perform other actions
             navigation.navigate('Main');
         } catch (error) {
             console.error('Login failed:', error);
+        }
+    };
+
+    //API integration: Google Auth
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await Google.logInAsync({
+                //androidClientId: '',    //get client id
+                //iosClientId: '',        //get client id
+                webClientId: '',          //get client id
+                scopes: ['profile', 'email'],
+            });
+
+            if(result.type === 'success') {
+                const accessToken = result.accessToken;
+                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+                navigation.navigate('Main');
+            } else {
+                console.error('Google login cancelled');
+            }
+        } catch (error) {
+            console.error('Google login error', error);
+        }
+    };
+
+    //API integration: Facebook Auth
+    const handleFacebookLogin = async () => {
+        try {
+            await Facebook.initializeAsync({
+                appId: '',      //get client id
+            });
+            const result = await Facebook.logInWithReadPermissionsAsync({
+                permissions: ['public_profile', 'email'],
+            });
+            if(result.type === 'success') {
+                const accessToken = result.token;
+                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+                navigation.navigate('Main'); 
+            } else {
+                console.error('Facebook login cancelled');
+            }
+        } catch (error) {
+            console.error('Facebook login error', error);
+        }
+    };
+
+
+    //API integration: Apple Auth
+    const handleAppleLogin = async () => {
+        try {
+            const credential = await AppleAuthentication.signInAsync({
+                requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL,],
+            });
+            if (credential) {
+                const accessToken = credential.identityToken;
+                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+                navigation.navigate('Main');
+            }
+        } catch (error) {
+            console.error('Apple login error', error);
         }
     };
 
@@ -114,15 +179,15 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
                 <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
                 <Text style={styles.socialButtonText}>Log in with Google</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress = {handleFacebookLogin}>
                 <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
                 <Text style={styles.socialButtonText}>Log in with Facebook</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton}>
+            <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin}>
                 <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
                 <Text style={styles.socialButtonText}>Log in with Apple</Text>
             </TouchableOpacity>
