@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -85,7 +86,7 @@ class PostCommentsListView(generics.ListAPIView):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post_id=post_id)
     
-class CommentDetailView(generics.RetrieveAPIView):
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -94,7 +95,12 @@ class CommentDetailView(generics.RetrieveAPIView):
         post_id = self.kwargs['post_id']
         comment_id = self.kwargs['comment_id']
         try:
-            comment = Comment.objects.get(post_id=post_id, id=comment_id)
+            return Comment.objects.get(post_id=post_id, id=comment_id)
         except Comment.DoesNotExist:
-            return Response({"detail": "Comment not found."}, status=status.HTTP_404_NOT_FOUND)
-        return comment
+            raise Http404("Comment not found.")
+    
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
