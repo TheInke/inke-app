@@ -25,17 +25,8 @@ class UserProfile(AbstractUser):
     state = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
 
+"""
 class Post(models.Model):
-    """
-    Represents individual posts made by users.
-    
-    Attributes:
-        user (ForeignKey): User who created the post.
-        text_content (str): Content of the post.
-        image (ImageField): Image attached to the post.
-        created_at (DateTimeField): Timestamp when the post was created.
-        updated_at (DateTimeField): Timestamp when the post was last updated.
-    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     text_content = models.TextField(blank=True)
     image = models.ImageField(upload_to='post_images', null=True, blank=True)
@@ -44,7 +35,21 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.text_content[:20]}'
-    
+
+"""
+
+# post model 
+class Post(models.Model):
+    title = models.CharField(max_length=100, blank=True, null=True)
+    content = models.TextField(blank=True, null=True)
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, default=False)
+
+    def __str__(self):
+        return self.title
+
 class Comment(models.Model):
     """
     Represents comments made by users on posts.
@@ -56,31 +61,12 @@ class Comment(models.Model):
         created_at (DateTimeField): Timestamp when the comment was created.
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.user.username} - {self.text[:20]}'
-
-class Like(models.Model):
-    """
-    Represents likes given by users to posts.
-    
-    Attributes:
-        user (ForeignKey): User who liked the post.
-        post (ForeignKey): Post being liked.
-        created_at (DateTimeField): Timestamp when the like was created.
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'post')
-
-    def __str__(self):
-        return f'{self.user.username} likes {self.post.id}'
 
 class Connection(models.Model):
     """
@@ -132,24 +118,13 @@ class Favorites(models.Model):
         user (ForeignKey): User who favorited the post.
         post (ForeignKey): Post that was favorited by the user.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="favorited")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-# post model 
-class Post(models.Model):
-    title = models.CharField(max_length=100)
-    content = models.TextField(blank=True, null=True)
-    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
     
 # like model 
 class Like(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
