@@ -6,9 +6,9 @@ import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 //import statements for auth
-import * as Google from 'expo-google-app-auth';
-import * as Facebook from 'expo-facebook';
-import * as AppleAuthentication from 'expo-apple-authentication';
+//import * as Google from 'expo-google-app-auth';
+//import * as Facebook from 'expo-facebook';
+//import * as AppleAuthentication from 'expo-apple-authentication';
 
 // Correctly import the image from the local assets folder
 import inkeLogo from '../../assets/images/inke_logo.png';
@@ -55,7 +55,7 @@ const LoginScreen = ({ navigation }) => {
                 secureTextEntry
             />
             
-            <TouchableOpacity style={styles.loginButton}>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
 
@@ -72,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.socialButtonText}>Log in with Apple</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                 <Text style={styles.link}>Forgot your password?</Text>
             </TouchableOpacity>
 

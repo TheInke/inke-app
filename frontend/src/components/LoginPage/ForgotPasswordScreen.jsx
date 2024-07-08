@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
-        fontSize: 18,
+        fontSize: 15,
         color: 'white',
         fontWeight: 'bold',
         alignSelf: 'center',
