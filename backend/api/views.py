@@ -2,22 +2,22 @@ from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from django.conf import settings
-from .models import Post, Like
+from .models import Post, Like, UserProfile
 from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 class CreateUserView(generics.CreateAPIView):
-    queryset = settings.AUTH_USER_MODEL.objects.all()
+    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.AllowAny]
 
 class UserProfileListView(generics.ListAPIView):
-    queryset = settings.AUTH_USER_MODEL.objects.all()
+    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [] #[permissions.IsAuthenticated]
 
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = settings.AUTH_USER_MODEL.objects.all()
+    queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
