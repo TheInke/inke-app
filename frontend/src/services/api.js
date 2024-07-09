@@ -68,6 +68,20 @@ export const fetchUserData = async (userId) => {
     }
 };
 
+export const createPost = async (image, description) => {
+    try {
+        const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
+        const response = await api.post('/api/posts', { image, description }, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+        return response.data; // Return the created post
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const logout = async () => {
     try {
         await AsyncStorage.removeItem(ACCESS_TOKEN);
@@ -91,3 +105,4 @@ api.interceptors.request.use(
 );
 
 export default api;
+

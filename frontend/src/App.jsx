@@ -2,24 +2,16 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './screens/LoginScreen';
+import HomepageScreen from './screens/HomepageScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-import HomepageScreen from './screens/HomepageScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const AuthStack = () => (
-    <Stack.Navigator>
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="Homepage" component={HomepageScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-);
-
 const MainTab = () => (
-    <Tab.Navigator>
+    <Tab.Navigator initialRouteName="HomepageScreen">
         <Tab.Screen name="HomepageScreen" component={HomepageScreen} />
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
         <Tab.Screen
@@ -40,12 +32,7 @@ const EditProfileScreenWrapper = () => (
 
 const App = () => (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName="Auth">
-            <Stack.Screen
-                name="Auth"
-                component={AuthStack}
-                options={{ headerShown: false }}
-            />
+        <Stack.Navigator initialRouteName="Main">
             <Stack.Screen
                 name="Main"
                 component={MainTab}
@@ -56,3 +43,5 @@ const App = () => (
 );
 
 export default App;
+
+
