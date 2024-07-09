@@ -24,6 +24,9 @@ class UserProfile(AbstractUser):
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
+    
+    def total_likes_on_posts(self):
+        return Like.objects.filter(post__user=self).count()
 
 """
 class Post(models.Model):

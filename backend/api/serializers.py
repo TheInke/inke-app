@@ -5,7 +5,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['id', 'first_name', 'last_name', 'phone_number', 'email', 'username', 'password', 'pronouns', 'pfp_image', 
-                  'links', 'bio', 'city', 'state', 'country']
+                  'links', 'bio', 'city', 'state', 'country', 'total_likes']
         extra_kwargs = {
             'password': {'write_only': True},  # Password field is write only
         }
@@ -33,6 +33,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if not email and not phone_number:
             raise serializers.ValidationError("Either email or phone number must be provided.")
         return data
+    
     
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 # class PostSerializer(serializers.ModelSerializer):

@@ -70,9 +70,14 @@ class LikePostView(generics.GenericAPIView):
         post = Post.objects.get(id=post_id)
         user = request.user
         
-        if Like.objects.filter(post=post, user=user).exists():
-            return Response({'detail': 'Already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
+        # Check if the post is already liked by the user
+        like = Like.objects.filter(post=post, user=user).first()
+        if like:
+            # Unlike the post
+            like.delete()
+            return Response({'detail': 'Unliked the post.'}, status=status.HTTP_204_NO_CONTENT)
         
+        # Like the post
         like = Like.objects.create(post=post, user=user)
         return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
 
