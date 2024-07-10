@@ -30,13 +30,14 @@ class UserProfile(AbstractUser):
 class Post(models.Model):
     title = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
-    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
 
     def __str__(self):
         return self.title
+
 
 class Comment(models.Model):
     """
@@ -110,9 +111,13 @@ class Favorites(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
 class Like(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='liked_posts')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'post')
+
+    def __str__(self):
+        return f'{self.user.username} likes {self.post.title}'
+

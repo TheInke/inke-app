@@ -34,6 +34,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Either email or phone number must be provided.")
         return data
     
+    def total_likes_on_posts(self):
+        return Like.objects.filter(user=self).count()
+    
     
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 # class PostSerializer(serializers.ModelSerializer):
@@ -76,10 +79,11 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
 
+
         
 # like serializers
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = '__all__'
+        fields = ['id', 'user', 'post', 'created_at']

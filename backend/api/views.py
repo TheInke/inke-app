@@ -5,6 +5,7 @@ from django.conf import settings
 from .models import Post, Like, UserProfile
 from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.decorators import api_view
 
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
@@ -80,6 +81,7 @@ class LikePostView(generics.GenericAPIView):
         like = Like.objects.create(post=post, user=user)
         return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
 
+
 class TotalLikesView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -87,3 +89,13 @@ class TotalLikesView(generics.GenericAPIView):
         user = request.user
         total_likes = Like.objects.filter(user=user).count()
         return Response({'total_likes': total_likes}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def liked_posts_history(request):
+    user = request.user
+    liked_posts = Like.objects.filter(user=user).select_related('post')
+
+    # Serialize the liked posts
+    serializer = PostSerializer(liked_posts, many=True)
+
+    return Response(serializer.data)
