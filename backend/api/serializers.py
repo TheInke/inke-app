@@ -70,9 +70,12 @@ class FavoritesSerializer(serializers.ModelSerializer):
 
 # post serializers 
 class PostSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
+
         
 # like serializers
 
