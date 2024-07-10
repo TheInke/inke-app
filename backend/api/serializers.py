@@ -63,6 +63,11 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Favorites model.
+
+    Serializes Favorites objects to and from JSON.
+    """
     class Meta:
         model = Favorites
         fields = ['id', 'user', 'post']

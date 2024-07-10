@@ -72,9 +72,32 @@ class PostViewSet(viewsets.ModelViewSet):
 
 # favorite feature
 class FavoritePostView(APIView):
+    """
+    API view for favoriting and unfavoriting posts.
+
+    This view handles favoriting and unfavoriting posts by authenticated users.
+
+    Attributes:
+        permission_classes (list): The list of permissions required to access this view.
+    """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id, format=None):
+        """
+        Handle POST request to favorite a post.
+
+        Args:
+            request (Request): The request object containing user data.
+            post_id (int): The ID of the post to be favorited.
+            format (str, optional): The format of the response.
+
+        Returns:
+            Response: The response object with success or error message.
+
+        Raises:
+            HTTP_404_NOT_FOUND: If the requested post does not exist.
+            HTTP_400_BAD_REQUEST: If the post is already favorited.
+        """
         user = request.user
         try:
             post = Post.objects.get(id=post_id)
@@ -89,6 +112,19 @@ class FavoritePostView(APIView):
         return Response({'message': 'Post favorited successfully'}, status=status.HTTP_201_CREATED)
     
     def delete(self, request, post_id):
+        """
+        Handle DELETE request to remove a post from favorites.
+
+        Args:
+            request (Request): The request object containing user data.
+            post_id (int): The ID of the post to be removed from favorites.
+
+        Returns:
+            Response: The response object with success or error message.
+
+        Raises:
+            HTTP_404_NOT_FOUND: If the requested post or favorite does not exist.
+        """
         user = request.user
         try:
             post = Post.objects.get(id=post_id)
@@ -105,12 +141,26 @@ class FavoritePostView(APIView):
 
 # listing favorites for a user
 class ListFavoritePostsView(generics.ListAPIView):
+    """
+    API view for listing favorite posts of a user.
+
+    This view retrieves and lists all posts favorited by the authenticated user.
+
+    Attributes:
+        serializer_class (Serializer): The serializer class used for serializing Post objects.
+        permission_classes (list): The list of permissions required to access this view.
+    """
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        #get user
-        user = self.request.user
+        """
+        Retrieve the queryset of favorite posts for the authenticated user.
+
+        Returns:
+            QuerySet: The queryset of Post objects favorited by the user.
+        """
+        user = self.request.user    #get user
         # get all the favorited post ids for a user
         favorite_posts_ids = Favorites.objects.filter(user=user).values_list('post_id', flat=True) 
         return Post.objects.filter(id__in=favorite_posts_ids)
