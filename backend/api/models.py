@@ -33,7 +33,7 @@ class Post(models.Model):
     photo = models.ImageField(upload_to='photos/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=1)  # Set default user ID to 1
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.title

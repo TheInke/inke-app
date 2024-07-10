@@ -44,6 +44,8 @@ class PostViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
+        if instance.user != request.user:
+            raise PermissionDenied("You do not have permission to edit this post.")
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -51,12 +53,14 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        if instance.user != request.user:
+            raise PermissionDenied("You do not have permission to delete this post.")
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_destroy(self, instance):
         instance.delete()
-
+        
 class LikePostView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
