@@ -134,9 +134,20 @@ class Favorites(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
-
-#Adding a model for Journal page
 class JournalEntry(models.Model):
+    """
+    Model representing a journal entry.
+
+    Attributes:
+        user (ForeignKey): The user who owns this journal entry.
+        title (CharField): The title of the journal entry.
+        text_content (TextField): The textual content of the journal entry.
+        image (ImageField): An optional image attached to the journal entry.
+        video (FileField): An optional video file attached to the journal entry.
+        audio (FileField): An optional audio file attached to the journal entry.
+        created_at (DateTimeField): The date and time when the journal entry was created.
+        updated_at (DateTimeField): The date and time when the journal entry was last updated.
+    """
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='journal_entries')
     title = models.CharField(max_length=255, default="Untitled")
     text_content = models.TextField(blank=True)
