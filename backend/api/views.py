@@ -33,33 +33,31 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-class PostCreateView(generics.CreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-# created simple post endpoint for testing comments with dummy data
-
-class PostListView(generics.ListAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = [permissions.AllowAny]
-
-class PostDetailView(generics.RetrieveAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = [permissions.AllowAny]
-
-# creating a new comment 
-
 class CommentCreateView(generics.CreateAPIView):
+    """
+    API view for creating a new comment.
+
+    This view allows authenticated users to create a new comment for a specified post.
+
+    Attributes:
+        serializer_class (Serializer): The serializer class used for the comment.
+        permission_classes (tuple): The tuple of permissions required to access this view.
+    """
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
+        """
+        Handle POST request to create a new comment.
+
+        Args:
+            request (Request): The request object containing the data.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            Response: The response object with the creation status and message.
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         post_id = kwargs.get('post_id')
@@ -75,23 +73,57 @@ class CommentCreateView(generics.CreateAPIView):
         )
         return Response({"detail": "Comment added successfully."}, status=status.HTTP_201_CREATED)
 
-# viewing the comment for specified post id 
-
-
 class PostCommentsListView(generics.ListAPIView):
+    """
+    API view for listing comments for a specified post.
+
+    This view allows anyone to view the comments associated with a specific post.
+
+    Attributes:
+        serializer_class (Serializer): The serializer class used for the comments.
+        permission_classes (list): The list of permissions required to access this view.
+    """
     serializer_class = CommentSerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
+        """
+        Retrieve the queryset of comments for the specified post.
+
+        Returns:
+            QuerySet: The queryset of comments filtered by post ID.
+        """
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post_id=post_id)
     
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API view for retrieving, updating, and deleting a comment.
+
+    This view provides the following actions:
+    - Retrieve a specific comment based on post ID and comment ID.
+    - Update a specific comment.
+    - Delete a specific comment.
+
+    Attributes:
+        queryset (QuerySet): The queryset that retrieves all comments.
+        serializer_class (Serializer): The serializer class used for the comment.
+        permission_classes (list): The list of permissions required to access this view.
+    """
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
+        """
+        Retrieve a specific comment based on the provided post ID and comment ID.
+
+        Returns:
+            Comment: The comment object if found.
+
+        Raises:
+            Http404: If the comment with the specified post ID and comment ID does not exist.
+        """
         post_id = self.kwargs['post_id']
         comment_id = self.kwargs['comment_id']
         try:
@@ -100,7 +132,13 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
             raise Http404("Comment not found.")
     
     def perform_update(self, serializer):
+        """
+        Save the changes to the comment.
+        """
         serializer.save()
 
     def perform_destroy(self, instance):
+        """
+        Delete the specified comment instance.
+        """
         instance.delete()
