@@ -7,11 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-//import statements for auth
-//import * as Google from 'expo-google-app-auth';
-//import * as Facebook from 'expo-facebook';
-//import * as AppleAuthentication from 'expo-apple-authentication';
-
 // Correctly import the image from the local assets folder
 import inkeLogo from '../../assets/images/inke_logo.png';
 
@@ -22,7 +17,7 @@ const LoginScreen = ({ navigation }) => {
     const handleLogin = async () => {
         try {
             const response = await login(username, password);
-            console.log('LOGIN SUCCESS | ln16');  
+            console.log('LOGIN SUCCESS | ln16');
 
             const accessToken = response.data.accessToken;
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
@@ -56,21 +51,21 @@ const LoginScreen = ({ navigation }) => {
                 onChangeText={setPassword}
                 secureTextEntry
             />
-            
+
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.socialButton}>
-                <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                <Icon name="google" size={20} color="#fff" style={styles.socialIcon} />
                 <Text style={styles.socialButtonText}>Log in with Google</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-                <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                <Icon name="facebook" size={20} color="#fff" style={styles.socialIcon} />
                 <Text style={styles.socialButtonText}>Log in with Facebook</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.socialButton}>
-                <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                <Icon name="apple" size={20} color="#fff" style={styles.socialIcon} />
                 <Text style={styles.socialButtonText}>Log in with Apple</Text>
             </TouchableOpacity>
 
@@ -78,7 +73,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.link}>Forgot your password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
                 <Text style={styles.link}>Don't have an account? Sign Up</Text>
             </TouchableOpacity>
         </View>
@@ -120,6 +115,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 10,
+        color: 'white',
     },
     loginButton: {
         width: '100%',

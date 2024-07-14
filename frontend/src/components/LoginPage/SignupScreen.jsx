@@ -1,46 +1,134 @@
-import { View, TextInput, Button } from 'react-native'
-import React, { useState } from 'react'
-import { signup } from '../services/api';
+// SignupScreen.jsx
 
-const SignupScreen = ({ data }) => {
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { signup } from '../../services/api'; // Import signup function from api.js
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ACCESS_TOKEN } from '../../constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+// Correctly import the image from the local assets folder
+import inkeLogo from '../../assets/images/inke_logo.png';
+
+const SignupScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
-    const [number, setNumber] = useState('');
+    const [password, setPassword] = useState('');
 
+    const handleSignup = async () => {
+        try {
+            const response = await signup(username, email, password);
+            console.log('SIGNUP SUCCESS | ln16');
 
+            const accessToken = response.data.accessToken;
+            await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+
+            // Navigate to the main screen or perform other actions
+            navigation.navigate('Main');
+        } catch (error) {
+            console.error('Signup failed:', error);
+        }
+    };
 
     return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={styles.container}>
+            <Image source={inkeLogo} style={styles.logo} />
+            <Text style={styles.title}>Inke</Text>
 
-        <text style={style.header} >Registration</text>
+            <Text style={styles.label}>SIGN UP</Text>
 
             <TextInput
+                style={styles.input}
                 placeholder="Username"
+                placeholderTextColor="#d3d3d3"
                 value={username}
-                onChangeText={setUsername}/>
-
+                onChangeText={setUsername}
+            />
             <TextInput
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={true}/>
-
-            <TextInput
+                style={styles.input}
                 placeholder="Email"
+                placeholderTextColor="#d3d3d3"
                 value={email}
                 onChangeText={setEmail}
-                secureTextEntry={true}/>
-
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
             <TextInput
-                placeholder="Phone Number"
-                value={number}
-                onChangeText={setNumber}
-                secureTextEntry={true}/>
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#d3d3d3"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+            />
 
-            <Button title="Sign Up" />
+            <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
+                <Text style={styles.signupButtonText}>Sign Up</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.link}>Already have an account? Log In</Text>
+            </TouchableOpacity>
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#000',    //#000  og: #fff
+    },
+    logo: {
+        width: 100, // Make the logo larger
+        height: 150, // Make the logo larger
+        borderRadius: 75, // Make the logo circular
+        marginBottom: -15,
+    },
+    title: {
+        fontSize: 50,
+        color: '#fff',  //added
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 18,
+        color: 'white', //added
+        fontWeight: 'bold',
+        alignSelf: 'flex-start',
+        marginBottom: 10,
+    },
+    input: {
+        width: '100%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 10,
+        color: 'white',
+    },
+    signupButton: {
+        width: '100%',
+        height: 40,
+        backgroundColor: '#fff',    //#fff  og: #000
+        borderColor: '#ddd',    //added
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        marginBottom: 20,
+    },
+    signupButtonText: {
+        color: '#000',  //#000  og: #fff
+        fontSize: 16,
+    },
+    link: {
+        color: '#007BFF',
+        marginTop: 10,
+        textDecorationLine: 'underline',
+    },
+});
 
 export default SignupScreen;

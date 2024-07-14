@@ -4,10 +4,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import LoginScreen from './components/LoginPage/LoginScreen';
-import ForgotPasswordScreen from './components/LoginPage/ForgotPasswordScreen';
+import ForgotPasswordScreen from './components/LoginPage/SignupScreen';
 import AuthStatusScreen from './components/LoginPage/AuthStatusScreen';
 import EditProfileScreen from './components/LoginPage/EditProfileScreen';
 import ProtectedRoute from './components/LoginPage/ProtectedRoute';
+import SignupScreen from './components/LoginPage/SignupScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,6 +23,11 @@ const AuthStack = () => (
         <Stack.Screen
             name="ForgotPassword"
             component={ForgotPasswordScreen}
+            options={{ headerShown: false }} // Hide the header for the forgot password screen
+        />
+        <Stack.Screen
+            name="Signup"
+            component={SignupScreen}
             options={{ headerShown: false }} // Hide the header for the forgot password screen
         />
     </Stack.Navigator>
