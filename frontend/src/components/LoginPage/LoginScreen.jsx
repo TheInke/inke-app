@@ -74,11 +74,11 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.socialButtonText}>Log in with Apple</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+            <TouchableOpacity>
                 <Text style={styles.link}>Forgot your password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                 <Text style={styles.link}>Don't have an account? Sign Up</Text>
             </TouchableOpacity>
         </View>
