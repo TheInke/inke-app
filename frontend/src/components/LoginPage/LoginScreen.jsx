@@ -98,7 +98,7 @@ const LoginScreen = ({ navigation }) => {
             const result = await Google.logInAsync({
                 //androidClientId: '',    //get client id
                 //iosClientId: '',        //get client id
-                webClientId: '',          //get client id
+                webClientId: '699989176848-955n3avv8p98cjp7u4cdku6dlq639h2b.apps.googleusercontent.com',          //get client id
                 scopes: ['profile', 'email'],
             });
 
