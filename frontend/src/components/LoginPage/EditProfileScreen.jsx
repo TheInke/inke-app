@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import { fetchUserData, updateUserProfile } from '../services/api'; // Import fetchUserData and updateUserProfile functions from api.js
-import { API_URL, ACCESS_TOKEN } from '../constants'; // Ensure API_URL and ACCESS_TOKEN are correctly imported
+import { fetchUserData, updateUserProfile } from '../../services/api'; // Import fetchUserData and updateUserProfile functions from api.js
+import { API_URL, ACCESS_TOKEN } from '../../constants'; // Ensure API_URL and ACCESS_TOKEN are correctly imported
 
 const EditProfileScreen = () => {
     const [loading, setLoading] = useState(true);
