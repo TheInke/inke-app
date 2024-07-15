@@ -37,12 +37,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def total_likes_on_posts(self):
         return Like.objects.filter(user=self).count()
     
-    
-# TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
-# class PostSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Post
-#         fields = '__all__'
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,27 +57,14 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialCircles
         fields = '__all__'
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
-class FavoritesSerializer(serializers.ModelSerializer):
+class FavoriteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the Favorites model.
+
+    Serializes Favorites objects to and from JSON.
+    """
     class Meta:
         model = Favorites
-        fields = '__all__'
-        
-        
-
-# post serializers 
-class PostSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
-
-    class Meta:
-        model = Post
-        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
-
-
-        
-# like serializers
-
-class LikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Like
-        fields = ['id', 'user', 'post', 'created_at']
+        fields = ['id', 'user', 'post']

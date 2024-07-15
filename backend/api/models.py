@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.conf import settings
-
 class UserProfile(AbstractUser):
     """
     Custom user profile model extending AbstractUser.
@@ -99,14 +98,9 @@ class SocialCircles(models.Model):
     group_pic = models.ImageField(upload_to='group_pics', null=True, blank=True)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='social_circles')
 
+
+
 class Favorites(models.Model):
-    """
-    Represents user favorites for posts.
-    
-    Attributes:
-        user (ForeignKey): User who favorited the post.
-        post (ForeignKey): Post that was favorited by the user.
-    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorited")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
