@@ -5,7 +5,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['id', 'first_name', 'last_name', 'phone_number', 'email', 'username', 'password', 'pronouns', 'pfp_image', 
-                  'links', 'bio', 'city', 'state', 'country', 'total_likes']
+                  'links', 'bio', 'city', 'state', 'country']
         extra_kwargs = {
             'password': {'write_only': True},  # Password field is write only
         }
@@ -37,6 +37,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def total_likes_on_posts(self):
         return Like.objects.filter(user=self).count()
     
+class PostSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
+    
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,7 +53,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = '__all__'
+        fields = ['id', 'user', 'post', 'created_at']
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class ConnectionSerializer(serializers.ModelSerializer):
     class Meta:
