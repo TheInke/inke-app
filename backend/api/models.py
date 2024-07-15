@@ -27,6 +27,16 @@ class UserProfile(AbstractUser):
         return Like.objects.filter(post__user=self).count()
 
 class Post(models.Model):
+    """
+    Represents individual posts made by users.
+    
+    Attributes:
+        user (ForeignKey): User who created the post.
+        text_content (str): Content of the post.
+        image (ImageField): Image attached to the post.
+        created_at (DateTimeField): Timestamp when the post was created.
+        updated_at (DateTimeField): Timestamp when the post was last updated.
+    """
     title = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
     photo = models.ImageField(upload_to='photos/', blank=True, null=True) 
@@ -55,6 +65,25 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.text[:20]}'
+    
+class Like(models.Model):
+    """
+    Represents likes given by users to posts.
+    
+    Attributes:
+        user (ForeignKey): User who liked the post.
+        post (ForeignKey): Post being liked.
+        created_at (DateTimeField): Timestamp when the like was created.
+    """
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='liked_posts')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+
+    def __str__(self):
+        return f'{self.user.username} likes {self.post.title}'
 
 class Connection(models.Model):
     """
@@ -101,17 +130,12 @@ class SocialCircles(models.Model):
 
 
 class Favorites(models.Model):
+    """
+    Represents user favorites for posts.
+
+    Attributes:
+        user (ForeignKey): User who favorited the post.
+        post (ForeignKey): Post that was favorited by the user.
+    """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="favorited")
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-
-class Like(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='liked_posts')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ('user', 'post')
-
-    def __str__(self):
-        return f'{self.user.username} likes {self.post.title}'
-

@@ -1,17 +1,11 @@
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from django.http import Http404
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from .models import UserProfile, Favorites, Post, Like, Comment, Post
-from .serializers import UserProfileSerializer, PostSerializer, FavoriteSerializer, LikeSerializer
-from django.conf import settings, CommentSerializer, PostSerializer
-from rest_framework.permissions import IsAuthenticated
+from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer, CommentSerializer
 
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
@@ -43,7 +37,7 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -69,7 +63,7 @@ class PostViewSet(viewsets.ModelViewSet):
         instance.delete()
         
 class LikePostView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         post_id = self.kwargs.get('post_id')
@@ -89,7 +83,7 @@ class LikePostView(generics.GenericAPIView):
 
 
 class TotalLikesView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -115,7 +109,7 @@ class FavoritePostView(APIView):
     Attributes:
         permission_classes (list): The list of permissions required to access this view.
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, post_id, format=None):
         """
@@ -186,7 +180,7 @@ class ListFavoritePostsView(generics.ListAPIView):
         permission_classes (list): The list of permissions required to access this view.
     """
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         """
@@ -211,7 +205,7 @@ class CommentCreateView(generics.CreateAPIView):
         permission_classes (tuple): The tuple of permissions required to access this view.
     """
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         """
