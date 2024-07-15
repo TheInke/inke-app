@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites
+from .models import UserProfile, Post, Comment, Like, Connection, SocialCircles, Favorites, JournalEntry
 
+#USER-PROFILE SERIALIZER
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -44,7 +45,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
     
-# TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
+# COMMENT SERIALIZER
 class CommentSerializer(serializers.ModelSerializer):
     """
     Serializer for the Comment model.
@@ -75,23 +76,26 @@ class CommentSerializer(serializers.ModelSerializer):
         return value
 
         fields = '__all__'
-# TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
+
+#LIKE SERIALIZER
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = ['id', 'user', 'post', 'created_at']
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class ConnectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Connection
         fields = '__all__'
+
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class SocialCirclesSerializer(serializers.ModelSerializer):
     class Meta:
         model = SocialCircles
         fields = '__all__'
 
-# TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
+# FAVORITE SERIALIZER
 class FavoriteSerializer(serializers.ModelSerializer):
     """
     Serializer for the Favorites model.
@@ -101,3 +105,20 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
         fields = ['id', 'user', 'post']
+
+# JOURNAL SERIALIZER
+class JournalEntrySerializer(serializers.ModelSerializer):
+    """
+    Serializer for the JournalEntry model.
+
+    Serializes JournalEntry objects to and from JSON.
+
+    Attributes:
+        model (Model): The JournalEntry model class.
+        fields (list): The list of fields to include in the serialized representation.
+        read_only_fields (list): The list of read-only fields that are serialized but not writable.
+    """
+    class Meta:
+        model = JournalEntry
+        fields = ['id', 'user', 'title', 'text_content', 'image', 'video', 'audio', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'user', 'created_at', 'updated_at']

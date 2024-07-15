@@ -1,14 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import CreateUserView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 # post 
-from rest_framework.routers import DefaultRouter
-from api import views
 from django.conf import settings
 from django.conf.urls.static import static
-
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -18,7 +14,7 @@ urlpatterns = [
     path("api/", include("api.urls")),
 ]
 
+# Adding static and media URL configurations
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
