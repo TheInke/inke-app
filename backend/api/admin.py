@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import UserProfile, Post, Comment,Favorites
-admin.site.register(Post)
-admin.site.register(UserProfile)
-admin.site.register(Comment)
-admin.site.register(Favorites)
+from . import models
+admin.site.register(models.UserProfile)
+admin.site.register(models.Post)
+admin.site.register(models.Comment)
+admin.site.register(models.Like)
+admin.site.register(models.Connection)
+admin.site.register(models.SocialCircles)
+admin.site.register(models.Favorites)
+admin.site.register(models.JournalEntry)

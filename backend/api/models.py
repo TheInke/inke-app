@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 class UserProfile(AbstractUser):
     """
@@ -121,14 +123,20 @@ class SocialCircles(models.Model):
         group_id (AutoField): Unique identifier for the social circle.
         group_name (str): Name of the social circle.
         group_pic (ImageField): Profile picture of the social circle.
+        description (str): Brief description of the social circle.
         members (ManyToManyField): Users who are members of the social circle.
+        created_by (ForeignKey): The user who created the social circle.
+        created_at (DateTimeField): Timestamp when the social circle was created.
+        updated_at (DateTimeField): Timestamp when the social circle was last updated.
     """
     group_id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=255, unique=True)
     group_pic = models.ImageField(upload_to='group_pics', null=True, blank=True)
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='social_circles')
-
-
+    desc = models.CharField(max_length=500, blank=True)
+    members = models.ManyToManyField(UserProfile, related_name='social_circles')
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=None, related_name='created_social_circles')
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Favorites(models.Model):
     """
