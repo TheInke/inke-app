@@ -163,7 +163,7 @@ class JournalEntry(models.Model):
         created_at (DateTimeField): The date and time when the journal entry was created.
         updated_at (DateTimeField): The date and time when the journal entry was last updated.
     """
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='journal_entries')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='journal_entries')
     title = models.CharField(max_length=255, default="Untitled")
     text_content = models.TextField(blank=True)
     image = models.ImageField(upload_to='journal_images/', blank=True, null=True)

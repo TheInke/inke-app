@@ -173,7 +173,6 @@ class SocialCirclesSerializer(serializers.ModelSerializer):
         representation['members'] = self.get_members(instance)
         return representation
     
-
 # FAVORITE SERIALIZER
 class FavoriteSerializer(serializers.ModelSerializer):
     # Template Serializer for Favorites
