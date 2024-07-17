@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Image, Pressable, Modal, ScrollView, TextInput, Animated, PanResponder } from 'react-native';
+import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import MasonryList from '@react-native-seoul/masonry-list';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { BlurView } from 'expo-blur';
 
 // Mock data for posts
@@ -72,13 +73,14 @@ const HomePage = () => {
     const [activeTab, setActiveTab] = useState('ForYou'); // Default active tab
     const [showFullScreenImage, setShowFullScreenImage] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const lastPressRef = useRef(0);
 
     useEffect(() => {
         // Simulate fetching posts
         setPosts(mockPosts); // Replace with actual data fetching
     }, []);
 
-    // Handle double tap for liking post
     const handleDoubleTap = (postId) => {
         const updatedPosts = posts.map((post) =>
             post.id === postId ? { ...post, isLiked: !post.isLiked } : post
@@ -86,27 +88,43 @@ const HomePage = () => {
         setPosts(updatedPosts);
     };
 
-    // Open full-screen image modal
     const openFullScreenImage = (imageUrl) => {
         setSelectedImageUrl(imageUrl);
         setShowFullScreenImage(true);
     };
 
-    // Close full-screen image modal
     const closeFullScreenImage = () => {
         setShowFullScreenImage(false);
         setSelectedImageUrl('');
     };
 
-    // Post function
+    const onGestureEvent = (event) => {
+        if (event.nativeEvent.translationY > 100) {
+            // Swipe down threshold
+            closeFullScreenImage();
+        }
+    };
+
+    const handlePress = (postId) => {
+        const now = Date.now();
+        const DOUBLE_PRESS_DELAY = 300;
+        if (now - lastPressRef.current < DOUBLE_PRESS_DELAY) {
+            handleDoubleTap(postId);
+            Animated.sequence([
+                Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
+                Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+            ]).start();
+        } else {
+            lastPressRef.current = now;
+            handleDoubleTap(postId);
+        }
+    };
+
     const renderPost = ({ item }) => (
         <View style={styles.postContainer}>
-            {/* Post Image */}
             <Pressable onPress={() => openFullScreenImage(item.imageUrl)}>
                 <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
             </Pressable>
-
-            {/* User Info Overlay */}
             <View style={styles.overlayContainer}>
                 <Image
                     source={{ uri: item.user.profilePic || 'https://via.placeholder.com/150' }}
@@ -114,10 +132,16 @@ const HomePage = () => {
                 />
                 <Text style={styles.overlayUsername}>{item.user.username}</Text>
             </View>
-
-            {/* Actions */}
             <View style={styles.actionsContainer}>
-                <TouchableHeart onPress={() => handleDoubleTap(item.id)} isLiked={item.isLiked} />
+                <TouchableWithoutFeedback onPress={() => handlePress(item.id)}>
+                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                        <FontAwesome
+                            name={item.isLiked ? 'heart' : 'heart-o'}
+                            size={24}
+                            color={item.isLiked ? 'red' : 'white'}
+                        />
+                    </Animated.View>
+                </TouchableWithoutFeedback>
                 <Pressable onPress={() => openCommentsModal(item)}>
                     <Text style={styles.commentsLink}>Comments</Text>
                 </Pressable>
@@ -125,26 +149,22 @@ const HomePage = () => {
         </View>
     );
 
-    // Open comments modal
     const openCommentsModal = (post) => {
         setSelectedPost(post);
         setShowCommentsModal(true);
     };
 
-    // Close comments modal
     const closeCommentsModal = () => {
         setShowCommentsModal(false);
         setSelectedPost(null);
     };
 
-    // Handle tab press
     const handleTabPress = (tab) => {
         setActiveTab(tab);
     };
 
     return (
         <View style={styles.container}>
-            {/* Navigation Tabs */}
             <View style={styles.tabsContainer}>
                 <Pressable
                     style={[styles.tab, activeTab === 'Following' && styles.activeTab]}
@@ -165,11 +185,8 @@ const HomePage = () => {
                     <Text style={styles.tabText}>Favorites</Text>
                 </Pressable>
             </View>
-
-            {/* Content based on active tab */}
             {activeTab === 'ForYou' && (
                 <BlurView intensity={100} style={StyleSheet.absoluteFill}>
-                    {/* Add padding to account for tabs */}
                     <View style={[styles.overlay, { paddingTop: 50 }]}>
                         <MasonryList
                             data={posts}
@@ -178,13 +195,11 @@ const HomePage = () => {
                             numColumns={2}
                             showsVerticalScrollIndicator={false}
                         />
-
-                        {/* Comments Modal */}
                         <Modal
                             animationType="slide"
                             visible={showCommentsModal}
                             onRequestClose={closeCommentsModal}
-                            transparent={true} // Make modal transparent to see through
+                            transparent={true}
                         >
                             <View style={styles.modalContainer}>
                                 <View style={styles.modalHeader}>
@@ -208,52 +223,56 @@ const HomePage = () => {
                                     <TextInput
                                         style={styles.commentInput}
                                         placeholder="Add a comment..."
-                                        placeholderTextColor="#888888" // Placeholder text color
+                                        placeholderTextColor="#888888"
                                         value={commentText}
                                         onChangeText={setCommentText}
                                     />
                                     <Pressable
                                         style={styles.addCommentButton}
                                         onPress={() => {
-                                            // handleAddComment(selectedPost.id, commentText);
                                             console.log('Add comment functionality here');
                                         }}
                                     >
                                         <Text style={styles.addCommentButtonText}>Post</Text>
                                     </Pressable>
                                 </View>
-                                {/* Add a gesture handler to close the modal */}
                                 <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
                                     <Text style={styles.closeModalButtonText}>Close</Text>
                                 </Pressable>
                             </View>
                         </Modal>
-
-                        {/* Full-Screen Image Modal */}
                         <Modal
                             animationType="fade"
                             visible={showFullScreenImage}
                             onRequestClose={closeFullScreenImage}
                             transparent={true}
                         >
-                            <View style={styles.fullScreenImageContainer}>
-                                <Pressable style={styles.fullScreenImageCloseButton} onPress={closeFullScreenImage}>
-                                    <Text style={styles.fullScreenImageCloseButtonText}>×</Text>
-                                </Pressable>
-                                <Image source={{ uri: selectedImageUrl }} style={styles.fullScreenImage} />
-                            </View>
+                            <PanGestureHandler
+                                onGestureEvent={onGestureEvent}
+                                onHandlerStateChange={({ nativeEvent }) => {
+                                    if (nativeEvent.state === State.END) {
+                                        if (nativeEvent.translationY > 100) {
+                                            closeFullScreenImage();
+                                        }
+                                    }
+                                }}
+                            >
+                                <View style={styles.fullScreenImageContainer}>
+                                    <Pressable style={styles.fullScreenImageCloseButton} onPress={closeFullScreenImage}>
+                                        <Text style={styles.fullScreenImageCloseButtonText}>×</Text>
+                                    </Pressable>
+                                    <Image source={{ uri: selectedImageUrl }} style={styles.fullScreenImage} />
+                                </View>
+                            </PanGestureHandler>
                         </Modal>
                     </View>
                 </BlurView>
             )}
-
-            {/* Content for other tabs can be added similarly */}
             {activeTab === 'Following' && (
                 <View style={styles.tabContent}>
                     <Text>Following Content</Text>
                 </View>
             )}
-
             {activeTab === 'Favorites' && (
                 <View style={styles.tabContent}>
                     <Text>Favorites Content</Text>
@@ -263,56 +282,35 @@ const HomePage = () => {
     );
 };
 
-// Animated Heart Icon component
-const TouchableHeart = ({ onPress, isLiked }) => {
-    const [scaleAnim] = useState(new Animated.Value(1));
-
-    const handlePress = () => {
-        Animated.sequence([
-            Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
-            Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
-        ]).start();
-        onPress();
-    };
-
-    return (
-        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            {/* Replace with your heart icon component */}
-            <Text style={{ fontSize: 24, color: isLiked ? 'red' : 'white' }}>{isLiked ? '❤️' : '🤍'}</Text>
-        </Animated.View>
-    );
-};
-
-// Styling of homepage
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000', // Black background
+        backgroundColor: '#000000',
     },
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        backgroundColor: '#000000', // Black background for tabs
+        backgroundColor: '#000000',
         paddingTop: 2,
         paddingBottom: 1,
-        zIndex: 10, // Ensure tabs are above the overlay
+        zIndex: 10,
     },
     tab: {
         paddingVertical: 10,
         paddingHorizontal: 20,
     },
     tabText: {
-        color: '#FFFFFF', // White text color
+        color: '#FFFFFF',
         fontSize: 16,
     },
     activeTab: {
         borderBottomWidth: 2,
-        borderBottomColor: '#FFFFFF', // White color for active tab indicator
+        borderBottomColor: '#FFFFFF',
     },
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', // Black color with opacity for overlay
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 8,
     },
     postContainer: {
@@ -328,7 +326,7 @@ const styles = StyleSheet.create({
         left: 10,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background for overlay
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 5,
         borderRadius: 5,
     },
@@ -363,7 +361,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         width: '100%',
         height: '50%',
-        backgroundColor: '#1c1c1c', // Black background for modal
+        backgroundColor: '#1c1c1c',
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: 20,
@@ -375,11 +373,11 @@ const styles = StyleSheet.create({
     modalHeaderText: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#FFFFFF', // White text color
+        color: '#FFFFFF',
     },
     divider: {
         height: 1,
-        backgroundColor: '#333333', // Dark grey divider color
+        backgroundColor: '#333333',
         width: '100%',
         marginVertical: 10,
     },
@@ -390,14 +388,14 @@ const styles = StyleSheet.create({
         padding: 8,
         marginBottom: 8,
         borderRadius: 5,
-        backgroundColor: '#1c1c1c', // Dark grey background for comments
+        backgroundColor: '#1c1c1c',
     },
     commentText: {
-        color: '#FFFFFF', // White text color for comments
+        color: '#FFFFFF',
     },
     commentUsername: {
         fontWeight: 'bold',
-        color: '#FFFFFF', // White text color for comment username
+        color: '#FFFFFF',
     },
     commentInputContainer: {
         flexDirection: 'row',
@@ -410,18 +408,18 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         borderWidth: 1,
-        borderColor: '#333333', // Dark grey border color
-        color: '#FFFFFF', // White text color
+        borderColor: '#333333',
+        color: '#FFFFFF',
     },
     addCommentButton: {
         marginLeft: 10,
         paddingHorizontal: 16,
         paddingVertical: 10,
         borderRadius: 5,
-        backgroundColor: '#FFFFFF', // White background for post button
+        backgroundColor: '#FFFFFF',
     },
     addCommentButtonText: {
-        color: '#000000', // Black text color for post button
+        color: '#000000',
         fontWeight: 'bold',
     },
     closeModalButton: {
@@ -429,14 +427,14 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     closeModalButtonText: {
-        color: '#FFFFFF', // White text color
+        color: '#FFFFFF',
         fontWeight: 'bold',
     },
     fullScreenImageContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.9)', // Semi-transparent black background
+        backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     fullScreenImage: {
         width: '90%',
@@ -447,13 +445,13 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 30,
         right: 30,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 10,
         borderRadius: 20,
     },
     fullScreenImageCloseButtonText: {
         fontSize: 24,
-        color: '#FFFFFF', // White text color
+        color: '#FFFFFF',
     },
     tabContent: {
         flex: 1,
