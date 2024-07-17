@@ -87,15 +87,16 @@ class TotalLikesView(generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        total_likes = Like.objects.filter(user=user).count()
+        total_likes = Like.objects.filter(post__user=user).count()
         return Response({'total_likes': total_likes}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def liked_posts_history(request):
     user = request.user
-    liked_posts = Like.objects.filter(user=user).select_related('post')
 
-    # Serialize the liked posts
-    serializer = PostSerializer(liked_posts, many=True)
+    liked_posts = Like.objects.filter(post__user=user).select_related('post')
+
+    posts = [like.post for like in liked_posts]
+    serializer = PostSerializer(posts, many=True)
 
     return Response(serializer.data)
