@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, ScrollView, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
-import MasonryList from '@react-native-seoul/masonry-list';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { BlurView } from 'expo-blur';
+
 
 // Mock data for posts
 const mockPosts = [
@@ -13,7 +12,7 @@ const mockPosts = [
             username: 'Ashley',
             profilePic: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsWqIODNMh2fpOtfun6Spu3rkMKa-nEpAlVA&s', // Empty profilePic to simulate missing profile picture
         },
-        imageUrl: 'data:image/jpeg;base64,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',
+        imageUrl: 'https://i.pinimg.com/474x/71/87/ae/7187ae90ebd10dfe792ea74fef6b41ce.jpg',
         isLiked: false,
         comments: [
             { user: 'Tom', text: 'Amazing view!' },
@@ -27,7 +26,7 @@ const mockPosts = [
             username: 'Sarah',
             profilePic: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOmlcrEfYZdBUHVwXggzrQiS9gyYH_FTOogg&s', // Empty profilePic to simulate missing profile picture
         },
-        imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQR2YjnLyQugucueVk0h3kv51R__HMpG93MgQ&s',
+        imageUrl: 'https://t4.ftcdn.net/jpg/05/68/63/11/360_F_568631153_ygTLlsjLeVtMrGDSUbqia6VD2GsdbHJx.jpg',
         isLiked: false,
         comments: [
             { user: 'John', text: 'Nice!', fontWeight: "bold" },
@@ -42,7 +41,7 @@ const mockPosts = [
             username: 'Adam',
             profilePic: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJZ38cGhD4JYl3jwI1QTGz6W04QNcgGto3Ug&s', // Empty profilePic to simulate missing profile picture
         },
-        imageUrl: 'data:image/jpeg;base64,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',
+        imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLqJE2BxKJRG-PSI9SR3jG3HmCcVj2Ye80zA&s',
         isLiked: false,
         comments: [
             { user: 'John', text: 'Congratulations!', fontWeight: "bold" },
@@ -75,6 +74,7 @@ const HomePage = () => {
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const lastPressRef = useRef(0);
+    const gestureY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
         // Simulate fetching posts
@@ -137,13 +137,20 @@ const HomePage = () => {
                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                         <FontAwesome
                             name={item.isLiked ? 'heart' : 'heart-o'}
-                            size={24}
+                            size={22}
                             color={item.isLiked ? 'red' : 'white'}
                         />
                     </Animated.View>
                 </TouchableWithoutFeedback>
                 <Pressable onPress={() => openCommentsModal(item)}>
-                    <Text style={styles.commentsLink}>Comments</Text>
+                    <FontAwesome name="comment-o" size={22} color="white" />
+                </Pressable>
+                <Pressable onPress={() => handleFavorite(item.id)}>
+                    <FontAwesome
+                        name={item.isFavorited ? 'bookmark' : 'bookmark-o'}
+                        size={22}
+                        color={item.isFavorited ? 'yellow' : 'white'}
+                    />
                 </Pressable>
             </View>
         </View>
@@ -163,7 +170,7 @@ const HomePage = () => {
         setActiveTab(tab);
     };
 
-    return (
+return (
         <View style={styles.container}>
             <View style={styles.tabsContainer}>
                 <Pressable
@@ -186,87 +193,91 @@ const HomePage = () => {
                 </Pressable>
             </View>
             {activeTab === 'ForYou' && (
-                <BlurView intensity={100} style={StyleSheet.absoluteFill}>
-                    <View style={[styles.overlay, { paddingTop: 50 }]}>
-                        <MasonryList
-                            data={posts}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={renderPost}
-                            numColumns={2}
-                            showsVerticalScrollIndicator={false}
-                        />
-                        <Modal
-                            animationType="slide"
-                            visible={showCommentsModal}
-                            onRequestClose={closeCommentsModal}
-                            transparent={true}
-                        >
-                            <View style={styles.modalContainer}>
-                                <View style={styles.modalHeader}>
-                                    <Text style={styles.modalHeaderText}>Comments</Text>
-                                    <View style={styles.divider} />
-                                </View>
-                                <ScrollView style={styles.commentsScrollView}>
-                                    {selectedPost &&
-                                        selectedPost.comments.map((comment, index) => (
-                                            <View key={index} style={styles.commentContainer}>
-                                                <Text style={styles.commentText}>
-                                                    <Text style={styles.commentUsername}>
-                                                        {comment.user}
-                                                    </Text>
-                                                    : {comment.text}
-                                                </Text>
-                                            </View>
-                                        ))}
-                                </ScrollView>
-                                <View style={styles.commentInputContainer}>
-                                    <TextInput
-                                        style={styles.commentInput}
-                                        placeholder="Add a comment..."
-                                        placeholderTextColor="#888888"
-                                        value={commentText}
-                                        onChangeText={setCommentText}
-                                    />
-                                    <Pressable
-                                        style={styles.addCommentButton}
-                                        onPress={() => {
-                                            console.log('Add comment functionality here');
-                                        }}
-                                    >
-                                        <Text style={styles.addCommentButtonText}>Post</Text>
-                                    </Pressable>
-                                </View>
-                                <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
-                                    <Text style={styles.closeModalButtonText}>Close</Text>
+                <View style={styles.overlay}>
+                    <FlatList
+                        data={posts}
+                        renderItem={renderPost}
+                        keyExtractor={(item) => item.id.toString()}
+                        numColumns={2}
+                        columnWrapperStyle={styles.columnWrapper}
+                    />
+                    <Modal
+                        animationType="slide"
+                        visible={showCommentsModal}
+                        onRequestClose={closeCommentsModal}
+                        transparent={true}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalHeaderText}>Comments</Text>
+                                <View style={styles.divider} />
+                            </View>
+                            <FlatList
+                                data={selectedPost ? selectedPost.comments : []}
+                                renderItem={({ item }) => (
+                                    <View style={styles.commentContainer}>
+                                        <Text style={styles.commentText}>
+                                            <Text style={styles.commentUsername}>{item.user}</Text>
+                                            : {item.text}
+                                        </Text>
+                                    </View>
+                                )}
+                                keyExtractor={(item, index) => index.toString()}
+                            />
+                            <View style={styles.commentInputContainer}>
+                                <TextInput
+                                    style={styles.commentInput}
+                                    placeholder="Add a comment..."
+                                    placeholderTextColor="#888888"
+                                    value={commentText}
+                                    onChangeText={setCommentText}
+                                />
+                                <Pressable
+                                    style={styles.addCommentButton}
+                                    onPress={() => {
+                                        console.log('Add comment functionality here');
+                                    }}
+                                >
+                                    <Text style={styles.addCommentButtonText}>Post</Text>
                                 </Pressable>
                             </View>
-                        </Modal>
-                        <Modal
-                            animationType="fade"
-                            visible={showFullScreenImage}
-                            onRequestClose={closeFullScreenImage}
-                            transparent={true}
-                        >
-                            <PanGestureHandler
-                                onGestureEvent={onGestureEvent}
-                                onHandlerStateChange={({ nativeEvent }) => {
-                                    if (nativeEvent.state === State.END) {
-                                        if (nativeEvent.translationY > 100) {
-                                            closeFullScreenImage();
-                                        }
+                            <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
+                                <Text style={styles.closeModalButtonText}>Close</Text>
+                            </Pressable>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="fade"
+                        visible={showFullScreenImage}
+                        onRequestClose={closeFullScreenImage}
+                        transparent={true}
+                    >
+                        <PanGestureHandler
+                            onGestureEvent={onGestureEvent}
+                            onHandlerStateChange={({ nativeEvent }) => {
+                                if (nativeEvent.state === State.END) {
+                                    if (nativeEvent.translationY > 100) {
+                                        closeFullScreenImage();
                                     }
-                                }}
-                            >
-                                <View style={styles.fullScreenImageContainer}>
-                                    <Pressable style={styles.fullScreenImageCloseButton} onPress={closeFullScreenImage}>
-                                        <Text style={styles.fullScreenImageCloseButtonText}>×</Text>
-                                    </Pressable>
-                                    <Image source={{ uri: selectedImageUrl }} style={styles.fullScreenImage} />
-                                </View>
-                            </PanGestureHandler>
-                        </Modal>
-                    </View>
-                </BlurView>
+                                }
+                            }}
+                        >
+                            <View style={styles.fullScreenImageContainer}>
+                                <Pressable
+                                    style={styles.fullScreenImageCloseButton}
+                                    onPress={closeFullScreenImage}
+                                >
+                                    <Text style={styles.fullScreenImageCloseButtonText}>×</Text>
+                                </Pressable>
+                                <Image
+                                    source={{ uri: selectedImageUrl }}
+                                    style={styles.fullScreenImage}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                        </PanGestureHandler>
+                    </Modal>
+                </View>
             )}
             {activeTab === 'Following' && (
                 <View style={styles.tabContent}>
@@ -313,12 +324,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 8,
     },
+    columnWrapper: {
+        justifyContent: 'space-between',
+    },
     postContainer: {
-        marginBottom: 25,
+        flex: 1,
+        margin: 8,
         borderRadius: 5,
         overflow: 'hidden',
-        marginLeft: 10,
-        marginRight: 5,
+        marginLeft: 8,
+        marginRight: 1,
     },
     overlayContainer: {
         position: 'absolute',
@@ -343,7 +358,7 @@ const styles = StyleSheet.create({
     },
     postImage: {
         width: '100%',
-        height: 200,
+        height: 250,
         borderRadius: 10,
     },
     actionsContainer: {
@@ -351,6 +366,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
+        marginTop: 0,
+        marginBottom: 6,
     },
     commentsLink: {
         color: '#FFFFFF',
@@ -437,9 +454,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     fullScreenImage: {
-        width: '90%',
-        height: '90%',
-        borderRadius: 10,
+        width: '100%',
+        height: '100%',
     },
     fullScreenImageCloseButton: {
         position: 'absolute',
