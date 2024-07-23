@@ -4,7 +4,34 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import api_view
+
+from django.core.mail import send_mail, EmailMessage
+
 from . import models, serializers
+
+class ForgotPasswordView(generics.CreateAPIView):
+    permission_classes = []
+    serializer_class = serializers.ForgotPasswordSerializer
+
+    def post(self, request):
+        subject = "Password Reset"
+        message = "Here's a link to reset your password."
+        receipient = [request.POST['email']]
+
+        sender = "inketest8@gmail.com" 
+        # this will be replaced with a company email and will be accessed securely. Same goes for the password which is currently stored on
+        
+        email = EmailMessage(
+            subject = subject,
+            body = message,
+            from_email = sender,
+            to = receipient,
+        )
+        email.content_subtype = 'html'
+        email.encoding = 'utf-8'
+        email.send()
+
+        return Response({"message": "Email sent successfully"}, status=status.HTTP_200_OK)
 
 class CreateUserView(generics.CreateAPIView):
     queryset = models.UserProfile.objects.all()

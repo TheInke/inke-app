@@ -36,5 +36,8 @@ urlpatterns = [
     path('posts/<int:post_id>/like/', views.LikePostView.as_view(), name='like-post'), 
     path('profile/total-likes/', views.TotalLikesView.as_view(), name='total-likes'),
     path('liked-posts/', views.liked_posts_history, name='liked-posts'),
+
+    # Forgot password endpoint
+    path('forgot-password', views.ForgotPasswordView.as_view(), name='forgot-password')
 ]
 

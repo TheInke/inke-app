@@ -201,3 +201,7 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         model = models.JournalEntry
         fields = ['id', 'user', 'title', 'text_content', 'image', 'video', 'audio', 'created_at', 'updated_at']
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
+class ForgotPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['email']
