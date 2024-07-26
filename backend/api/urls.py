@@ -15,5 +15,6 @@ urlpatterns = [
     path('posts/<int:post_id>/like/', LikePostView.as_view(), name='like-post'),
     path('profile/total-likes/', TotalLikesView.as_view(), name='total-likes'),
     path('liked-posts/', views.liked_posts_history, name='liked-posts'),
+    # profile/<int:user_id>/total-likes/
 ]
 

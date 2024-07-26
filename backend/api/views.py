@@ -78,16 +78,29 @@ class LikePostView(generics.GenericAPIView):
             return Response({'detail': 'Unliked the post.'}, status=status.HTTP_204_NO_CONTENT)
         
         # Like the post
-        like = Like.objects.create(post=post, user=user)
+        print(f"{post.user}")
+        like = Like.objects.create(post=post, user=user) # user == person who liked the post
+        # user --> "liker"
+        # author of the post
+        
         return Response(LikeSerializer(like).data, status=status.HTTP_201_CREATED)
 
 
+
+# DISCLAIMER: only works for total likes of request.user, for now
+# eventually, a user argument should be sent through to this view
 class TotalLikesView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        total_likes = Like.objects.filter(user=user).count()
+        total_likes = 0
+        
+        user_posts = Post.objects.filter(user=user) # all of request.user's posts
+        for post in user_posts:
+            total_likes += Like.objects.filter(post=post).count()
+
+        # Like.objects.filter(post=Post.objects.filter(user=user))
         return Response({'total_likes': total_likes}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
