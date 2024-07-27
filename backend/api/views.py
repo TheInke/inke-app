@@ -4,6 +4,8 @@ from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile
 from .serializers import UserProfileSerializer, ForgotPasswordSerializer
 
+from django.core.mail import EmailMessage
+
 class ForgotPasswordView(generics.CreateAPIView):
     permission_classes = []
     serializer_class = ForgotPasswordSerializer
