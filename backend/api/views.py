@@ -2,7 +2,31 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from .models import UserProfile
-from .serializers import UserProfileSerializer
+from .serializers import UserProfileSerializer, ForgotPasswordSerializer
+
+class ForgotPasswordView(generics.CreateAPIView):
+    permission_classes = []
+    serializer_class = ForgotPasswordSerializer
+
+    def post(self, request):
+        subject = "Password Reset"
+        message = "Here's a link to reset your password."
+        receipient = [request.POST['email']]
+
+        sender = "inketest8@gmail.com" 
+        # this will be replaced with a company email and will be accessed securely. Same goes for the password which is currently stored on
+        
+        email = EmailMessage(
+            subject = subject,
+            body = message,
+            from_email = sender,
+            to = receipient,
+        )
+        email.content_subtype = 'html'
+        email.encoding = 'utf-8'
+        email.send()
+
+        return Response({"message": "Email sent successfully"}, status=status.HTTP_200_OK)
 
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()

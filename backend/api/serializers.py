@@ -64,3 +64,7 @@ class FavoritesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorites
         fields = '__all__'
+
+class ForgotPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ['email']

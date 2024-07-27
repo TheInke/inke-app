@@ -162,3 +162,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'inketest8@gmail.com'
+EMAIL_HOST_PASSWORD = 'bepd sqty uzrn cbws'
+EMAIL_USE_TLS = True 
