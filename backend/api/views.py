@@ -13,7 +13,8 @@ class ForgotPasswordView(generics.CreateAPIView):
     def post(self, request):
         subject = "Password Reset"
         message = "Here's a link to reset your password."
-        receipient = [request.POST['email']]
+        receipient = [request.data.get('email')]
+        print(receipient)
 
         sender = "inketest8@gmail.com" 
         # this will be replaced with a company email and will be accessed securely. Same goes for the password which is currently stored on

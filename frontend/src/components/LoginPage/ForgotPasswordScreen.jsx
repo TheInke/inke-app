@@ -3,19 +3,34 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios'
 
 const ForgotPasswordScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
 
     const handleResetPassword = async () => {
-        try {
-            // Call your reset password API here
-            console.log('Password reset link sent to:', email);
-            // Navigate to the login screen or show a success message
-            navigation.navigate('Login');
-        } catch (error) {
-            console.error('Password reset failed:', error);
-        }
+
+            const data = {
+                "email": email
+            };
+
+            try {
+                
+                console.log(email)
+                // the localhost needs to be changed to the server during production
+                const response = await axios.post('http://127.0.0.1:8000/api/forgot-password/', data);
+                
+                console.log('Response:', response.data);
+
+                // Call your reset password API here
+                console.log('Password reset link sent to:', email);
+                // Navigate to the login screen or show a success message
+                navigation.navigate('Login');
+
+            } catch (error) {
+                console.error('Password reset failed:', error);
+            }
+   
     };
 
     return (
