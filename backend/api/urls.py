@@ -1,9 +1,10 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, LikePostView, TotalLikesView, CreateUserView, UserProfileListView, UserProfileDetailView
+from .views import PostViewSet, LikePostView, TotalLikesView, CreateUserView, UserProfileListView, UserProfileDetailView, ConnectionViewSet
 from . import views
 
 router = DefaultRouter()
+router.register(r'connections', ConnectionViewSet)
 router.register(r'posts', PostViewSet)
 
 urlpatterns = [
@@ -16,4 +17,3 @@ urlpatterns = [
     path('profile/total-likes/', TotalLikesView.as_view(), name='total-likes'),
     path('liked-posts/', views.liked_posts_history, name='liked-posts'),
 ]
-

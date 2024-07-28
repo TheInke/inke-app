@@ -2,10 +2,10 @@ from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from django.conf import settings
-from .models import Post, Like, UserProfile
-from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer
+from .models import Post, Like, UserProfile, Connection
+from .serializers import UserProfileSerializer, PostSerializer, LikeSerializer, ConnectionSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 
 class CreateUserView(generics.CreateAPIView):
     queryset = UserProfile.objects.all()
@@ -99,3 +99,39 @@ def liked_posts_history(request):
     serializer = PostSerializer(liked_posts, many=True)
 
     return Response(serializer.data)
+
+
+
+class ConnectionViewSet(viewsets.ModelViewSet):
+    queryset = Connection.objects.all()
+    serializer_class = ConnectionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        from_user = request.user
+        to_user_id = request.data.get('to_user')
+        to_user = UserProfile.objects.get(id=to_user_id)
+        connection, created = Connection.objects.get_or_create(from_user=from_user, to_user=to_user)
+        if created:
+            serializer = self.get_serializer(connection)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"detail": "Connection request already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        connection = self.get_object()
+        if connection.to_user == request.user and connection.status == 'pending':
+            connection.status = 'accepted'
+            connection.save()
+            return Response({"detail": "Connection request accepted."}, status=status.HTTP_200_OK)
+        return Response({"detail": "Invalid request."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        connection = self.get_object()
+        if connection.to_user == request.user and connection.status == 'pending':
+            connection.status = 'rejected'
+            connection.save()
+            return Response({"detail": "Connection request rejected."}, status=status.HTTP_200_OK)
+        return Response({"detail": "Invalid request."}, status=status.HTTP_400_BAD_REQUEST)
