@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, FlatList, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, FlatList, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MasonryList from 'react-native-masonry-list';
 
 // Mock data for posts
 const mockPosts = [
@@ -189,7 +190,6 @@ const ExploreScreen = () => {
     const gestureY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Simulate fetching posts
         setPosts(mockPosts); // Replace with actual data fetching
     }, []);
 
@@ -208,7 +208,7 @@ const ExploreScreen = () => {
     };
 
     const openFullScreenImage = (post) => {
-        setSelectedImageUrl(post.imageUrl);
+        setSelectedImageUrl(post.uri);
         setSelectedPostId(post.id);
         setShowFullScreenImage(true);
     };
@@ -221,7 +221,6 @@ const ExploreScreen = () => {
 
     const onGestureEvent = (event) => {
         if (event.nativeEvent.translationY > 100) {
-            // Swipe down threshold
             closeFullScreenImage();
         }
     };
@@ -241,21 +240,6 @@ const ExploreScreen = () => {
         }
     };
 
-    const renderPost = ({ item }) => (
-        <View style={styles.postContainer}>
-            <Pressable onPress={() => openFullScreenImage(item)}>
-                <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
-            </Pressable>
-            <View style={styles.overlayContainer}>
-                <Image
-                    source={{ uri: item.user.profilePic || 'https://via.placeholder.com/150' }}
-                    style={styles.overlayProfilePic}
-                />
-                <Text style={styles.overlayUsername}>{item.user.username}</Text>
-            </View>
-        </View>
-    );
-
     const openCommentsModal = (post) => {
         setSelectedPost(post);
         setShowCommentsModal(true);
@@ -268,59 +252,60 @@ const ExploreScreen = () => {
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={posts}
-                renderItem={renderPost}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2} // Set number of columns to 2
-                columnWrapperStyle={styles.columnWrapper} // Ensure spacing between columns
-                contentContainerStyle={styles.flatListContent}
+            <MasonryList
+                images={posts.map(post => ({
+                    ...post,
+                    uri: post.imageUrl,
+                }))}
+                imageContainerStyle={styles.postContainer}
+                
+                onPressImage={(data) => openFullScreenImage(data)}
             />
             <Modal
-                animationType="slide"
-                visible={showCommentsModal}
-                onRequestClose={closeCommentsModal}
-                transparent={true}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalHeaderText}>Comments</Text>
-                        <View style={styles.divider} />
-                    </View>
-                    <FlatList
-                        data={selectedPost ? selectedPost.comments : []}
-                        renderItem={({ item }) => (
-                            <View style={styles.commentContainer}>
-                                <Text style={styles.commentText}>
-                                    <Text style={styles.commentUsername}>{item.user}</Text>
-                                    : {item.text}
-                                </Text>
+                        animationType="slide"
+                        visible={showCommentsModal}
+                        onRequestClose={closeCommentsModal}
+                        transparent={true}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalHeaderText}>Comments</Text>
+                                <View style={styles.divider} />
                             </View>
-                        )}
-                        keyExtractor={(item, index) => index.toString()}
-                    />
-                    <View style={styles.commentInputContainer}>
-                        <TextInput
-                            style={styles.commentInput}
-                            placeholder="Add a comment..."
-                            placeholderTextColor="#888888"
-                            value={commentText}
-                            onChangeText={setCommentText}
-                        />
-                        <Pressable
-                            style={styles.addCommentButton}
-                            onPress={() => {
-                                console.log('Add comment functionality here');
-                            }}
-                        >
-                            <Text style={styles.addCommentButtonText}>Post</Text>
-                        </Pressable>
-                    </View>
-                    <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
-                        <Text style={styles.closeModalButtonText}>Close</Text>
-                    </Pressable>
-                </View>
-            </Modal>
+                            <FlatList
+                                data={selectedPost ? selectedPost.comments : []}
+                                renderItem={({ item }) => (
+                                    <View style={styles.commentContainer}>
+                                        <Text style={styles.commentText}>
+                                            <Text style={styles.commentUsername}>{item.user}</Text>
+                                            : {item.text}
+                                        </Text>
+                                    </View>
+                                )}
+                                keyExtractor={(item, index) => index.toString()}
+                            />
+                            <View style={styles.commentInputContainer}>
+                                <TextInput
+                                    style={styles.commentInput}
+                                    placeholder="Add a comment..."
+                                    placeholderTextColor="#888888"
+                                    value={commentText}
+                                    onChangeText={setCommentText}
+                                />
+                                <Pressable
+                                    style={styles.addCommentButton}
+                                    onPress={() => {
+                                        console.log('Add comment functionality here');
+                                    }}
+                                >
+                                    <Text style={styles.addCommentButtonText}>Post</Text>
+                                </Pressable>
+                            </View>
+                            <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
+                                <Text style={styles.closeModalButtonText}>Close</Text>
+                            </Pressable>
+                        </View>
+                    </Modal>
             <Modal
                 animationType="fade"
                 visible={showFullScreenImage}
@@ -350,32 +335,38 @@ const ExploreScreen = () => {
                             resizeMode="contain"
                         />
                         {selectedPostId && (
-                            <View style={styles.fullScreenActionsContainer}>
-                                <TouchableWithoutFeedback onPress={() => handlePress(selectedPostId)}>
-                                    <FontAwesome
-                                        name={posts.find(post => post.id === selectedPostId).isLiked ? 'heart' : 'heart-o'}
-                                        size={30}
-                                        color={posts.find(post => post.id === selectedPostId).isLiked ? 'red' : 'white'}
-                                        style={styles.actionIcon}
+                            <>
+                                <View style={styles.posterInfoContainer}>
+                                    <Image
+                                        source={{ uri: posts.find(post => post.id === selectedPostId).user.profilePic }}
+                                        style={styles.posterProfilePic}
                                     />
-                                </TouchableWithoutFeedback>
-                                <Pressable onPress={() => openCommentsModal(posts.find(post => post.id === selectedPostId))}>
-                                    <FontAwesome
-                                        name="comment-o"
-                                        size={30}
-                                        color="white"
-                                        style={styles.actionIcon}
-                                    />
-                                </Pressable>
-                                <TouchableWithoutFeedback onPress={() => handleFavorite(selectedPostId)}>
-                                    <FontAwesome
-                                        name={posts.find(post => post.id === selectedPostId).isFavorited ? 'bookmark' : 'bookmark-o'}
-                                        size={30}
-                                        color={posts.find(post => post.id === selectedPostId).isFavorited ? 'yellow' : 'white'}
-                                        style={styles.actionIcon}
-                                    />
-                                </TouchableWithoutFeedback>
-                            </View>
+                                    <Text style={styles.posterUsername}>
+                                        {posts.find(post => post.id === selectedPostId).user.username}
+                                    </Text>
+                                </View>
+                                <View style={styles.fullScreenActionsContainer}>
+                                    <TouchableWithoutFeedback onPress={() => handlePress(selectedPostId)}>
+                                        <FontAwesome
+                                            name={posts.find(post => post.id === selectedPostId).isLiked ? 'heart' : 'heart-o'}
+                                            size={30}
+                                            color={posts.find(post => post.id === selectedPostId).isLiked ? 'red' : 'white'}
+                                            style={styles.actionIcon}
+                                        />
+                                    </TouchableWithoutFeedback>
+                                    <Pressable onPress={() => openCommentsModal(posts.find(post => post.id === selectedPostId))}>
+                                        <FontAwesome name="comment-o" size={30} color="white" style={styles.actionIcon} />
+                                    </Pressable>
+                                    <TouchableWithoutFeedback onPress={() => handleFavorite(selectedPostId)}>
+                                        <FontAwesome
+                                            name={posts.find(post => post.id === selectedPostId).isFavorited ? 'bookmark' : 'bookmark-o'}
+                                            size={30}
+                                            color={posts.find(post => post.id === selectedPostId).isFavorited ? 'gold' : 'white'}
+                                            style={styles.actionIcon}
+                                        />
+                                    </TouchableWithoutFeedback>
+                                </View>
+                            </>
                         )}
                     </View>
                 </PanGestureHandler>
@@ -389,48 +380,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#000000',
     },
-    columnWrapper: {
-        justifyContent: 'space-between',
-    },
-    postContainer: {
-        flex: 1,
-        margin: 4, // Adjust margin to fit 2 posts per line
-        borderRadius: 5,
-        overflow: 'hidden',
-    },
-    overlayContainer: {
-        position: 'absolute',
-        top: 10,
-        left: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 5,
-        borderRadius: 5,
-    },
-    overlayProfilePic: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        marginRight: 8,
-    },
-    overlayUsername: {
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-    },
-    postImage: {
-        width: '100%',
-        height: 200, // Adjust height if needed
-        borderRadius: 10,
-    },
+   
+    postContainer: { marginBottom: 0 },
+    
+    
     modalContainer: {
-        position: 'absolute',
-        bottom: 0,
-        width: '100%',
-        height: '50%',
-        backgroundColor: '#1c1c1c',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 20,
     },
     modalHeader: {
@@ -442,38 +398,25 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#FFFFFF',
     },
+    
     divider: {
         height: 1,
         backgroundColor: '#333333',
         width: '100%',
         marginVertical: 10,
     },
-    commentContainer: {
-        padding: 8,
-        marginBottom: 8,
-        borderRadius: 5,
-        backgroundColor: '#1c1c1c',
-    },
-    commentText: {
-        color: '#FFFFFF',
-    },
-    commentUsername: {
-        fontWeight: 'bold',
-        color: '#FFFFFF',
-    },
-    commentInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 10,
-    },
+    commentContainer: { marginBottom: 10 },
+    commentText: { color: '#fff' },
+    commentUsername: { fontWeight: 'bold' },
+    commentInputContainer: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
     commentInput: {
         flex: 1,
         height: 40,
+        borderColor: '#fff',
+        borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: '#333333',
-        color: '#FFFFFF',
+        color: '#fff',
     },
     addCommentButton: {
         marginLeft: 10,
@@ -486,50 +429,52 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontWeight: 'bold',
     },
-    closeModalButton: {
-        alignItems: 'center',
-        paddingVertical: 10,
-    },
-    closeModalButtonText: {
-        color: '#FFFFFF',
-        fontWeight: 'bold',
-    },
+    closeModalButton: { marginTop: 10, alignItems: 'center' },
+    closeModalButtonText: { color: '#fff', fontWeight: 'bold' },
     fullScreenImageContainer: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start', 
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
     },
+    fullScreenImageCloseButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 10,
+        borderRadius: 20,
+        zIndex: 1, 
+    },
+    fullScreenImageCloseButtonText: { color: '#fff', fontSize: 30 },
     fullScreenImage: {
         width: '100%',
         height: '80%',
     },
-    fullScreenImageCloseButton: {
-        position: 'absolute',
-        top: 30,
-        right: 30,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 10,
-        borderRadius: 20,
-    },
-    fullScreenImageCloseButtonText: {
-        fontSize: 24,
-        color: '#FFFFFF',
-    },
     fullScreenActionsContainer: {
         position: 'absolute',
-        bottom: 30,
+        bottom: 40,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '80%',
-        paddingHorizontal: 20,
+        justifyContent: 'space-around',
+        width: '100%',
+        zIndex: 0, 
     },
-    actionIcon: {
-        marginHorizontal: 10,
+    actionIcon: { marginHorizontal: 20 },
+    posterInfoContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#fff',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    flatListContent: {
-        paddingHorizontal: 4,
-    },
+    posterProfilePic: { width: 40, height: 40, borderRadius: 20 },
+    posterUsername: { color: '#fff', marginLeft: 10, fontSize: 16 },
 });
+
 
 export default ExploreScreen;
