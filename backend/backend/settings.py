@@ -86,7 +86,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'path.to.your.middleware': {
+        'api.middleware': {
             'handlers': ['console', 'file'],
             'level': 'DEBUG',
         },
