@@ -67,11 +67,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 //import statements for auth
 import * as Google from 'expo-google-app-auth';
+//import { signInWithGoogle } from '@/lib/auth';
+//import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import * as Facebook from 'expo-facebook';
 import * as AppleAuthentication from 'expo-apple-authentication';
 
 // Correctly import the image from the local assets folder
 import inkeLogo from '../../assets/images/inke_logo.png';
+
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -93,12 +96,13 @@ const LoginScreen = ({ navigation }) => {
     };
 
     //API integration: Google Auth
+    
     const handleGoogleLogin = async () => {
         try {
             const result = await Google.logInAsync({
                 //androidClientId: '',    //get client id
                 //iosClientId: '',        //get client id
-                webClientId: '699989176848-955n3avv8p98cjp7u4cdku6dlq639h2b.apps.googleusercontent.com',          //get client id
+                webClientId: '699989176848-hcsepqcl3i6b02cuflk3blqio6mdu7cd.apps.googleusercontent.com',          //get client id
                 scopes: ['profile', 'email'],
             });
 
@@ -113,6 +117,8 @@ const LoginScreen = ({ navigation }) => {
             console.error('Google login error', error);
         }
     };
+    
+    
 
     //API integration: Facebook Auth
     const handleFacebookLogin = async () => {
