@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './screens/LoginScreen';
+//import LoginScreen from './screens/LoginScreen';
+import SearchScreen from './screens/SearchScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -11,8 +12,11 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const AuthStack = () => (
-    <Stack.Navigator>
+    /*<Stack.Navigator>
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    </Stack.Navigator>*/
+    <Stack.Navigator>
+        <Stack.Screen name = "SearchScreen" component={SearchScreen}/>
     </Stack.Navigator>
 );
 
