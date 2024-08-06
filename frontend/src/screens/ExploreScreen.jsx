@@ -178,7 +178,7 @@ const mockPosts = [
 
 
 const ExploreScreen = () => {
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState(mockPosts);
     const [showCommentsModal, setShowCommentsModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
     const [commentText, setCommentText] = useState('');
@@ -190,7 +190,8 @@ const ExploreScreen = () => {
     const gestureY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        setPosts(mockPosts); // Replace with actual data fetching
+        // Set initial posts
+        setPosts(mockPosts);
     }, []);
 
     const handleDoubleTap = (postId) => {
@@ -250,6 +251,18 @@ const ExploreScreen = () => {
         setSelectedPost(null);
     };
 
+    const loadMorePosts = () => {
+        // Simulate fetching more posts by appending posts to the end
+        setPosts(prevPosts => {
+            const newPosts = [...prevPosts, ...mockPosts];
+            return newPosts;
+        });
+    };
+
+    const onEndReached = () => {
+        loadMorePosts();
+    };
+
     return (
         <View style={styles.container}>
             <MasonryList
@@ -258,54 +271,55 @@ const ExploreScreen = () => {
                     uri: post.imageUrl,
                 }))}
                 imageContainerStyle={styles.postContainer}
-                
                 onPressImage={(data) => openFullScreenImage(data)}
+                onEndReached={onEndReached} // Trigger loading more posts
+                onEndReachedThreshold={0.1} // Adjust this value if needed
             />
             <Modal
-                        animationType="slide"
-                        visible={showCommentsModal}
-                        onRequestClose={closeCommentsModal}
-                        transparent={true}
-                    >
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalHeader}>
-                                <Text style={styles.modalHeaderText}>Comments</Text>
-                                <View style={styles.divider} />
+                animationType="slide"
+                visible={showCommentsModal}
+                onRequestClose={closeCommentsModal}
+                transparent={true}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalHeaderText}>Comments</Text>
+                        <View style={styles.divider} />
+                    </View>
+                    <FlatList
+                        data={selectedPost ? selectedPost.comments : []}
+                        renderItem={({ item }) => (
+                            <View style={styles.commentContainer}>
+                                <Text style={styles.commentText}>
+                                    <Text style={styles.commentUsername}>{item.user}</Text>
+                                    : {item.text}
+                                </Text>
                             </View>
-                            <FlatList
-                                data={selectedPost ? selectedPost.comments : []}
-                                renderItem={({ item }) => (
-                                    <View style={styles.commentContainer}>
-                                        <Text style={styles.commentText}>
-                                            <Text style={styles.commentUsername}>{item.user}</Text>
-                                            : {item.text}
-                                        </Text>
-                                    </View>
-                                )}
-                                keyExtractor={(item, index) => index.toString()}
-                            />
-                            <View style={styles.commentInputContainer}>
-                                <TextInput
-                                    style={styles.commentInput}
-                                    placeholder="Add a comment..."
-                                    placeholderTextColor="#888888"
-                                    value={commentText}
-                                    onChangeText={setCommentText}
-                                />
-                                <Pressable
-                                    style={styles.addCommentButton}
-                                    onPress={() => {
-                                        console.log('Add comment functionality here');
-                                    }}
-                                >
-                                    <Text style={styles.addCommentButtonText}>Post</Text>
-                                </Pressable>
-                            </View>
-                            <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
-                                <Text style={styles.closeModalButtonText}>Close</Text>
-                            </Pressable>
-                        </View>
-                    </Modal>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                    />
+                    <View style={styles.commentInputContainer}>
+                        <TextInput
+                            style={styles.commentInput}
+                            placeholder="Add a comment..."
+                            placeholderTextColor="#888888"
+                            value={commentText}
+                            onChangeText={setCommentText}
+                        />
+                        <Pressable
+                            style={styles.addCommentButton}
+                            onPress={() => {
+                                console.log('Add comment functionality here');
+                            }}
+                        >
+                            <Text style={styles.addCommentButtonText}>Post</Text>
+                        </Pressable>
+                    </View>
+                    <Pressable onPress={closeCommentsModal} style={styles.closeModalButton}>
+                        <Text style={styles.closeModalButtonText}>Close</Text>
+                    </Pressable>
+                </View>
+            </Modal>
             <Modal
                 animationType="fade"
                 visible={showFullScreenImage}
@@ -374,7 +388,6 @@ const ExploreScreen = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
