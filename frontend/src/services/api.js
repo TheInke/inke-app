@@ -77,6 +77,16 @@ export const logout = async () => {
     }
 };
 
+export const fetchSearchData = async () => {
+    try {
+        const response = await api.get('/api/search/');
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching search data:', error);
+        throw error;
+    }
+};
+
 api.interceptors.request.use(
     async (config) => {
         const token = await AsyncStorage.getItem(ACCESS_TOKEN);
