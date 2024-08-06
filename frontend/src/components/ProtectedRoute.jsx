@@ -21,7 +21,6 @@ const ProtectedRoute = ({ children }) => {
             if (accessToken) {
                 setIsLoggedIn(true);
                 setLoading(false);
-                navigation.navigate('SearchScreen')
             } else {
                 setIsLoggedIn(false);
                 setLoading(false);
