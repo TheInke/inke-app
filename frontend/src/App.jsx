@@ -57,6 +57,7 @@ const App = () => (
 export default App;
 */
 
+/*
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -72,7 +73,6 @@ const Tab = createBottomTabNavigator();
 
 const MainTab = () => (
     <Tab.Navigator initialRouteName="HomepageScreen">
-        {/*<Tab.Screen name="HomepageScreen" component={HomepageScreen} />*/}
         <Tab.Screen name="SearchScreen" component={SearchScreen} />
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
         <Tab.Screen
@@ -104,3 +104,35 @@ const App = () => (
 );
 
 export default App;
+*/
+
+
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import SearchScreen from './path/to/SearchScreen';
+
+const Stack = createStackNavigator();
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SearchScreen">
+        <Stack.Screen name="SearchScreen" component={SearchScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+
+
+
+
