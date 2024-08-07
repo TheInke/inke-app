@@ -61,33 +61,46 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import LoginScreen from './screens/LoginScreen';
+//import HomepageScreen from './screens/HomepageScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
-import EditProfileScreen from './screens/EditProfileScreen';
-import SearchScreen from './screens/SearchScreen';
+//import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import SearchScreen from './screens/SearchScreen';
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const MainTab = () => (
+    <Tab.Navigator initialRouteName="HomepageScreen">
+        {/*<Tab.Screen name="HomepageScreen" component={HomepageScreen} />*/}
+        <Tab.Screen name="SearchScreen" component={SearchScreen} />
+        <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
+        <Tab.Screen
+            name="SearchScreen"
+            component={SearchScreenWrapper}
+            options={{
+                tabBarLabel: 'Search',
+            }}
+        />
+    </Tab.Navigator>
+);
+
+const SearchScreenWrapper = () => (
+    <ProtectedRoute>
+        <SearchScreen />
+    </ProtectedRoute>
+);
 
 const App = () => (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName="SearchScreen">
+        <Stack.Navigator initialRouteName="Main">
             <Stack.Screen
-                name="SearchScreen"
-                component={SearchScreen}
+                name="Main"
+                component={MainTab}
+                options={{ headerShown: false }}
             />
         </Stack.Navigator>
     </NavigationContainer>
 );
 
 export default App;
-
-
-
-
-
-
-
-<Stack.Navigator>
-        <Stack.Screen name = "SearchScreen" component={SearchScreen}/>
-    </Stack.Navigator>
