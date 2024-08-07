@@ -1,4 +1,4 @@
-
+/*
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -51,6 +51,36 @@ const App = () => (
                 name="Main"
                 component={MainTab}
                 options={{ headerShown: false }}
+            />
+        </Stack.Navigator>
+    </NavigationContainer>
+);
+
+export default App;
+*/
+
+
+
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginScreen from './screens/LoginScreen';
+import AuthStatusScreen from './screens/AuthStatusScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import SearchScreen from './screens/SearchScreen';
+import ProtectedRoute from './components/ProtectedRoute';
+
+
+const Stack = createStackNavigator();
+
+const App = () => (
+    <NavigationContainer>
+        <Stack.Navigator initialRouteName="SearchScreen">
+            <Stack.Screen
+                name="SearchScreen"
+                component={SearchScreen}
+                options={{ headerShown: true, title: 'Search' }}
             />
         </Stack.Navigator>
     </NavigationContainer>
