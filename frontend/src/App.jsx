@@ -106,7 +106,7 @@ const App = () => (
 export default App;
 */
 
-
+/*
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -125,10 +125,38 @@ const App = () => {
 };
 
 export default App;
+*/
 
 
 
+// App.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import AuthStatusScreen from './screens/AuthStatusScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+import LoginScreen from './screens/LoginScreen'; // Ensure this path is correct
+import SearchScreen from './screens/SearchScreen'; // Ensure this path is correct
+import ProtectedRoute from './components/ProtectedRoute';
 
+const Stack = createStackNavigator();
+
+const App = () => {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Protected">
+                <Stack.Screen name="LoginScreen" component={LoginScreen} />
+                <Stack.Screen name="SearchScreen" component={SearchScreen} />
+                <Stack.Screen name="Protected" component={ProtectedRoute}>
+                    {props => <ProtectedRoute {...props} />}
+                </Stack.Screen>
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
+};
+
+export default App;
 
 
 

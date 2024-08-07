@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {View, Text, TextInput, Button, Image, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
 import { fetchSearchData } from "../services/api";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ACCESS_TOKEN } from '../constants';
 
 /*
 const SearchScreen = () => {
