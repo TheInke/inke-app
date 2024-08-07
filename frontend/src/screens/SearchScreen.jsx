@@ -37,4 +37,5 @@ const SearchScreen = () => {
         <Text>Search Screen</Text>
       </View>
     );
+    //console.log(SearchScreen);
   };
