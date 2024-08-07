@@ -67,12 +67,13 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import LoginScreen from './screens/LoginScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import CreatePostScreen from './screens/CreatePostScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-
 
 const Stack = createStackNavigator();
 
@@ -82,7 +83,15 @@ const App = () => (
             <Stack.Screen
                 name="CreatePostScreen"
                 component={CreatePostScreen}
-                options={{ headerShown: true, title: 'Upload' }}
+                options={({ navigation }) => ({
+                    headerShown: true,
+                    title: 'Upload',
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <Icon name="chevron-back" size={30} style={{ marginLeft: 25 }} />
+                        </TouchableOpacity>
+                    ),
+                })}
             />
         </Stack.Navigator>
     </NavigationContainer>
