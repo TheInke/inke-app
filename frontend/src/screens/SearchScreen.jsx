@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {View, Text, TextInput, Button, Image, ScrollView, TouchableOpacity, StyleSheet} from 'react-native';
 import { fetchSearchData } from "../services/api";
 
+/*
 const SearchScreen = () => {
     const [data, setData] = useState({
         popular_searches: [],
@@ -27,3 +28,13 @@ const SearchScreen = () => {
         <Text>Popular Searches</Text>
     )
 }
+*/
+
+
+const SearchScreen = () => {
+    return (
+      <View>
+        <Text>Search Screen</Text>
+      </View>
+    );
+  };

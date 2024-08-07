@@ -110,7 +110,7 @@ export default App;
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SearchScreen from './path/to/SearchScreen';
+import SearchScreen from './screens/SearchScreen';
 
 const Stack = createStackNavigator();
 
