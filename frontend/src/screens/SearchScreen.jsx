@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   podcastTitle: {
-    fontSize: 16,
+    fontSize: 13,
   },
   bottomNav: {
     flexDirection: 'row',
