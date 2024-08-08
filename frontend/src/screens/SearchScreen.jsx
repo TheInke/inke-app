@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
 export default SearchScreen;
 */
 
-
+ 
 
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
