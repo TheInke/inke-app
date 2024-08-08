@@ -981,6 +981,8 @@ import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome, Entypo } from '@expo/vector-icons';
 
+import article_Img from '../assets/images/articleImg.png';
+
 const SearchScreen = () => {
   return (
     <View style={styles.container}>
@@ -1002,7 +1004,7 @@ const SearchScreen = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Articles</Text>
           <View style={styles.articleItem}>
-            <Image  source={{ uri: 'https://www.sciencedirect.com/science/article/abs/pii/S2212657023000491#:~:text=The%20four%20types%20of%20chronic,within%20the%20past%2030%20days./150' }} style={styles.articleImage} />
+            <Image source={article_Img} style={styles.articleImage} />
             <View style={styles.articleContent}>
               <Text style={styles.articleTitle}>“The link between chronic diseases and mental health”</Text>
               <TouchableOpacity>
