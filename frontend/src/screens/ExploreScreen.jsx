@@ -388,18 +388,22 @@ const ExploreScreen = () => {
         </View>
     );
 };
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#000000',
     },
    
-    postContainer: { marginBottom: 0 },
+    postContainer: { margin: 1,
+        backgroundColor: '#000'
+     },
     
     
     modalContainer: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 1)',
         padding: 20,
     },
     modalHeader: {
@@ -448,7 +452,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start', 
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'rgba(0, 0, 0, 1)',
     },
     fullScreenImageCloseButton: {
         position: 'absolute',
