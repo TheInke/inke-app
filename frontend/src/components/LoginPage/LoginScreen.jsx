@@ -4,6 +4,7 @@ import { login } from '../../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import axios from 'axios';
 
 //import statements for auth
 //import * as Google from 'expo-google-app-auth';
@@ -18,12 +19,19 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
+        const data = {
+            "username":username,
+            "password":password
+        }
         try {
-            const response = await login(username, password);
-            console.log('LOGIN SUCCESS | ln16');  
+            // Post username and password to token endpoint to receive ACCESS and REFRESH
+            const response = await axios.post('http://localhost:8000/api/token/', data)
+            
+            const { access, refresh } = response.data;
 
-            const accessToken = response.data.accessToken;
-            await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+            await AsyncStorage.setItem('ACCESS_TOKEN', access);
+            await AsyncStorage.setItem('REFRESH_TOKEN', refresh);
+            console.log('LOGIN SUCCESS | ln16');
 
             // Navigate to the main screen or perform other actions
             navigation.navigate('Main');
