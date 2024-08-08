@@ -617,11 +617,10 @@ import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet 
 import { Ionicons, MaterialIcons, FontAwesome, Entypo } from '@expo/vector-icons';
 import article_Img from '../assets/images/articleImg.png';
 import vid_Img1 from '../assets/images/vidImg1.png';
-/*
 import vid_Img2 from '../assets/images/vidImg2.png';
 import pc_Img1 from '../assets/images/pcImg1.png';
 import pc_Img2 from '../assets/images/pcImg2.png';
-*/
+
 
 const SearchScreen = ({ navigation }) => {
   return (
@@ -664,7 +663,7 @@ const SearchScreen = ({ navigation }) => {
               <Text style={styles.videoTitle}>Mental Health Education</Text>
             </View>
             <View style={styles.videoItem}>
-              <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.videoImage} />
+              <Image source={vid_Img2} style={styles.videoImage} />
               <Text style={styles.videoTitle}>Easy Yoga</Text>
             </View>
           </View>
@@ -676,11 +675,11 @@ const SearchScreen = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Podcasts</Text>
           <View style={styles.podcastItem}>
-            <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.podcastImage} />
+            <Image source={pc_Img1} style={styles.podcastImage} />
             <Text style={styles.podcastTitle}>Feel Better, Live More with Dr. Chatterjee</Text>
           </View>
           <View style={styles.podcastItem}>
-            <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.podcastImage} />
+            <Image source={pc_Img2} style={styles.podcastImage} />
             <Text style={styles.podcastTitle}>The Mental Illness Happy Hour with Paul Gilmartin</Text>
           </View>
           <TouchableOpacity>
