@@ -25,9 +25,16 @@ class UserProfile(AbstractUser):
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
+
+    search_history = models.ManyToManyField('Search', related_name='users')
     
     def total_likes_on_posts(self):
         return Like.objects.filter(post__user=self).count()
+
+# represents a search query from a user
+class Search(models.Model):
+    keywords = models.CharField(max_length=50, blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Post(models.Model):
     """

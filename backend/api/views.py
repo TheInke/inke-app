@@ -370,3 +370,36 @@ class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_response(self):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class SearchView(generics.CreateAPIView):
+    
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        keywords = str(kwargs.get('keywords')).split()
+
+        # mapping user id to number of points (priority in query result)
+        res_priority = {int:int}
+
+        for user in models.UserProfile.objects.all:
+            res_priority[user.id] = 0
+            
+            if user.username in keywords:
+                res_priority[user.id] += 1
+            elif user.first_name in keywords or user.last_name in keywords:
+                res_priority[user.id] += 0.5
+            
+            if user.city == request.user.city:
+                res_priority[user.id] += 1.5
+            elif user.state == request.user.state:
+                res_priority[user.id] += 1
+            elif user.country == request.user.country:
+                res_priority[user.id] += 0.5
+            
+            # Other priorities may be added later based on metadata, such as mutuals, 
+            # engagement, similar topics, etc.
+        
+        result_users = sorted(res_priority, key=lambda k: res_priority[k])
+        
+        return Response({'sorted_keys': result_users}, status=status.HTTP_200_OK)
