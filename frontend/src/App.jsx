@@ -72,17 +72,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import LoginScreen from './screens/LoginScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
-import CreatePostScreen from './screens/CreatePostScreen';
+import ProfilePageScreen from './screens/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const Stack = createStackNavigator();
 
 const App = () => (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName="CreatePostScreen">
+        <Stack.Navigator initialRouteName="ProfilePageScreen">
             <Stack.Screen
-                name="CreatePostScreen"
-                component={CreatePostScreen}
+                name="ProfilePageScreen"
+                component={ProfilePageScreen}
                 options={({ navigation }) => ({
                     headerShown: true,
                     title: 'Upload',
