@@ -164,6 +164,7 @@ const LoginScreen = ({ navigation }) => {
                 <Text style={styles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
 
+            {/*
             <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
                 <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
                 <Text style={styles.socialButtonText}>Log in with Google</Text>
@@ -176,6 +177,7 @@ const LoginScreen = ({ navigation }) => {
                 <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
                 <Text style={styles.socialButtonText}>Log in with Apple</Text>
             </TouchableOpacity>
+            */}
 
             <TouchableOpacity>
                 <Text style={styles.link}>Forgot your password?</Text>
@@ -223,6 +225,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 10,
+        color: '#fff',
     },
     loginButton: {
         width: '100%',
