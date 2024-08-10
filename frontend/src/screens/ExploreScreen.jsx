@@ -190,11 +190,35 @@ const ExploreScreen = () => {
     const gestureY = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        // Set initial posts
         setPosts(mockPosts);
     }, []);
 
+    const debounce = (onSingle, onDouble) => {
+        if (lastPressRef.current) {
+            clearTimeout(lastPressRef.current);
+            lastPressRef.current = null;
+            onDouble();
+        } else {
+            lastPressRef.current = setTimeout(() => {
+                lastPressRef.current = null;
+                onSingle();
+            }, 300);
+        }
+    };
+
     const handleDoubleTap = (postId) => {
+        const updatedPosts = posts.map((post) =>
+            post.id === postId ? { ...post, isLiked: !post.isLiked } : post
+        );
+        setPosts(updatedPosts);
+        Animated.sequence([
+            Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
+            Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+        ]).start();
+    };
+
+    // function to handle like button press
+    const handleLikePress = (postId) => {
         const updatedPosts = posts.map((post) =>
             post.id === postId ? { ...post, isLiked: !post.isLiked } : post
         );
@@ -227,18 +251,10 @@ const ExploreScreen = () => {
     };
 
     const handlePress = (postId) => {
-        const now = Date.now();
-        const DOUBLE_PRESS_DELAY = 300;
-        if (now - lastPressRef.current < DOUBLE_PRESS_DELAY) {
-            handleDoubleTap(postId);
-            Animated.sequence([
-                Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
-                Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
-            ]).start();
-        } else {
-            lastPressRef.current = now;
-            handleDoubleTap(postId);
-        }
+        debounce(
+            () => console.log('Single tap detected'),
+            () => handleDoubleTap(postId)
+        );
     };
 
     const openCommentsModal = (post) => {
@@ -252,7 +268,6 @@ const ExploreScreen = () => {
     };
 
     const loadMorePosts = () => {
-        // Simulate fetching more posts by appending posts to the end
         setPosts(prevPosts => {
             const newPosts = [...prevPosts, ...mockPosts];
             return newPosts;
@@ -272,8 +287,8 @@ const ExploreScreen = () => {
                 }))}
                 imageContainerStyle={styles.postContainer}
                 onPressImage={(data) => openFullScreenImage(data)}
-                onEndReached={onEndReached} // Trigger loading more posts
-                onEndReachedThreshold={0.1} // Adjust this value if needed
+                onEndReached={onEndReached}
+                onEndReachedThreshold={0.1}
             />
             <Modal
                 animationType="slide"
@@ -343,11 +358,13 @@ const ExploreScreen = () => {
                         >
                             <Text style={styles.fullScreenImageCloseButtonText}>×</Text>
                         </Pressable>
-                        <Image
-                            source={{ uri: selectedImageUrl }}
-                            style={styles.fullScreenImage}
-                            resizeMode="contain"
-                        />
+                        <TouchableWithoutFeedback onPress={() => handlePress(selectedPostId)}>
+                            <Animated.Image
+                                source={{ uri: selectedImageUrl }}
+                                style={[styles.fullScreenImage, { transform: [{ scale: scaleAnim }] }]}
+                                resizeMode="contain"
+                            />
+                        </TouchableWithoutFeedback>
                         {selectedPostId && (
                             <>
                                 <View style={styles.posterInfoContainer}>
@@ -360,7 +377,7 @@ const ExploreScreen = () => {
                                     </Text>
                                 </View>
                                 <View style={styles.fullScreenActionsContainer}>
-                                    <TouchableWithoutFeedback onPress={() => handlePress(selectedPostId)}>
+                                    <TouchableWithoutFeedback onPress={() => handleLikePress(selectedPostId)}>
                                         <FontAwesome
                                             name={posts.find(post => post.id === selectedPostId).isLiked ? 'heart' : 'heart-o'}
                                             size={30}
