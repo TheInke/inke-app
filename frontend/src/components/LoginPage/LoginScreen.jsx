@@ -212,7 +212,6 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async () => {
         try {
-
             console.log("Login Data==> ", { username, password });
             const response = await login(username, password);
             console.log('LOGIN SUCCESS | inke');    // Testing login og: ln16
