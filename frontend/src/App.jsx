@@ -6,6 +6,7 @@ import HomepageScreen from './screens/HomepageScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import CheckpointsScreen from './screens/CheckpointsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -14,6 +15,7 @@ const MainTab = () => (
     <Tab.Navigator initialRouteName="HomepageScreen">
         <Tab.Screen name="HomepageScreen" component={HomepageScreen} />
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
+        <Tab.Screen name="Checkpoints" component={CheckpointsScreen} />
         <Tab.Screen
             name="EditProfileScreen"
             component={EditProfileScreenWrapper}
