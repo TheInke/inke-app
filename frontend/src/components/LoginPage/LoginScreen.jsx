@@ -66,11 +66,10 @@ import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 //import statements for auth
-import * as Google from 'expo-google-app-auth';
+//import * as Google from 'expo-google-app-auth';
 //import { signInWithGoogle } from '@/lib/auth';
 //import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-import * as Facebook from 'expo-facebook';
-import * as AppleAuthentication from 'expo-apple-authentication';
+//import * as AppleAuthentication from 'expo-apple-authentication';
 
 // Correctly import the image from the local assets folder
 import inkeLogo from '../../assets/images/inke_logo.png';
@@ -96,7 +95,7 @@ const LoginScreen = ({ navigation }) => {
     };
 
     //API integration: Google Auth
-    
+    /*
     const handleGoogleLogin = async () => {
         try {
             const result = await Google.logInAsync({
@@ -117,32 +116,11 @@ const LoginScreen = ({ navigation }) => {
             console.error('Google login error', error);
         }
     };
-    
-    
-
-    //API integration: Facebook Auth
-    const handleFacebookLogin = async () => {
-        try {
-            await Facebook.initializeAsync({
-                appId: '',      //get client id
-            });
-            const result = await Facebook.logInWithReadPermissionsAsync({
-                permissions: ['public_profile', 'email'],
-            });
-            if(result.type === 'success') {
-                const accessToken = result.token;
-                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-                navigation.navigate('Main'); 
-            } else {
-                console.error('Facebook login cancelled');
-            }
-        } catch (error) {
-            console.error('Facebook login error', error);
-        }
-    };
+    */
 
 
     //API integration: Apple Auth
+    /*
     const handleAppleLogin = async () => {
         try {
             const credential = await AppleAuthentication.signInAsync({
@@ -157,6 +135,7 @@ const LoginScreen = ({ navigation }) => {
             console.error('Apple login error', error);
         }
     };
+    */
 
     return (
         <View style={styles.container}>
