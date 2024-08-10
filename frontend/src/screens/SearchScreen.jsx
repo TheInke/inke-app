@@ -628,7 +628,7 @@ const SearchScreen = ({ navigation }) => {
       <ScrollView style={styles.content}>
         <View style={styles.searchBar}>
           <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
-          <TextInput style={styles.searchInput} placeholder="Search keywords" />
+          <TextInput style={styles.searchInput} placeholder="Search Users" />
         </View>
 
         <View style={styles.section}>
