@@ -57,133 +57,96 @@ export default LoginScreen;
 
 
 
+// src/components/LoginPage/LoginScreen.jsx
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { login } from '../../services/api'; // Import login function from api.js
+import React, { useState, useContext } from 'react';
+import { View, Text, Image, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import { AuthContext } from '../../services/context/authContext';
+import InputBox from '../../components/Forms/InputBox';
+import SubmitButton from '../../components/Forms/SubmitButton';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ACCESS_TOKEN } from '../../constants';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
-//import statements for auth
-//import * as Google from 'expo-google-app-auth';
-//import { signInWithGoogle } from '@/lib/auth';
-//import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-//import * as AppleAuthentication from 'expo-apple-authentication';
-
-// Correctly import the image from the local assets folder
+import axios from 'axios';
+import { ACCESS_TOKEN } from '../../services/constants';
 import inkeLogo from '../../assets/images/inke_logo.png';
 
-
 const LoginScreen = ({ navigation }) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    // Global state
+    const [state, setState] = useContext(AuthContext);
 
+    // Local states
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    // Handle login
     const handleLogin = async () => {
         try {
-            const response = await login(username, password);
-            console.log('LOGIN SUCCESS | inke');    // Testing login og: ln16
+            setLoading(true);
+            if (!email || !password) {
+                Alert.alert("Please Fill All Fields");
+                setLoading(false);
+                return;
+            }
 
-            const accessToken = response.data.accessToken;
+            const { data } = await axios.post("/auth/login", { email, password });
+            setState(data);
+            await AsyncStorage.setItem("@auth", JSON.stringify(data));
+
+            const accessToken = data.accessToken; // Assuming accessToken is part of the response
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
 
-            // Navigate to the main screen or perform other actions
-            navigation.navigate('Main');
+            alert(data && data.message);
+            navigation.navigate("Main");
+            console.log("Login Data==> ", { email, password });
         } catch (error) {
-            console.error('Login failed:', error);
+            alert(error.response?.data?.message || "Login failed");
+            console.error("Login failed:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    //API integration: Google Auth
-    /*
-    const handleGoogleLogin = async () => {
-        try {
-            const result = await Google.logInAsync({
-                //androidClientId: '',    //get client id
-                //iosClientId: '',        //get client id
-                webClientId: '699989176848-hcsepqcl3i6b02cuflk3blqio6mdu7cd.apps.googleusercontent.com',          //get client id
-                scopes: ['profile', 'email'],
-            });
-
-            if(result.type === 'success') {
-                const accessToken = result.accessToken;
-                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-                navigation.navigate('Main');
-            } else {
-                console.error('Google login cancelled');
-            }
-        } catch (error) {
-            console.error('Google login error', error);
-        }
+    // Temporary function to check local storage data
+    const getLocalStorageData = async () => {
+        let data = await AsyncStorage.getItem("@auth");
+        console.log("Local Storage ==> ", data);
     };
-    */
-
-
-    //API integration: Apple Auth
-    /*
-    const handleAppleLogin = async () => {
-        try {
-            const credential = await AppleAuthentication.signInAsync({
-                requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL,],
-            });
-            if (credential) {
-                const accessToken = credential.identityToken;
-                await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-                navigation.navigate('Main');
-            }
-        } catch (error) {
-            console.error('Apple login error', error);
-        }
-    };
-    */
+    getLocalStorageData();
 
     return (
         <View style={styles.container}>
             <Image source={inkeLogo} style={styles.logo} />
             <Text style={styles.title}>Inke</Text>
-
             <Text style={styles.label}>LOGIN</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Username"
-                placeholderTextColor="#d3d3d3"
-                value={username}
-                onChangeText={setUsername}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#d3d3d3"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>Log In</Text>
-            </TouchableOpacity>
+            <View style={{ marginHorizontal: 20 }}>
+                <InputBox
+                    inputTitle={"Email"}
+                    keyboardType="email-address"
+                    autoComplete="email"
+                    value={email}
+                    setValue={setEmail}
+                />
+                <InputBox
+                    inputTitle={"Password"}
+                    secureTextEntry={true}
+                    autoComplete="password"
+                    value={password}
+                    setValue={setPassword}
+                />
+            </View>
 
-            {/*
-            <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
-                <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Google</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton} onPress = {handleFacebookLogin}>
-                <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Facebook</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin}>
-                <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Apple</Text>
-            </TouchableOpacity>
-            */}
+            <SubmitButton
+                btnTitle="Login"
+                loading={loading}
+                handleSubmit={handleLogin}
+            />
 
             <TouchableOpacity>
                 <Text style={styles.link}>Forgot your password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text style={styles.link}>Don't have an account? Sign Up</Text>
             </TouchableOpacity>
         </View>
@@ -196,69 +159,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#000',    //#000  og: #fff
+        backgroundColor: '#000', // Background color
     },
     logo: {
-        width: 100, // Make the logo larger
-        height: 150, // Make the logo larger
-        borderRadius: 75, // Make the logo circular
+        width: 100,
+        height: 150,
+        borderRadius: 75,
         marginBottom: -15,
     },
     title: {
         fontSize: 50,
-        color: '#fff',  //added
+        color: '#fff',
         fontWeight: 'bold',
         marginBottom: 20,
     },
     label: {
         fontSize: 18,
-        color: 'white', //added
+        color: 'white',
         fontWeight: 'bold',
         alignSelf: 'flex-start',
         marginBottom: 10,
-    },
-    input: {
-        width: '100%',
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 10,
-        color: '#fff',
-    },
-    loginButton: {
-        width: '100%',
-        height: 40,
-        backgroundColor: '#fff',    //#fff  og: #000
-        borderColor: '#ddd',    //added
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 5,
-        marginBottom: 20,
-    },
-    loginButtonText: {
-        color: '#000',  //#000  og: #fff
-        fontSize: 16,
-    },
-    socialButton: {
-        width: '100%',
-        height: 40,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 5,
-        marginBottom: 10,
-        paddingLeft: 10,
-    },
-    socialIcon: {
-        marginRight: 10,
-    },
-    socialButtonText: {
-        fontSize: 16,
-        color: '#fff',   //added
     },
     link: {
         color: '#007BFF',
@@ -268,5 +188,3 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
-
-
