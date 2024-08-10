@@ -190,7 +190,7 @@ export default LoginScreen;
 */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { login } from '../../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../../constants';
@@ -270,55 +270,61 @@ const LoginScreen = ({ navigation }) => {
     */
 
     return (
-        <View style={styles.container}>
-            <Image source={inkeLogo} style={styles.logo} />
-            <Text style={styles.title}>Inke</Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={0}  // Adjust this value if needed
+        >
+            <View style={styles.container}>
+                <Image source={inkeLogo} style={styles.logo} />
+                <Text style={styles.title}>Inke</Text>
 
-            <Text style={styles.label}>LOGIN</Text>
+                <Text style={styles.label}>LOGIN</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Username"
-                placeholderTextColor="#d3d3d3"
-                value={username}
-                onChangeText={setUsername}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                placeholderTextColor="#d3d3d3"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-            />
-            
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>Log In</Text>
-            </TouchableOpacity>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Username"
+                    placeholderTextColor="#d3d3d3"
+                    value={username}
+                    onChangeText={setUsername}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    placeholderTextColor="#d3d3d3"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                
+                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                    <Text style={styles.loginButtonText}>Log In</Text>
+                </TouchableOpacity>
 
-            {/*
-            <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
-                <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Google</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton} onPress = {handleFacebookLogin}>
-                <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Facebook</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin}>
-                <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
-                <Text style={styles.socialButtonText}>Log in with Apple</Text>
-            </TouchableOpacity>
-            */}
+                {/*
+                <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
+                    <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                    <Text style={styles.socialButtonText}>Log in with Google</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton} onPress = {handleFacebookLogin}>
+                    <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                    <Text style={styles.socialButtonText}>Log in with Facebook</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin}>
+                    <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                    <Text style={styles.socialButtonText}>Log in with Apple</Text>
+                </TouchableOpacity>
+                */}
 
-            <TouchableOpacity>
-                <Text style={styles.link}>Forgot your password?</Text>
-            </TouchableOpacity>
+                <TouchableOpacity>
+                    <Text style={styles.link}>Forgot your password?</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity>
-                <Text style={styles.link}>Don't have an account? Sign Up</Text>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity>
+                    <Text style={styles.link}>Don't have an account? Sign Up</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 
