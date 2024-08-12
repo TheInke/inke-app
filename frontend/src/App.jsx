@@ -75,6 +75,7 @@ import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import ExploreScreen from './screens/ExploreScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -82,6 +83,7 @@ const Tab = createBottomTabNavigator();
 const MainTab = () => (
     <Tab.Navigator initialRouteName="HomepageScreen">
         <Tab.Screen name="HomepageScreen" component={HomepageScreen} />
+        <Tab.Screen name="ExploreScreen" component={ExploreScreen} />
         <Tab.Screen name="AuthStatusScreen" component={AuthStatusScreen} />
         <Tab.Screen
             name="EditProfileScreen"
@@ -125,5 +127,3 @@ const App = () => (
 );
 
 export default App;
-
-
