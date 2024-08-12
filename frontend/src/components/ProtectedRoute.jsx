@@ -1,5 +1,4 @@
 // ProtectedRoute.jsx
-
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,6 +20,7 @@ const ProtectedRoute = ({ children }) => {
             if (accessToken) {
                 setIsLoggedIn(true);
                 setLoading(false);
+                navigation.navigate('SearchScreen')
             } else {
                 setIsLoggedIn(false);
                 setLoading(false);
