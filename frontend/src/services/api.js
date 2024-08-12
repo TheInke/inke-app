@@ -9,6 +9,7 @@ const api = axios.create({
     },
 });
 
+/*
 export const login = async (username, password) => {
     try {
         const response = await api.post('/api/token/', { username, password });
@@ -25,7 +26,7 @@ export const refreshToken = async () => {
         const response = await api.post('/api/token/refresh/', {
             refresh: refresh_token,
         });
-        const { access } = response.data;
+        const { access } = response.data.access_token;
         await AsyncStorage.setItem(ACCESS_TOKEN, access);
         return access;
     } catch (error) {
@@ -53,7 +54,7 @@ export const auth = async () => {
         return false; // If request fails, not authenticated
     }
 };
-
+ 
 export const fetchUserData = async (userId) => {
     try {
         const accessToken = await AsyncStorage.getItem(ACCESS_TOKEN);
@@ -68,6 +69,7 @@ export const fetchUserData = async (userId) => {
     }
 };
 
+
 export const logout = async () => {
     try {
         await AsyncStorage.removeItem(ACCESS_TOKEN);
@@ -76,6 +78,7 @@ export const logout = async () => {
         throw error;
     }
 };
+*/
 
 api.interceptors.request.use(
     async (config) => {

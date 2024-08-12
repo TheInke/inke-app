@@ -28,22 +28,19 @@ const AuthStack = () => (
 );
 
 const MainTab = () => (
-    <Tab.Navigator>
-        <Tab.Screen name="AuthStatus" component={AuthStatusScreen} />
-        <Tab.Screen
-            name="EditProfile"
-            component={EditProfileScreenWrapper}
-            options={{
-                tabBarLabel: 'Edit Profile',
-            }}
-        />
-    </Tab.Navigator>
-);
-
-const EditProfileScreenWrapper = () => (
     <ProtectedRoute>
-        <EditProfileScreen />
+        <Tab.Navigator>
+            <Tab.Screen name="AuthStatus" component={AuthStatusScreen} />
+            <Tab.Screen
+                name="EditProfile"
+                component={EditProfileScreen}
+                options={{
+                    tabBarLabel: 'Edit Profile',
+                }}
+            />
+        </Tab.Navigator>
     </ProtectedRoute>
+    
 );
 
 const App = () => (
