@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
-import Animated, {interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated'
+import {interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated'
 
 //import { login } from '../services/api'; // Import login function from api.js
 //import AsyncStorage from '@react-native-async-storage/async-storage';
