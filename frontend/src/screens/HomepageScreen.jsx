@@ -91,7 +91,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, ScrollView, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { API_URL, ACCESS_TOKEN, USER_ID } from '../constants';
+import { API_URL, ACCESS_TOKEN, USER_ID } from '../constants.js';
 
 const HomePage = () => {
     const [posts, setPosts] = useState([]);
@@ -110,6 +110,7 @@ const HomePage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
+                console.log(API_URL);
                 const response = await fetch(`${API_URL}/posts/`, {
                     headers: {
                         'Authorization': `Bearer ${ACCESS_TOKEN}`,
