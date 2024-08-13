@@ -26,7 +26,7 @@
     "expo": "~51.0.24",
     "expo-blur": "~13.0.2",
     "expo-av": "~14.0.6",
-    "expo-camera": "^15.0.14",
+    "expo-camera": "~15.0.14",
     "expo-face-detector": "~12.7.1",
     "expo-image-manipulator": "~12.0.5",
     "expo-image-picker": "^15.0.7",

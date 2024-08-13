@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   imageBox: {
-    height: 300,
+    height: 230,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonContainer: {
-    height: 80, // Adjust height as needed
+    height: 60, // Adjust height as needed
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     borderRadius: 5,
-    marginBottom: 30, // Added bottom margin for the post button
+    marginBottom: 5, // Added bottom margin for the post button
     marginLeft: 10,
     marginRight: 10,
   },
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   requestPermissionButton: {
-    backgroundColor: 'blue',
+    backgroundColor: 'black',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
