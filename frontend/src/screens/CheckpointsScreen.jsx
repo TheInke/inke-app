@@ -1,69 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
-import {interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming} from 'react-native-reanimated'
+import { View, Text, TextInput, Button, StyleSheet, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
 
 //import { login } from '../services/api'; // Import login function from api.js
 //import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { ACCESS_TOKEN } from '../constants';
 
-
-const Ripple = ({ delay }) => 
-{
-  const ripple = useSharedValue(0);
-  const style = useAnimatedStyle( () => {
-    return {
-      opacity: 0.8 - ripple.value,
-      transform: [
-        {
-          scale: interpolate(ripple.value, [0,1], [0,4]),
-        },
-      ],
-    };
-  });
-
-  useEffect( () => {
-    ripple.value = withDelay(
-      delay,
-      withRepeat(
-        withTiming(1, {
-          duration: 4000,
-        }),
-        -1
-    )
-    );
-  }, []);
-  
-  return <Animated.View style={[styles.ripple, style]}/>
-}
-    
-
-
 export default CheckpointsScreen = () => {
-  <View style={styles.container}>
-    <Ripple delay={0}/>
-    <Ripple delay={1000}/>
-    <Ripple delay={2000}/>
-    <Ripple delay={3000}/>
-  </View>
+  
+  return (
+    <View style={styles.screenContainer}>
+      <View style={styles.topHalf}>
+        <Text style={styles.header}>Drag the circle to adjust duration of this session</Text>
+      </View>
+    </View>
+  );
+  
 };
 
+
+const { height, width } = Dimensions.get('window');
 const styles = StyleSheet.create
 (
   {
-    container: 
+    screenContainer: 
     {
       flex: 1,
+      backgroundColor: 'black',
+      alignItems: 'center',
+    },
+    topHalf:
+    {
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'black'
+      height: height / 5,
+      width: width,
+      borderColor: 'red',
+      borderWidth: 3,
     },
-    ripple: 
+    header:
     {
-      position: absolute,
-      width: 100,
-      height: 100,
-      borderRadius: 50,
+      color: 'white',
+      fontSize: 30,
+      margin: 40,
+    },
+    circle:
+    {
       backgroundColor: 'gray',
+      height: 170,
+      width: 170,
+      borderRadius: 85,
     }
   }
 )
