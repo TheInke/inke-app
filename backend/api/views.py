@@ -372,34 +372,47 @@ class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class SearchView(generics.CreateAPIView):
+
+    # empty to allow testing without authentication
+    queryset = models.UserProfile.objects.all()
+    serializer_class = serializers.SearchSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        keywords = str(kwargs.get('keywords')).split()
+        # keywords of the search, separated by space and arranged in a list "keywords"
+
+        keywords = str(request.POST['keywords']).split()
+
+        print(keywords)
+        print(f'POST user: {request.user}')
+        print(f'user city: {request.user.city}')
 
         # mapping user id to number of points (priority in query result)
-        res_priority = {int:int}
+        res_priority = {}
 
-        for user in models.UserProfile.objects.all:
+        print(f'Keywords: {keywords}')
+        for user in models.UserProfile.objects.all():
             res_priority[user.id] = 0
             
             if user.username in keywords:
+                res_priority[user.id] += 2
+            elif (user.first_name and (user.first_name in keywords)) or (user.last_name and (user.last_name in keywords)):
                 res_priority[user.id] += 1
-            elif user.first_name in keywords or user.last_name in keywords:
-                res_priority[user.id] += 0.5
             
-            if user.city == request.user.city:
+            if user.city and (user.city == request.user.city):
                 res_priority[user.id] += 1.5
-            elif user.state == request.user.state:
+            elif user.state and (user.state == request.user.state):
                 res_priority[user.id] += 1
-            elif user.country == request.user.country:
+            elif user.country and (user.country == request.user.country):
                 res_priority[user.id] += 0.5
             
             # Other priorities may be added later based on metadata, such as mutuals, 
             # engagement, similar topics, etc.
         
+        print(res_priority)
         result_users = sorted(res_priority, key=lambda k: res_priority[k])
         
         return Response({'sorted_keys': result_users}, status=status.HTTP_200_OK)
