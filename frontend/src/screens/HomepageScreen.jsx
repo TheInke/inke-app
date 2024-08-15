@@ -211,19 +211,19 @@ const HomePage = () => {
                     <Animated.View style={{ transform: [{ scale: animations[item.id] || new Animated.Value(1) }] }}>
                         <FontAwesome
                             name={item.isLiked ? 'heart' : 'heart-o'}
-                            size={22}
-                            color={item.isLiked ? 'red' : 'white'}
+                            size={20}
+                            color={item.isLiked ? 'red' : 'black'}
                         />
                     </Animated.View>
                 </TouchableWithoutFeedback>
                 <Pressable onPress={() => openCommentsModal(item)}>
-                    <FontAwesome name="comment-o" size={22} color="white" />
+                    <FontAwesome name="comment-o" size={20} color="black" />
                 </Pressable>
                 <Pressable onPress={() => handleFavorite(item.id)}>
                     <FontAwesome
                         name={item.isFavorited ? 'bookmark' : 'bookmark-o'}
-                        size={22}
-                        color={item.isFavorited ? 'yellow' : 'white'}
+                        size={20}
+                        color={item.isFavorited ? 'yellow' : 'black'}
                     />
                 </Pressable>
             </View>
@@ -362,11 +362,13 @@ const HomePage = () => {
             )}
             <View style={styles.bottomNavigationBar}>
                 <Pressable onPress={handleSearchPress}>
-                    <FontAwesome name="search" size={28} color="#FFFFFF" />
+                    <FontAwesome name="search" size={25} />
                 </Pressable>
+
                 <Pressable onPress={handleAddPost} style={styles.addPostButton}>
-                    <FontAwesome name="plus" size={28} color="#000000" />
+                    <FontAwesome name="plus" size={25} />
                 </Pressable>
+
                 <Pressable onPress={handleProfilePress}>
                     <Image
                         source={{ uri: currentUserProfilePic }}
@@ -381,13 +383,13 @@ const HomePage = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000000',
+        backgroundColor: '#FFFFFF',
     },
     tabsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        backgroundColor: '#000000',
+        backgroundColor: '#FFFFFF',
         paddingTop: 2,
         paddingBottom: 1,
         zIndex: 10,
@@ -397,30 +399,29 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     tabText: {
-        color: '#FFFFFF',
+        color: 'black',
         fontSize: 16,
     },
     activeTab: {
         borderBottomWidth: 2,
-        borderBottomColor: '#FFFFFF',
+        borderBottomColor: '#BFAC98',
     },
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         padding: 8,
     },
     columnWrapper: {
         justifyContent: 'space-between',
+        marginHorizontal: -15,
+        marginTop: -15,
     },
     postContainer: {
         flex: 1,
         margin: 8,
-        borderRadius: 5,
         overflow: 'hidden',
     },
     textPostContainer: {
         padding: 54,
-        borderRadius: 10,
         backgroundColor: '#1c1c1c',
         width: '100%',
         maxHeight: 300,
@@ -434,13 +435,12 @@ const styles = StyleSheet.create({
     },
     profileOverlayContainer: {
         position: 'absolute',
-        top: 10,
-        left: 10,
+        top: 5,
+        left: 5,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        padding: 5,
-        borderRadius: 5,
+        padding: 3,
         zIndex: 1,
     },
     overlayProfilePic: {
@@ -450,21 +450,19 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     overlayUsername: {
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 'bold',
         color: '#FFFFFF',
     },
     postImage: {
         width: '100%',
         height: 250,
-        borderRadius: 10,
     },
     actionsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
-        marginTop: 0,
+        padding: 7,
         marginBottom: 6,
     },
     commentsLink: {
@@ -562,15 +560,15 @@ const styles = StyleSheet.create({
     },
     bottomNavigationBar: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#000000',
+        backgroundColor: '#FFFFFF',
         position: 'absolute',
         bottom: 1,
         width: '100%',
-        height: 55,
+        height: 50,
     },
     addPostButton: {
         backgroundColor: '#FFFFFF',
@@ -582,14 +580,10 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     profilePic: {
-        width: 45,
-        height: 45,
+        width: 40,
+        height: 40,
         borderRadius: 19,
         borderColor: '#FFFFFF',
-    },
-    bottomBarIcon: {
-        width: 24,
-        height: 24,
     },
 });
 
