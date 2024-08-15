@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard, TouchableWithoutFeedback, Dimensions, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Video } from 'expo-av';
+import axios from 'axios';
 
 const { height, width } = Dimensions.get('window');
 
@@ -122,7 +123,6 @@ export default function CreatePostScreen() {
 
   // Handle date confirmation from the date picker
   const handleConfirm = (date) => {
-    console.log("A date has been picked: ", date);
     setScheduleDate(date);
     hideDatePicker();
   };
@@ -140,13 +140,40 @@ export default function CreatePostScreen() {
     setIs24hPost(!is24hPost);
   };
 
-  // Calculate expiration date for 24h post
-  const calculateExpirationDate = () => {
-    const currentDate = new Date();
-    if (isSchedule && scheduleDate) {
-      return new Date(scheduleDate.getTime() + 24 * 60 * 60 * 1000);
+  // Handle Post Submission
+  const handlePost = async () => {
+    try {
+      // Commented out 24-hour post and scheduled post logic
+      // const expirationDate = calculateExpirationDate();
+
+      const formData = new FormData();
+      formData.append('description', description);
+      formData.append('group', selectedGroup);
+      // formData.append('scheduleDate', scheduleDate ? scheduleDate.toISOString() : null);
+      // formData.append('expirationDate', expirationDate.toISOString());
+      // formData.append('is24hPost', is24hPost);
+      
+      if (media) {
+        const fileType = mediaType === 'image' ? 'image/jpeg' : 'video/mp4';
+        formData.append('media', {
+          uri: media,
+          name: `media.${mediaType === 'image' ? 'jpg' : 'mp4'}`,
+          type: fileType,
+        });
+      }
+
+      const response = await axios.post('http://your-backend-url.com/api/posts/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('Post created successfully:', response.data);
+      // Handle successful post submission (e.g., navigate to home screen, clear form)
+    } catch (error) {
+      console.error('Error creating post:', error);
+      // Handle error (e.g., show error message)
     }
-    return new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
   };
 
   return (
@@ -191,45 +218,39 @@ export default function CreatePostScreen() {
               </TouchableOpacity>
             )}
             <View style={styles.formContainer}>
-              <View style={styles.descriptionContainer}>
-                <TextInput
-                  style={[styles.descriptionInput, description && styles.descriptionText]}
-                  placeholder="Add Description"
-                  placeholderTextColor="gray"
-                  onChangeText={setDescription}
-                  value={description}
-                  multiline
-                  numberOfLines={3} // Maximum number of visible lines
-                  maxHeight={60} // Maximum height for the text input
-                  scrollEnabled // Enable scrolling within the text input
-                />
-              </View>
               <TouchableOpacity
                 style={[styles.uploadOptionButton, styles.leftAlignButton]}
                 onPress={() => handleUploadOption('album')}
               >
                 <Text style={[styles.uploadOptionButtonText, uploadOption === 'album' && styles.uploadOptionButtonTextSelected]}>Post To Album</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.uploadOptionButton, styles.leftAlignButton]}
-                onPress={() => handleUploadOption('group')}
-              >
-                <Text style={[styles.uploadOptionButtonText, uploadOption === 'group' && styles.uploadOptionButtonTextSelected]}>Post To Group</Text>
-              </TouchableOpacity>
-              {uploadOption === 'group' && (
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedGroup}
-                    style={styles.groupPicker}
-                    onValueChange={(itemValue, itemIndex) => setSelectedGroup(itemValue)}
+
+              <View style={styles.groupSelectionContainer}>
+                <TouchableOpacity
+                  style={[styles.uploadOptionButton, styles.leftAlignButton]}
+                  onPress={() => handleUploadOption('group')}
+                >
+                  <Text style={[styles.uploadOptionButtonText, uploadOption === 'group' && styles.uploadOptionButtonTextSelected]}>Post To Group</Text>
+                </TouchableOpacity>
+                {uploadOption === 'group' && (
+                  <ScrollView
+                    style={styles.groupScrollView}
+                    nestedScrollEnabled={true}
                   >
-                    <Picker.Item label="Select Group" value="" />
-                    <Picker.Item label="Group 1" value="group1" />
-                    <Picker.Item label="Group 2" value="group2" />
-                    <Picker.Item label="Group 3" value="group3" />
-                  </Picker>
-                </View>
-              )}
+                    <Picker
+                      selectedValue={selectedGroup}
+                      style={styles.groupPicker}
+                      onValueChange={(itemValue, itemIndex) => setSelectedGroup(itemValue)}
+                    >
+                      <Picker.Item label="Select Group" value="" />
+                      <Picker.Item label="Group 1" value="group1" />
+                      <Picker.Item label="Group 2" value="group2" />
+                      <Picker.Item label="Group 3" value="group3" />
+                      <Picker.Item label="Group 4" value="group4" />
+                    </Picker>
+                  </ScrollView>
+                )}
+              </View>
             </View>
             <View style={styles.scheduleRow}>
               <View style={styles.scheduleContainer}>
@@ -273,11 +294,7 @@ export default function CreatePostScreen() {
               }}
               textColor="white" // Set the text color to white
             />
-            <TouchableOpacity style={styles.postButton} onPress={() => {
-              const expirationDate = calculateExpirationDate();
-              console.log('Post Expiration Date:', expirationDate);
-              // Add your post submission logic here
-            }}>
+            <TouchableOpacity style={styles.postButton} onPress={handlePost}>
               <Text style={styles.postButtonText}>{isSchedule ? 'Schedule' : 'Post'}</Text>
             </TouchableOpacity>
           </>
@@ -306,7 +323,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   imageBox: {
-    height: 300,
+    height: 230,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -328,7 +345,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonContainer: {
-    height: 80, // Adjust height as needed
+    height: 60, // Adjust height as needed
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -423,13 +440,22 @@ const styles = StyleSheet.create({
   descriptionText: {
     borderBottomWidth: 0,
   },
-  groupPicker: {
-    height: 50,
-    width: '100%',
+  groupSelectionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  calendarButton: {
-    alignSelf: 'center',
-    marginTop: 10,
+  groupPickerContainer: {
+    flex: 1,
+    maxHeight: 100, // Adjust height to allow only 2 options to display before scrolling
+    marginLeft: 10,
+  },
+  groupScrollView: {
+    flexGrow: 0, // Prevent ScrollView from expanding to fit content
+  },
+  groupPicker: {
+    height: '100%',
+    width: '100%',
   },
   calendarButtonInline: {
     marginLeft: 10,
@@ -439,7 +465,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     borderRadius: 5,
-    marginBottom: 30, // Added bottom margin for the post button
+    marginBottom: 5, // Added bottom margin for the post button
     marginLeft: 10,
     marginRight: 10,
   },
@@ -449,7 +475,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   requestPermissionButton: {
-    backgroundColor: 'blue',
+    backgroundColor: 'black',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
@@ -460,4 +486,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
