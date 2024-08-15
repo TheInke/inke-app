@@ -1,41 +1,32 @@
-import React, { useEffect, useState, useRef, Component } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-
-//import { login } from '../services/api'; // Import login function from api.js
-//import AsyncStorage from '@react-native-async-storage/async-storage';
-//import { ACCESS_TOKEN } from '../constants';
-/*
-      borderColor: 'red',
-      borderWidth: 3,
- */
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from 'react-native';
 
 export default CheckpointsScreen = () => {
-
   const size = new Animated.Value(1);
-  const instructionFontSize = new Animated.Value(40);  // Font size starts as a large value
+  const instructionFontSize = new Animated.Value(40);
   const opacity = new Animated.Value(0);
 
-  useEffect(() => {
-    // Animate the ripple effect
+  const [animationRunning, setAnimationRunning] = useState(false);  // Track animation state
 
+  // Function to start the animation
+  const startAnimation = () => {
     const instructionFontAnimation = Animated.sequence([
       Animated.timing(instructionFontSize, {
-        toValue: 60,  // Animate to a slightly larger font size
+        toValue: 60,
         duration: 4000,
-        useNativeDriver: false,  // Must be false for fontSize animations
+        useNativeDriver: false,
       }),
       Animated.timing(instructionFontSize, {
         toValue: 60,
         duration: 1000,
-        useNativeDriver: false,  // Must be false for fontSize animations
+        useNativeDriver: false,
       }),
       Animated.timing(instructionFontSize, {
-        toValue: 40,  // Animate back to original size
+        toValue: 40,
         duration: 8000,
-        useNativeDriver: false,  // Must be false for fontSize animations
+        useNativeDriver: false,
       }),
-    ])
+    ]);
 
     const sizeAnimation = Animated.sequence([
       Animated.timing(size, {
@@ -71,7 +62,25 @@ export default CheckpointsScreen = () => {
     Animated.loop(
       Animated.parallel([sizeAnimation, opacityAnimation, instructionFontAnimation])
     ).start();
-  }, []);
+  };
+
+  // Stop the animation by resetting the values
+  const stopAnimation = () => {
+    size.stopAnimation();
+    opacity.stopAnimation();
+    instructionFontSize.stopAnimation();
+  };
+
+  // Handle the tap event
+  const handleTap = () => {
+    console.log(animationRunning);
+    if (animationRunning) {
+      stopAnimation();  // Stop animation if running
+    } else {
+      startAnimation();  // Start animation if stopped
+    }
+    setAnimationRunning(!animationRunning);  // Toggle animation state
+  };
 
   const { height, width } = Dimensions.get('window');
   const styles = StyleSheet.create({
@@ -87,8 +96,6 @@ export default CheckpointsScreen = () => {
       width: width,
       marginTop: 70,
       paddingTop: 40,
-      borderColor: 'blue',
-      borderWidth: 5,
     },
     header: {
       color: 'white',
@@ -100,12 +107,16 @@ export default CheckpointsScreen = () => {
       justifyContent: 'center',
       padding: 10,
       marginTop: (154.6 / 2) - 30,
+
+      //borderColor: 'blue',
+      //borderWidth: 5,
     },
     timer: {
       backgroundColor: 'gray',
       height: 170,
       width: 170,
       borderRadius: 85,
+      zIndex: 1,  // Ensure touch is captured
     },
     ripple: {
       position: 'absolute',
@@ -114,26 +125,37 @@ export default CheckpointsScreen = () => {
       borderRadius: 150,
       backgroundColor: 'rgba(211, 211, 211, 0.4)',
       opacity: opacity,
-      transform: [
-        {
-          scale: size
-        }
-      ],
+      transform: [{ scale: size }],
+      zIndex: -1,  // Make sure it's behind the timer for tap functionality
+    },
+    touchable:
+    {
+      borderColor: 'red',
+      borderWidth: 5,
     },
   });
 
   return (
     <View style={styles.screenContainer}>
       <View style={styles.topHalf}>
-        {/* Use Animated.Text to animate the font size */}
         <Animated.Text style={[styles.header, { fontSize: instructionFontSize }]}>
           Inhale
         </Animated.Text>
       </View>
-      <View style={styles.timerContainer}>
-        <View style={styles.timer}></View>
-        <Animated.View style={styles.ripple} />
-      </View>
+      {/*
+      <TouchableOpacity onPress={handleTap} activeOpacity={0.9}>
+        <View style={styles.timerContainer}>
+          <View style={styles.timer}></View>
+          <Animated.View style={styles.ripple} />
+        </View>
+      </TouchableOpacity>
+       TouchableOpacity for tap detection */}
+        <View style={styles.timerContainer}>
+          <TouchableOpacity style={styles.touchable} onPress={handleTap}>
+            <View style={styles.timer}></View>
+          </TouchableOpacity>
+          <Animated.View style={styles.ripple} />
+        </View>
     </View>
   );
 };
