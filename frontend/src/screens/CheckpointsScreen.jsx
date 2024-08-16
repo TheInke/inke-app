@@ -8,8 +8,11 @@ export default CheckpointsScreen = () => {
   const opacity = new Animated.Value(0);
   */
 
+  // Note:
+  // Without the usage of useRef, the values of size, opacity and animatedFontSize are improperly maintained
+  // and may not work as intended. In this case, the animations simply did not run without the usage of useRef
   const size = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0.4)).current;
   const animatedFontSize = useRef(new Animated.Value(40)).current;
 
   const instructionText = [
@@ -26,40 +29,42 @@ export default CheckpointsScreen = () => {
   // Function to start the animation
   const startAnimation = () => {
     
-    const inhaleAnimation = () => 
-    {
-      setInstructionTextIndex(1);
+    // Note:
+    // Animated.sequence() and Animated.loop() do not recognize animations if they are made functions
+    // Below, I have simply initialized them as components
+    
+    const inhaleAnimation = 
       Animated.timing(animatedFontSize, {
         toValue: 60,
         duration: 4000,
         useNativeDriver: false,
-      })
-    }
-    const holdAnimation = () => 
-    {
-      setInstructionTextIndex(2);
+        // setInstructionTextIndex(1);
+      });
+    
+    const holdAnimation = 
       Animated.timing(animatedFontSize, {
         toValue: 60,
-        duration: 1000,
+        duration: 7000,
         useNativeDriver: false,
-      })
-    }
-    const exhaleAnimation = () => 
-    {
-      setInstructionTextIndex(3);
+        // setInstructionTextIndex(2);
+      });
+
+    const exhaleAnimation = 
       Animated.timing(animatedFontSize, {
         toValue: 40,
         duration: 8000,
         useNativeDriver: false,
-      })
-    }
-
+        // setInstructionTextIndex(3);
+      });
+    
+    // Handles expanding and shrinking instruction text (ex: inhale, exhale, hold)
     const instructionFontAnimation = Animated.sequence([
       inhaleAnimation,
       holdAnimation,
       exhaleAnimation,
     ]);
 
+    // Controls size of the expanding and contracting circle, over the course of the breathing session
     const sizeAnimation = Animated.sequence([
       Animated.timing(size, {
         toValue: 2.5,
@@ -68,7 +73,7 @@ export default CheckpointsScreen = () => {
       }),
       Animated.timing(size, {
         toValue: 2.5,
-        duration: 1000,
+        duration: 7000,
         useNativeDriver: true,
       }),
       Animated.timing(size, {
@@ -78,18 +83,60 @@ export default CheckpointsScreen = () => {
       }),
     ]);
 
-    const opacityAnimation = Animated.sequence([
+
+    /*
+    const opacityOscillation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0.4,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0.2,
+          duration: 500,
+          useNativeDriver: true,
+        })
+      ]),
+      {
+        iterations: 7,
+        resetBeforeIteration: false,
+      }
+    );
+    */
+
+    const test = Animated.loop(
       Animated.timing(opacity, {
-        toValue: 0,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0.8,
+        toValue: 0.4,
         duration: 1000,
         useNativeDriver: true,
       }),
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      {
+        iterations: 7,
+        resetBeforeIteration: false
+      }
+    );
+
+
+    const opacityAnimation = Animated.sequence([
+      Animated.timing(opacity, {
+        toValue: 0.4,
+        duration: 4000,
+        useNativeDriver: true,
+      }),
+      test,
+      Animated.timing(opacity, {
+        toValue: 0.4,
+        duration: 8000,
+        useNativeDriver: true
+      }),
     ]);
+
 
     Animated.loop(
       Animated.parallel([sizeAnimation, opacityAnimation, instructionFontAnimation])
@@ -101,20 +148,22 @@ export default CheckpointsScreen = () => {
     
     size.stopAnimation();
     size.setValue(1);
+
     opacity.stopAnimation();
-    opacity.setValue(1);
+    opacity.setValue(0.4);
+
     animatedFontSize.stopAnimation();
     animatedFontSize.setValue(40);
+
   };
 
   // Handle the tap event
   const handleTap = () => {
-    console.log(animationRunning);
+  
     if (animationRunning) {
-      console.log('trying stopAnimation');
+      setInstructionTextIndex(1);
       stopAnimation();  // Stop animation if running
     } else {
-      console.log('trying startAnimation');
       startAnimation();  // Start animation if stopped
     }
     setAnimationRunning(!animationRunning);  // Toggle animation state
@@ -181,19 +230,6 @@ export default CheckpointsScreen = () => {
           {instructionText[instructionTextIndex].instruction}
         </Animated.Text>
       </View>
-
-      {/*
-      <TouchableOpacity onPress={handleTap} activeOpacity={0.9}>
-        <View style={styles.timerContainer}>
-          <View style={styles.timer}></View>
-          <Animated.View style={styles.ripple} />
-        </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.touchable} onPress={ () => handleTap()}>
-            <View style={styles.timer}></View>
-          </TouchableOpacity>
-       TouchableOpacity for tap detection */}
 
         <View style={styles.timerContainer}>
           <TouchableOpacity style={styles.touchable} activeOpacity={0.8} onPress={handleTap}>
