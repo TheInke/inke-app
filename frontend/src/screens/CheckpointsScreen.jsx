@@ -23,7 +23,6 @@ export default CheckpointsScreen = () => {
   ]
 
   const [instructionTextIndex, setInstructionTextIndex] = useState(0);
-
   const [animationRunning, setAnimationRunning] = useState(false);  // Track animation state
 
   // Function to start the animation
@@ -83,64 +82,42 @@ export default CheckpointsScreen = () => {
       }),
     ]);
 
+    // We will handle parallel loop for opacity flashing at t=4000 separately (due to nesting issues):
 
-    /*
-    const opacityOscillation = Animated.loop(
+    const opacityFlashingAnimation = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 0.4,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0.2,
-          duration: 500,
-          useNativeDriver: true,
-        })
+        Animated.timing(opacity, 
+          {
+            toValue: 0.2,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+        Animated.timing(opacity, 
+          {
+            toValue: 0.4,
+            duration: 600,
+            useNativeDriver: true,
+          }),
       ]),
       {
         iterations: 7,
-        resetBeforeIteration: false,
-      }
-    );
-    */
-
-    const test = Animated.loop(
-      Animated.timing(opacity, {
-        toValue: 0.4,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      {
-        iterations: 7,
-        resetBeforeIteration: false
       }
     );
 
-
-    const opacityAnimation = Animated.sequence([
-      Animated.timing(opacity, {
-        toValue: 0.4,
-        duration: 4000,
-        useNativeDriver: true,
-      }),
-      test,
-      Animated.timing(opacity, {
-        toValue: 0.4,
-        duration: 8000,
-        useNativeDriver: true
-      }),
+    const opacityLoop = Animated.sequence([
+      Animated.delay(4000),
+      opacityFlashingAnimation,
+      Animated.delay(8000)
     ]);
 
-
+    // Handles sizing and changing instruction loop
     Animated.loop(
-      Animated.parallel([sizeAnimation, opacityAnimation, instructionFontAnimation])
+      Animated.parallel([sizeAnimation, opacityLoop, instructionFontAnimation])
     ).start();
+
+    
+
+    
   };
 
   // Stop the animation by resetting the values
@@ -159,6 +136,7 @@ export default CheckpointsScreen = () => {
 
   // Handle the tap event
   const handleTap = () => {
+    setInstructionTextIndex(1);
   
     if (animationRunning) {
       setInstructionTextIndex(1);
@@ -221,6 +199,10 @@ export default CheckpointsScreen = () => {
     {
       zIndex: 3
     },
+    sampleText:
+    {
+      color: 'white'
+    }
   });
 
   return (
