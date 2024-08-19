@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef} from 'react';
-import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions, FlatList} from 'react-native';
+import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from 'react-native';
+import { invertColor } from '../InvertColor.js'
 
 export default CheckpointsScreen = () => {
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
   /*
   const size = new Animated.Value(1);
   const instructionFontSize = new Animated.Value(40);
@@ -15,8 +19,10 @@ export default CheckpointsScreen = () => {
   const opacity = useRef(new Animated.Value(0.4)).current;
   const animatedFontSize = useRef(new Animated.Value(40)).current;
 
+  const [countDown, setCountDown] = useState(1);
+
   const instructionText = [
-    {instruction:'Drag the timer to choose duration.\nRelease to start.', fontSize: 20},
+    {instruction:'Drag the timer to choose duration. Release to start.', fontSize: 25},
     {instruction:'Inhale', fontSize: animatedFontSize},
     {instruction:'Hold', fontSize: animatedFontSize},
     {instruction:'Exhale', fontSize: animatedFontSize},
@@ -57,6 +63,7 @@ export default CheckpointsScreen = () => {
       });
     
     // Handles expanding and shrinking instruction text (ex: inhale, exhale, hold)
+    
     const instructionFontAnimation = Animated.sequence([
       inhaleAnimation,
       holdAnimation,
@@ -88,7 +95,7 @@ export default CheckpointsScreen = () => {
       Animated.sequence([
         Animated.timing(opacity, 
           {
-            toValue: 0.2,
+            toValue: 0.7,
             duration: 400,
             useNativeDriver: true,
           }),
@@ -113,11 +120,7 @@ export default CheckpointsScreen = () => {
     // Handles sizing and changing instruction loop
     Animated.loop(
       Animated.parallel([sizeAnimation, opacityLoop, instructionFontAnimation])
-    ).start();
-
-    
-
-    
+    ).start(); 
   };
 
   // Stop the animation by resetting the values
@@ -151,49 +154,80 @@ export default CheckpointsScreen = () => {
   const styles = StyleSheet.create({
     screenContainer: {
       flex: 1,
-      backgroundColor: 'black',
-      alignItems: 'center',
-    },
-    topHalf: {
+      backgroundColor: isDarkMode ? invertColor('#FFFFFF') : '#FFFFFF',
       alignItems: 'center',
       justifyContent: 'center',
-      height: height / 5,
+    },
+    topHalf: {
+      
+      /*
+      borderColor: 'red',
+      borderWidth: 3,
+      */
+      
+      alignItems: 'center',
+      justifyContent: 'top',
+      height: 'fit-content',
       width: width,
-      marginTop: 70,
-      paddingTop: 40,
+      paddingHorizontal: 20,
+      marginBottom: 20,
+      
     },
     header: {
-      color: 'white',
+      color: isDarkMode ? invertColor('#000000') : '#000000',
       fontWeight: 'bold',
-      margin: 10,
+      textAlign: 'center',
+      zIndex: 10,
     },
     timerContainer: {
+      
+      /*
+      borderColor: 'green',
+      borderWidth: 3,
+      */
+      
       alignItems: 'center',
       justifyContent: 'center',
       padding: 10,
-      marginTop: (154.6 / 2) - 30,
+      // marginTop: (154.6 / 2) - 30,
       zIndex: 1
 
       //borderColor: 'blue',
       //borderWidth: 5,
     },
     timer: {
-      backgroundColor: 'gray',
+      
+      /*
+      borderColor: 'red',
+      borderWidth: 5,
+      */
+
+      alignItem: 'center',
+      justifyContent: 'center',
+      backgroundColor: isDarkMode ? 'gray' : 'black',
       height: 170,
       width: 170,
       borderRadius: 85,
       zIndex: 2,  // Ensure touch is captured
+    },
+    countDown: 
+    {
+      alignSelf: 'center',
+      justifyContent: 'center',
+      color: 'white',
+      fontSize: 40,
+      fontWeight: 'bold'
     },
     ripple: {
       position: 'absolute',
       height: 170,
       width: 170,
       borderRadius: 150,
-      backgroundColor: 'rgba(211, 211, 211, 0.4)',
+      backgroundColor: isDarkMode ? 'rgba(211, 211, 211, 0.4)' : 'rgba(153, 204, 255, 1)',
       opacity: opacity,
       transform: [{ scale: size }],
-      zIndex: -1,  // Make sure it's behind the timer for tap functionality
-      elevation: -1
+      zIndex: -3,  // Make sure it's behind the timer for tap functionality
+      elevation: -3
     },
     touchable:
     {
@@ -207,6 +241,7 @@ export default CheckpointsScreen = () => {
 
   return (
     <View style={styles.screenContainer}>
+      
       <View style={styles.topHalf}>
         <Animated.Text style={[styles.header, { fontSize: instructionText[instructionTextIndex].fontSize }]}>
           {instructionText[instructionTextIndex].instruction}
@@ -215,7 +250,9 @@ export default CheckpointsScreen = () => {
 
         <View style={styles.timerContainer}>
           <TouchableOpacity style={styles.touchable} activeOpacity={0.8} onPress={handleTap}>
-            <View style={styles.timer}></View>
+            <View style={styles.timer}>
+              <Text style={styles.countDown}>{ countDown }</Text>
+            </View>
           </TouchableOpacity>
           <Animated.View style={styles.ripple} />
         </View>
