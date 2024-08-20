@@ -4,7 +4,7 @@ import { invertColor } from '../InvertColor.js'
 
 export default CheckpointsScreen = () => {
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
 
   /*
   const size = new Animated.Value(1);
