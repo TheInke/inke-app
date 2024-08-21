@@ -6,9 +6,10 @@ import ClickableOption  from "../components/ClickableOption";
 const AccountSettingsScreen = () => {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
-    console.log('Account Settings Screen pressed!')
 
+    //const userProfilePicture = await axios.get('')
     
+    // pfp_image
 
     // Styles:
 
@@ -45,7 +46,7 @@ const AccountSettingsScreen = () => {
         {
             backgroundColor: 'white',
             flexDirection: 'row',
-            height: 150,
+            height: 130,
             width: '90%',
             alignSelf: 'center',
 
@@ -58,8 +59,8 @@ const AccountSettingsScreen = () => {
         },
         profileImage:
         {
-            height: 110,
-            width: 110,
+            height: 100,
+            width: 100,
             borderRadius: 55,
             borderColor: 'lightgray',
             borderWidth: 2,
@@ -107,7 +108,7 @@ const AccountSettingsScreen = () => {
             <ClickableOption iconName="lock" text="Privacy and Security" onPress={() => {console.log('Privacy')}} /> 
             <ClickableOption iconName="help-circle" text="Help and Support" onPress={() => {console.log('Help and Support')}} /> 
             <ClickableOption iconName="edit" text="About SafeSpace" onPress={() => {console.log('button pressed')}} /> 
-            <ClickableOption iconName="log-out" text="Logout" onPress={() => {console.log('button pressed')}} /> 
+            <ClickableOption iconName="log-out" text="Logout" textColor='#D60000' iconColor='#D60000' onPress={() => {console.log('button pressed')}} /> 
 
         </View>
     );

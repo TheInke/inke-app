@@ -2,17 +2,22 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-const ClickableOption = ({ iconName, text, onPress }) => (
+const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
   <View style={styles.clickableOptionShadowBox}>
     <TouchableOpacity style={styles.clickableOption} onPress={onPress} activeOpacity={0.7}>
-      <Icon name={iconName} size={20} color="rgba(20, 20, 20, 1)" />
-      <Text style={styles.clickableOptionName}>{text}</Text>
+      <Icon name={iconName} size={20} color={iconColor} />
+      <Text style={[styles.clickableOptionName, { color: textColor }]}>{text}</Text>
       <View style={styles.rightIconContainer}>
         <Icon name="chevron-right" size={20} color="rgba(20, 20, 20, 1)" />
       </View>
     </TouchableOpacity>
   </View>
 );
+
+ClickableOption.defaultProps = {
+  textColor: 'black', // Replace 'default-icon' with your preferred default icon name
+  iconColor: "rgba(20, 20, 20, 1)",
+};
 
 const styles = StyleSheet.create({
   clickableOption: {
