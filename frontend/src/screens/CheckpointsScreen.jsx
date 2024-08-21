@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, TouchableOpacity, Dimensions } from 'react-native';
 import { invertColor } from '../InvertColor.js'
 
 export default CheckpointsScreen = () => {
 
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   /*
   const size = new Animated.Value(1);
@@ -17,15 +17,16 @@ export default CheckpointsScreen = () => {
   // and may not work as intended. In this case, the animations simply did not run without the usage of useRef
   const size = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0.4)).current;
-  const animatedFontSize = useRef(new Animated.Value(40)).current;
+  const animatedFontSize = useRef(new Animated.Value(30)).current;
+  // const headerSize = useRef(new Animated.Value(25)).current;
 
-  const [countDown, setCountDown] = useState(1);
+  // const [countDown, setCountDown] = useState(1);
 
   const instructionText = [
-    {instruction:'Drag the timer to choose duration. Release to start.', fontSize: 25},
-    {instruction:'Inhale', fontSize: animatedFontSize},
-    {instruction:'Hold', fontSize: animatedFontSize},
-    {instruction:'Exhale', fontSize: animatedFontSize},
+    { instruction: 'Drag the timer to choose duration. Release to start.', fontSize: 25 },
+    { instruction: 'Inhale', fontSize: animatedFontSize },
+    { instruction: 'Hold', fontSize: animatedFontSize },
+    { instruction: 'Exhale', fontSize: animatedFontSize },
   ]
 
   const [instructionTextIndex, setInstructionTextIndex] = useState(0);
@@ -33,37 +34,37 @@ export default CheckpointsScreen = () => {
 
   // Function to start the animation
   const startAnimation = () => {
-    
+
     // Note:
     // Animated.sequence() and Animated.loop() do not recognize animations if they are made functions
     // Below, I have simply initialized them as components
-    
-    const inhaleAnimation = 
+
+    const inhaleAnimation =
       Animated.timing(animatedFontSize, {
-        toValue: 60,
+        toValue: 40,
         duration: 4000,
         useNativeDriver: false,
         // setInstructionTextIndex(1);
       });
-    
-    const holdAnimation = 
+
+    const holdAnimation =
       Animated.timing(animatedFontSize, {
-        toValue: 60,
+        toValue: 40,
         duration: 7000,
         useNativeDriver: false,
         // setInstructionTextIndex(2);
       });
 
-    const exhaleAnimation = 
+    const exhaleAnimation =
       Animated.timing(animatedFontSize, {
-        toValue: 40,
+        toValue: 30,
         duration: 8000,
         useNativeDriver: false,
         // setInstructionTextIndex(3);
       });
-    
+
     // Handles expanding and shrinking instruction text (ex: inhale, exhale, hold)
-    
+
     const instructionFontAnimation = Animated.sequence([
       inhaleAnimation,
       holdAnimation,
@@ -93,13 +94,13 @@ export default CheckpointsScreen = () => {
 
     const opacityFlashingAnimation = Animated.loop(
       Animated.sequence([
-        Animated.timing(opacity, 
+        Animated.timing(opacity,
           {
             toValue: 0.7,
             duration: 400,
             useNativeDriver: true,
           }),
-        Animated.timing(opacity, 
+        Animated.timing(opacity,
           {
             toValue: 0.4,
             duration: 600,
@@ -118,14 +119,30 @@ export default CheckpointsScreen = () => {
     ]);
 
     // Handles sizing and changing instruction loop
-    Animated.loop(
+    const mainLoop = Animated.loop(
       Animated.parallel([sizeAnimation, opacityLoop, instructionFontAnimation])
-    ).start(); 
+    ).start();
+
+    /* const configAnimation = Animated.timing(headerSize, 
+      {
+        toValue: 0,
+        duration: 3000,
+        useNativeDriver: true
+      });
+    */
+  
+    // configAnimation.start();
+    mainLoop;
   };
+
+  
+
+
+
 
   // Stop the animation by resetting the values
   const stopAnimation = () => {
-    
+
     size.stopAnimation();
     size.setValue(1);
 
@@ -133,14 +150,19 @@ export default CheckpointsScreen = () => {
     opacity.setValue(0.4);
 
     animatedFontSize.stopAnimation();
-    animatedFontSize.setValue(40);
+    animatedFontSize.setValue(30);
+
+    // headerSize.setValue(25);
 
   };
 
+  const handleFocus = () => {
+    console.log('hi');
+  };
+
   // Handle the tap event
-  const handleTap = () => {
-    setInstructionTextIndex(1);
-  
+  const handleBeginSession = () => {
+
     if (animationRunning) {
       setInstructionTextIndex(1);
       stopAnimation();  // Stop animation if running
@@ -151,6 +173,12 @@ export default CheckpointsScreen = () => {
   };
 
   const { height, width } = Dimensions.get('window');
+
+  const timerScaleValue = size.interpolate({
+    inputRange: [1, 2.5],
+    outputRange: [1, 1.5],  // Smaller scale for the timer
+  });
+
   const styles = StyleSheet.create({
     screenContainer: {
       flex: 1,
@@ -159,33 +187,35 @@ export default CheckpointsScreen = () => {
       justifyContent: 'center',
     },
     topHalf: {
-      
+
       /*
       borderColor: 'red',
       borderWidth: 3,
       */
-      
+
       alignItems: 'center',
       justifyContent: 'top',
       height: 'fit-content',
       width: width,
       paddingHorizontal: 20,
-      marginBottom: 20,
-      
+      marginBottom: 80,
+
     },
     header: {
+      position: 'absolute',
       color: isDarkMode ? invertColor('#000000') : '#000000',
+      fontSize: 25,
       fontWeight: 'bold',
       textAlign: 'center',
       zIndex: 10,
     },
     timerContainer: {
-      
+
       /*
       borderColor: 'green',
       borderWidth: 3,
       */
-      
+
       alignItems: 'center',
       justifyContent: 'center',
       padding: 10,
@@ -195,8 +225,15 @@ export default CheckpointsScreen = () => {
       //borderColor: 'blue',
       //borderWidth: 5,
     },
+    instruction:
+    {
+      color: isDarkMode ? invertColor('#FFFFFF') : '#FFFFFF',
+      textAlign: 'center',
+      fontWeight: 'bold',
+    },
+
     timer: {
-      
+
       /*
       borderColor: 'red',
       borderWidth: 5,
@@ -207,10 +244,11 @@ export default CheckpointsScreen = () => {
       backgroundColor: isDarkMode ? 'gray' : 'black',
       height: 170,
       width: 170,
+      transform: [{ scale: timerScaleValue }],
       borderRadius: 85,
       zIndex: 2,  // Ensure touch is captured
     },
-    countDown: 
+    countDown:
     {
       alignSelf: 'center',
       justifyContent: 'center',
@@ -239,23 +277,33 @@ export default CheckpointsScreen = () => {
     }
   });
 
+
+  const handleTimer = () => { console.log(instructionText[instructionTextIndex].fontSize); };
   return (
     <View style={styles.screenContainer}>
+
+      {/*
       
+      */}
       <View style={styles.topHalf}>
-        <Animated.Text style={[styles.header, { fontSize: instructionText[instructionTextIndex].fontSize }]}>
-          {instructionText[instructionTextIndex].instruction}
+        <Animated.Text style={styles.header}>
+          Drag the timer to choose duration. Release to start.
         </Animated.Text>
       </View>
 
-        <View style={styles.timerContainer}>
-          <TouchableOpacity style={styles.touchable} activeOpacity={0.8} onPress={handleTap}>
-            <View style={styles.timer}>
-              <Text style={styles.countDown}>{ countDown }</Text>
-            </View>
-          </TouchableOpacity>
-          <Animated.View style={styles.ripple} />
-        </View>
+      <View style={styles.timerContainer}>
+        <TouchableOpacity style={styles.touchable} activeOpacity={0.8} onPressIn={handleTimer} onPressOut={handleBeginSession}>
+          <Animated.View style={styles.timer}>
+            <Animated.Text style={[styles.instruction, { fontSize: animatedFontSize }]}>
+              {instructionText[instructionTextIndex].instruction}
+            </Animated.Text>
+          </Animated.View>
+        </TouchableOpacity>
+        <Animated.View style={styles.ripple} />
+      </View>
     </View>
   );
 };
+
+
+// instructionText[instructionTextIndex].fontSize
