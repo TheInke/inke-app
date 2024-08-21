@@ -18,6 +18,8 @@ const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    // Temporary auto-login:
+
     const handleLogin = async () => {
         const data = {
             "username":username,

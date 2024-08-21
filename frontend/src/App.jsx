@@ -13,6 +13,7 @@ import ProfilePageScreen from './screens/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import CheckpointsScreen from './screens/CheckpointsScreen';
 import CreatePostScreen from './screens/CreatePostScreen';
+import AccountSettingsScreen from './screens/AccountSettingsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -84,6 +85,7 @@ const MainTab = () => (
                 tabBarLabel: 'Profile',
             }}
         />
+        <Tab.Screen name="Account Settings" component={AccountSettingsScreen} />
     </Tab.Navigator>
 );
 
@@ -112,17 +114,18 @@ const MainStack = () => (
 
 const App = () => (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName="Auth">
-            <Stack.Screen
-                name="Auth"
-                component={AuthStack}
-                options={{ headerShown: false }}
-            />
+        <Stack.Navigator initialRouteName="Main">
             <Stack.Screen
                 name="Main"
                 component={MainStack}
                 options={{ headerShown: false }}
             />
+            <Stack.Screen
+                name="Auth"
+                component={AuthStack}
+                options={{ headerShown: false }}
+            />
+            
         </Stack.Navigator>
     </NavigationContainer>
 );
