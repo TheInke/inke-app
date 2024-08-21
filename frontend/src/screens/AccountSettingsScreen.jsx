@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
 import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,7 +8,25 @@ const AccountSettingsScreen = () => {
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
 
-    //const userProfilePicture = await axios.get('')
+    const getUserId = async () => {
+        try {
+          const userId = await AsyncStorage.getItem('USER_ID');
+          if (userId !== null) {
+            // Successfully retrieved the user ID
+            return userId;
+          } else {
+            // Handle the case when there is no user ID stored
+            console.log('No user ID found');
+            return null;
+          }
+        } catch (error) {
+          console.error('Error retrieving user ID:', error);
+          return null;
+        }
+      };
+    
+    console.log(getUserId);
+    //const userProfilePicture = await axios.get('http://127.0.0.1:8000/api/users/{storeUserId}')
     
     // pfp_image
 

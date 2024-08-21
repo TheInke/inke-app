@@ -114,15 +114,15 @@ const MainStack = () => (
 
 const App = () => (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen
-                name="Main"
-                component={MainStack}
-                options={{ headerShown: false }}
-            />
+        <Stack.Navigator initialRouteName="Auth">
             <Stack.Screen
                 name="Auth"
                 component={AuthStack}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Main"
+                component={MainStack}
                 options={{ headerShown: false }}
             />
             

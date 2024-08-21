@@ -18,8 +18,6 @@ const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    // Temporary auto-login:
-
     const handleLogin = async () => {
         const data = {
             "username":username,
@@ -29,10 +27,12 @@ const LoginScreen = ({ navigation }) => {
             // Post username and password to token endpoint to receive ACCESS and REFRESH
             const response = await axios.post('http://localhost:8000/api/token/', data)
             
-            const { access, refresh } = response.data;
+            const { access, refresh, user_id} = response.data;
+            console.log(user_id);
 
             await AsyncStorage.setItem('ACCESS_TOKEN', access);
             await AsyncStorage.setItem('REFRESH_TOKEN', refresh);
+            await AsyncStorage.setItem('USER_ID', user_id);
             console.log('LOGIN SUCCESS | ln16');
 
             // Navigate to the main screen or perform other actions
