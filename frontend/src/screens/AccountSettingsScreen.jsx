@@ -1,47 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React from "react";
+import { React, useEffect, useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
 import Icon from 'react-native-vector-icons/Feather';
 import ClickableOption from "../components/ClickableOption";
+import axios from "axios";
+import { useFetchUserField } from "../fetchUserField";
 
 const AccountSettingsScreen = () => {
 
-    const getUserId = async () => {
-        try {
-            const userId = await AsyncStorage.getItem('USER_ID');
-            return userIdString ? JSON.parse(userIdString) : null;
-        } catch (error) {
-            console.error('Error retrieving user ID:', error);
-            return null;
-        }
-    };
-    
-    const a = async () => 
+    // Using utility function to fetch current user
+    const userImageURL = fetchUserField('pfp_image');
+
+    if (userImageURL === false)
     {
-        const b = await AsyncStorage.getItem('USER_ID');
-        return b;
-    };
-    console.log(JSON.parse(a));
+        console.log('Error fetching user: either user or field does not exist');
+    }
+    // console.log(userImageURL);
 
-    //console.log(getUserId);
-    //console.log(userIdString);
-
-    const userImageURL = async (userIdString) => {
-        try {
-            // Perform the GET request
-            const response = await axios.get(`http://127.0.0.1:8000/api/users/${userIdString}`);
-
-            // Extract the pfp_image from the response
-            const pfpImage = response.data.pfp_image; // Adjust the key based on the actual response structure
-
-            return pfpImage; // Return the profile picture URL or data
-        } catch (error) {
-            console.error('Error fetching user profile picture:', error);
-            return null; // Handle error case (e.g., return null or a default image)
-        }
-    };
-
-    // pfp_image
 
     // Styles:
 

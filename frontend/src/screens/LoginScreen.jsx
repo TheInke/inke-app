@@ -28,11 +28,12 @@ const LoginScreen = ({ navigation }) => {
             const response = await axios.post('http://localhost:8000/api/token/', data)
             
             const { access, refresh, user_id} = response.data;
-            console.log(user_id);
+            console.log('user_id variable', user_id);
 
             await AsyncStorage.setItem('ACCESS_TOKEN', access);
             await AsyncStorage.setItem('REFRESH_TOKEN', refresh);
             await AsyncStorage.setItem('USER_ID', JSON.stringify(user_id));
+            
             console.log('LOGIN SUCCESS | ln16');
 
             // Navigate to the main screen or perform other actions
