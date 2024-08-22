@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-export const useFetchUserField = (field) => {
+export const fetchUserField = (field) => {
   const [data, setData] = useState(null); // Holds the field data or `false`
   const [error, setError] = useState(false); // Used to track if an error occurred
 

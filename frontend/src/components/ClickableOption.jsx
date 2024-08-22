@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
   <View style={styles.clickableOptionShadowBox}>

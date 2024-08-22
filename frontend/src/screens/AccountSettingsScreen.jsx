@@ -1,19 +1,23 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { React, useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image, ImageBackground } from "react-native";
 import Icon from 'react-native-vector-icons/Feather';
 import ClickableOption from "../components/ClickableOption";
 import axios from "axios";
-import { useFetchUserField } from "../fetchUserField";
+import { fetchUserField } from "../fetchUserField";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const AccountSettingsScreen = () => {
 
     // Using utility function to fetch current user
     const userImageURL = fetchUserField('pfp_image');
+    const userFirstName = fetchUserField('first_name');
+    console.log(userFirstName)
 
-    if (userImageURL === false)
-    {
-        console.log('Error fetching user: either user or field does not exist');
+    if (userImageURL === false) {
+        console.log('Error fetching user profile image: either user or field does not exist');
+    }
+    if (userFirstName === false) {
+        console.log('Error fetching user first name: either user or field does not exist');
     }
     // console.log(userImageURL);
 
@@ -31,7 +35,7 @@ const AccountSettingsScreen = () => {
         profileCardShadowBox:
         {
             shadowColor: 'lightgray',
-            shadowOffset: { width: -0.5, height: 6 },
+            shadowOffset: { width: -4, height: 6 },
             shadowOpacity: 0.7,
             shadowRadius: 2,
             elevation: 5
@@ -51,7 +55,7 @@ const AccountSettingsScreen = () => {
         },
         profileCard:
         {
-            backgroundColor: 'white',
+            backgroundColor: 'rgba(176, 219, 209, 0.6)',
             flexDirection: 'row',
             height: 130,
             width: '90%',
@@ -59,6 +63,18 @@ const AccountSettingsScreen = () => {
 
             alignItems: 'center',
             padding: 10,
+
+            borderColor: 'rgba(0, 0, 0, 0.4)',
+            borderWidth: 0.2,
+            borderRadius: 7,
+        },
+        gradient:
+        {
+            position: 'absolute',
+            flexDirection: 'row',
+            height: 130,
+            width: '90%',
+            alignSelf: 'center',
 
             borderColor: 'rgba(0, 0, 0, 0.4)',
             borderWidth: 0.2,
@@ -92,22 +108,33 @@ const AccountSettingsScreen = () => {
 
     });
 
+
     return (
         <View style={styles.container}>
+            
+            {/* Back button */}
             <TouchableOpacity onPress={() => { console.log('back button pressed') }}>
                 <Icon name="chevron-left" size={30} style={styles.backButton}></Icon>
             </TouchableOpacity>
+            
+            {/* Shadow effect for profile card */}
             <View style={styles.profileCardShadowBox}>
-                <View style={styles.profileCard}>
+                {/* gradient background matching SafeSpace theme */}
+                <LinearGradient 
+                    colors={['#FFFFFF', 'rgba(176, 219, 209, 0.8)',]} 
+                    start={[0, 0]} end={[1, 1]}     
+                    style={styles.profileCard}>
                     <Image
-                        source={{ uri: userImageURL }} // Use the fetched image URL
+                        source={{ uri: userImageURL }}
                         style={styles.profileImage}
                     />
                     <View>
-                        <Text style={styles.profileCardUsername}>Helena</Text>
+                        <Text style={styles.profileCardUsername}>Welcome, {userFirstName}</Text>
                     </View>
-                </View>
+                </LinearGradient>
             </View>
+
+            {/* Divider line */}
             <View style={styles.divider}></View>
 
             {/* List of settings: */}
