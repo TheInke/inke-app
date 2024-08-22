@@ -32,7 +32,7 @@ const LoginScreen = ({ navigation }) => {
 
             await AsyncStorage.setItem('ACCESS_TOKEN', access);
             await AsyncStorage.setItem('REFRESH_TOKEN', refresh);
-            await AsyncStorage.setItem('USER_ID', user_id);
+            await AsyncStorage.setItem('USER_ID', JSON.stringify(user_id));
             console.log('LOGIN SUCCESS | ln16');
 
             // Navigate to the main screen or perform other actions

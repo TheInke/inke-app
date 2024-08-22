@@ -1,33 +1,46 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React from "react";
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
 import Icon from 'react-native-vector-icons/Feather';
-import ClickableOption  from "../components/ClickableOption";
+import ClickableOption from "../components/ClickableOption";
 
 const AccountSettingsScreen = () => {
-    const screenWidth = Dimensions.get('window').width;
-    const screenHeight = Dimensions.get('window').height;
 
     const getUserId = async () => {
         try {
-          const userId = await AsyncStorage.getItem('USER_ID');
-          if (userId !== null) {
-            // Successfully retrieved the user ID
-            return userId;
-          } else {
-            // Handle the case when there is no user ID stored
-            console.log('No user ID found');
-            return null;
-          }
+            const userId = await AsyncStorage.getItem('USER_ID');
+            return userIdString ? JSON.parse(userIdString) : null;
         } catch (error) {
-          console.error('Error retrieving user ID:', error);
-          return null;
+            console.error('Error retrieving user ID:', error);
+            return null;
         }
-      };
+    };
     
-    console.log(getUserId);
-    //const userProfilePicture = await axios.get('http://127.0.0.1:8000/api/users/{storeUserId}')
-    
+    const a = async () => 
+    {
+        const b = await AsyncStorage.getItem('USER_ID');
+        return b;
+    };
+    console.log(JSON.parse(a));
+
+    //console.log(getUserId);
+    //console.log(userIdString);
+
+    const userImageURL = async (userIdString) => {
+        try {
+            // Perform the GET request
+            const response = await axios.get(`http://127.0.0.1:8000/api/users/${userIdString}`);
+
+            // Extract the pfp_image from the response
+            const pfpImage = response.data.pfp_image; // Adjust the key based on the actual response structure
+
+            return pfpImage; // Return the profile picture URL or data
+        } catch (error) {
+            console.error('Error fetching user profile picture:', error);
+            return null; // Handle error case (e.g., return null or a default image)
+        }
+    };
+
     // pfp_image
 
     // Styles:
@@ -106,13 +119,15 @@ const AccountSettingsScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => {console.log('back button pressed')}}>
+            <TouchableOpacity onPress={() => { console.log('back button pressed') }}>
                 <Icon name="chevron-left" size={30} style={styles.backButton}></Icon>
             </TouchableOpacity>
             <View style={styles.profileCardShadowBox}>
                 <View style={styles.profileCard}>
-                    <View style={styles.profileImage}>
-                    </View>
+                    <Image
+                        source={{ uri: userImageURL }} // Use the fetched image URL
+                        style={styles.profileImage}
+                    />
                     <View>
                         <Text style={styles.profileCardUsername}>Helena</Text>
                     </View>
@@ -122,12 +137,12 @@ const AccountSettingsScreen = () => {
 
             {/* List of settings: */}
 
-            <ClickableOption iconName="edit" text="Edit Profile" onPress={() => {console.log('Edit Profile')}} /> 
-            <ClickableOption iconName="bell" text="Notifications" onPress={() => {console.log('Notifications')}} /> 
-            <ClickableOption iconName="lock" text="Privacy and Security" onPress={() => {console.log('Privacy')}} /> 
-            <ClickableOption iconName="help-circle" text="Help and Support" onPress={() => {console.log('Help and Support')}} /> 
-            <ClickableOption iconName="edit" text="About SafeSpace" onPress={() => {console.log('button pressed')}} /> 
-            <ClickableOption iconName="log-out" text="Logout" textColor='#D60000' iconColor='#D60000' onPress={() => {console.log('button pressed')}} /> 
+            <ClickableOption iconName="edit" text="Edit Profile" onPress={() => { console.log('Edit Profile') }} />
+            <ClickableOption iconName="bell" text="Notifications" onPress={() => { console.log('Notifications') }} />
+            <ClickableOption iconName="lock" text="Privacy and Security" onPress={() => { console.log('Privacy') }} />
+            <ClickableOption iconName="help-circle" text="Help and Support" onPress={() => { console.log('Help and Support') }} />
+            <ClickableOption iconName="edit" text="About SafeSpace" onPress={() => { console.log('button pressed') }} />
+            <ClickableOption iconName="log-out" text="Logout" textColor='#D60000' iconColor='#D60000' onPress={() => { console.log('button pressed') }} />
 
         </View>
     );
