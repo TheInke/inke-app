@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet, Image, ScrollView, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { fetchUserData, updateUserProfile } from '../services/api'; // Import fetchUserData and updateUserProfile functions from api.js
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         borderColor: 'lightgray',
         borderWidth: 2,
     },
-    editProfileLink: 
+    editProfileLink:
     {
         color: '#6CBCC0',
         fontWeight: '700',
@@ -62,9 +62,57 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderBlockColor: 'black'
     },
+    editFieldsContainer:
+    {
+        height: 500,
+        width: '90%',
+        alignSelf: 'center',
+        alignItems: 'center',
+
+        borderColor: 'red',
+        borderWidth: 2,
+    },
+    editField:
+    {
+        height: 40,
+        width: '100%',
+        flexDirection: 'row',
+
+        borderColor: 'blue',
+        borderWidth: 2,
+    },
+
+    // Temporary modal testing:
+
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'flex-end', // Position the modal at the bottom
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent
+
+    },
+    modalContent: {
+        width: '100%', // Full width
+        padding: 20,
+        backgroundColor: 'white',
+        borderTopLeftRadius: 20, // Rounded top corners
+        borderTopRightRadius: 20,
+        alignItems: 'center',
+
+        borderColor: 'black',
+        borderWidth: 1,
+        borderRadius: 3,
+    },
+    closeModalButton: {
+        marginTop: 20,
+        color: '#6CBCC0',
+        fontWeight: '700',
+    },
 })
 
 const EditProfileScreen = () => {
+
+    const [modalVisible, setModalVisible] = useState(false); // State to manage modal visibility
 
     const userImageURL = fetchUserField('pfp_image');
     if (userImageURL === false) {
@@ -80,10 +128,13 @@ const EditProfileScreen = () => {
                     source={{ uri: userImageURL }}
                     style={styles.profileImage}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { setModalVisible(true) }}>
                     <Text style={styles.editProfileLink}>Edit profile image</Text>
                 </TouchableOpacity>
             </View>
+
+            
+
         </ScrollView>
     );
 };
