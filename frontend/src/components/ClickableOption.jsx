@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
   <View style={styles.clickableOptionShadowBox}>
     <TouchableOpacity style={styles.clickableOption} onPress={onPress} activeOpacity={0.7}>
-      <Icon name={iconName} size={20} color={iconColor} />
+      <Icon style={styles.leftIcon}name={iconName} size={20} color={iconColor} />
       <Text style={[styles.clickableOptionName, { color: textColor }]}>{text}</Text>
       <View style={styles.rightIconContainer}>
         <Icon name="chevron-right" size={20} color="rgba(20, 20, 20, 1)" />
@@ -16,35 +16,27 @@ const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
 );
 
 ClickableOption.defaultProps = {
-  textColor: 'black', // Replace 'default-icon' with your preferred default icon name
   iconColor: "rgba(20, 20, 20, 1)",
 };
 
 const styles = StyleSheet.create({
-  /*clickableOption: {
+  
+  clickableOption: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 50,
     width: '90%',
     alignSelf: 'center',
 
-    marginTop: 15,
+    marginTop: 20,
     padding: 10,
-    backgroundColor: 'white',
-    borderColor: 'rgba(0, 0, 0, 0.3)',
-    borderWidth: 0.2,
-    borderRadius: 7,
-  },
-  */
-  clickableOption:
-  {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     backgroundColor: '#f0f0f0',
-    borderRadius: 20,
-    marginRight: 10, // Add spacing between buttons
-    alignItems: 'center', // Center the text
+    //borderColor: 'rgba(0, 0, 0, 0.3)',
+    borderColor: '#f0f0f0',
+    borderWidth: 0.2,
+    borderRadius: 25,
   },
+  
   clickableOptionShadowBox: {
     shadowColor: 'lightgray',
     shadowOffset: { width: -0.5, height: 3 },
@@ -60,6 +52,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     flex: 1,
+  },
+  leftIcon: {
+    paddingLeft: 8,
   },
 });
 
