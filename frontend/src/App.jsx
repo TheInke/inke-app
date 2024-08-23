@@ -14,6 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CheckpointsScreen from './screens/CheckpointsScreen';
 import CreatePostScreen from './screens/CreatePostScreen';
 import AccountSettingsScreen from './screens/AccountSettingsScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -86,6 +87,7 @@ const MainTab = () => (
             }}
         />
         <Tab.Screen name="Account Settings" component={AccountSettingsScreen} />
+        <Tab.Screen name="Edit Profile" component={EditProfileScreen} />
     </Tab.Navigator>
 );
 
