@@ -21,7 +21,7 @@ ClickableOption.defaultProps = {
 };
 
 const styles = StyleSheet.create({
-  clickableOption: {
+  /*clickableOption: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 50,
@@ -34,6 +34,16 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(0, 0, 0, 0.3)',
     borderWidth: 0.2,
     borderRadius: 7,
+  },
+  */
+  clickableOption:
+  {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 20,
+    marginRight: 10, // Add spacing between buttons
+    alignItems: 'center', // Center the text
   },
   clickableOptionShadowBox: {
     shadowColor: 'lightgray',
