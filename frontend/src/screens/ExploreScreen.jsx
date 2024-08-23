@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, FlatList, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { StatusBar, View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, FlatList, TouchableWithoutFeedback, Dimensions, TouchableOpacity} from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MasonryList from 'react-native-masonry-list';
+import { Ionicons, Entypo, MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 // Mock data for posts
 const mockPosts = [
@@ -178,6 +181,8 @@ const mockPosts = [
 
 
 const ExploreScreen = () => {
+    const navigation = useNavigation();
+    const isFocused = useIsFocused();
     const [posts, setPosts] = useState(mockPosts);
     const [showCommentsModal, setShowCommentsModal] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
@@ -188,10 +193,14 @@ const ExploreScreen = () => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const lastPressRef = useRef(0);
     const gestureY = useRef(new Animated.Value(0)).current;
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        setPosts(mockPosts);
-    }, []);
+        if (isFocused) {
+            // This runs when the screen comes into focus
+            setPosts(mockPosts);
+        }
+    }, [isFocused]);
 
     const debounce = (onSingle, onDouble) => {
         if (lastPressRef.current) {
@@ -217,7 +226,6 @@ const ExploreScreen = () => {
         ]).start();
     };
 
-    // function to handle like button press
     const handleLikePress = (postId) => {
         const updatedPosts = posts.map((post) =>
             post.id === postId ? { ...post, isLiked: !post.isLiked } : post
@@ -278,8 +286,35 @@ const ExploreScreen = () => {
         loadMorePosts();
     };
 
+    // Reload the screen if already on ExploreScreen
+    const reloadScreen = () => {
+        if (isFocused) {
+            navigation.navigate('ExploreScreen', { reload: true });
+        }
+    };
+
+    const handleSearchBarPress = () => {
+        // Navigate to SearchScreen without focusing on the TextInput
+        navigation.navigate('SearchScreen');
+    };
+
+
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.searchBar}>
+            <TouchableOpacity onPress={handleSearchBarPress} style={styles.searchBar}>
+                <Ionicons name="search" size={24} color="#f4f4f4" style={styles.searchIcon} />
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search"
+                    placeholderTextColor="#D3D3D3"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    editable={false}
+                />
+                </TouchableOpacity>
+            </View>
+            
             <MasonryList
                 images={posts.map(post => ({
                     ...post,
@@ -402,7 +437,24 @@ const ExploreScreen = () => {
                     </View>
                 </PanGestureHandler>
             </Modal>
-        </View>
+            <View style={styles.bottomNav}>
+                <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('HomeScreen')}>
+                    <Entypo name="grid" size={24} style={styles.navIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navItem} onPress={reloadScreen}>
+                    <Ionicons name="search" size={24} style={styles.navIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('AnotherScreen')}>
+                    <Ionicons name="add-circle" size={24} style={styles.navIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('GroupsScreen')}>
+                    <MaterialIcons name="groups" size={24} style={styles.navIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('ProfileScreen')}>
+                    <FontAwesome name="user-circle" size={24} style={styles.navIcon} />
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -411,11 +463,31 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#000000',
+        paddingTop: 0,
     },
    
     postContainer: { margin: 1,
         backgroundColor: '#000'
      },
+     searchBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#333',
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: '#444',
+        
+    },
+    searchInput: {
+        flex: 1,
+        color: '#fff',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+    searchIcon: {
+        marginRight: 10,
+    },
     
     
     modalContainer: {
@@ -508,7 +580,25 @@ const styles = StyleSheet.create({
     },
     posterProfilePic: { width: 40, height: 40, borderRadius: 20 },
     posterUsername: { color: '#fff', marginLeft: 10, fontSize: 16 },
+
+    bottomNav: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        height: 60,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        backgroundColor: '#fff',  
+    },
+    navItem: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    navIcon: {
+        color: '#000', 
+    },
 });
+
 
 
 export default ExploreScreen;
