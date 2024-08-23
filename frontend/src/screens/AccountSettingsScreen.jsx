@@ -56,7 +56,6 @@ const AccountSettingsScreen = () => {
         },
         profileCard:
         {
-            backgroundColor: 'rgba(176, 219, 209, 0.6)',
             flexDirection: 'row',
             height: 130,
             width: '90%',
@@ -87,7 +86,7 @@ const AccountSettingsScreen = () => {
         {
             height: 100,
             width: 100,
-            borderRadius: 55,
+            borderRadius: 50,
             borderColor: 'lightgray',
             borderWidth: 2,
         },
