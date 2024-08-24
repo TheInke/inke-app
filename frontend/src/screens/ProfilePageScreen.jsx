@@ -96,7 +96,7 @@ export default function ProfilePage() {
       </ScrollView>
 
       {/* Bottom Navigation Bar */}
-      <View style={styles.bottomNavBar}>
+      {/* <View style={styles.bottomNavBar}>
         <TouchableOpacity>
           <Ionicons name="search" size={30} color="black" />
         </TouchableOpacity>
@@ -106,7 +106,7 @@ export default function ProfilePage() {
         <TouchableOpacity>
           <MaterialIcons name="person" size={30} color="black" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }

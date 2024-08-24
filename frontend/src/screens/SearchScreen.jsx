@@ -649,7 +649,7 @@ const SearchScreen = ({ navigation }) => {
             <View style={styles.articleContent}>
               <Text style={styles.articleTitle}>“The link between chronic diseases and mental health”</Text>
               <TouchableOpacity>
-                <Text style={styles.viewMore}>view more ></Text>
+                <Text style={styles.viewMore}>view more </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -668,7 +668,7 @@ const SearchScreen = ({ navigation }) => {
             </View>
           </View>
           <TouchableOpacity>
-            <Text style={styles.viewMore}>view more ></Text>
+            <Text style={styles.viewMore}>view more </Text>
           </TouchableOpacity>
         </View>
 
@@ -683,12 +683,12 @@ const SearchScreen = ({ navigation }) => {
             <Text style={styles.podcastTitle}>The Mental Illness Happy Hour with Paul Gilmartin</Text>
           </View>
           <TouchableOpacity>
-            <Text style={styles.viewMore}>view more ></Text>
+            <Text style={styles.viewMore}>view more </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('HomeScreen')}>
           <Entypo name="grid" size={24} color="black" />
         </TouchableOpacity>
@@ -704,7 +704,7 @@ const SearchScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.navItem} onPress={() => navigation.navigate('ProfileScreen')}>
           <FontAwesome name="user-circle" size={24} color="black" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 };

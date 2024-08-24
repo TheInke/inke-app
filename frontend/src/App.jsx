@@ -1,9 +1,9 @@
 import React from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TouchableOpacity, View } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import HomepageScreen from './screens/HomepageScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -11,8 +11,8 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import SearchScreen from './screens/SearchScreen';
 import ProfilePageScreen from './screens/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-import CheckpointsScreen from './screens/CheckpointsScreen';
 import CreatePostScreen from './screens/CreatePostScreen';
+import ConnectionScreen from './screens/ConnectionScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,51 +32,72 @@ const AuthStack = () => (
     </Stack.Navigator>
 );
 
-const CreatePostButton = () => {
-    const navigation = useNavigation();
+const CreatePostButton = ({ navigation }) => (
+    <TouchableOpacity
+        style={{
+            width: 60,
+            height: 60,
+            alignItems: 'center',
+            marginBottom: 10,
+        }}
+        onPress={() => navigation.navigate('CreatePost')}
+    >
+        <Ionicons name="create" size={30} color="black" style={styles.navItem} />
+    </TouchableOpacity>
+);
 
-    return (
-        <TouchableOpacity
-            style={{
-                width: 60,
-                height: 60,
-                backgroundColor: '#000',
-                borderRadius: 30,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginBottom: 10,
-            }}
-            onPress={() => navigation.navigate('CreatePost')}
-        >
-            <Icon name="add" size={35} color="white" />
-        </TouchableOpacity>
-    );
-};
+const EmptyScreen = () => <View />; // A placeholder component
 
-const MainTab = () => (
+const MainTab = ({ navigation }) => (
     <Tab.Navigator
         screenOptions={({ route }) => ({
-            tabBarIcon: ({ color, size }) => {
+            tabBarIcon: ({ focused, size }) => {
                 let iconName;
+                let iconColor = focused ? 'grey' : 'black'; // Black by default, grey when focused
 
                 if (route.name === 'Home') {
-                    iconName = 'home';
+                    iconName = 'grid';
+                } else if (route.name === 'Search') {
+                    iconName = 'search';
                 } else if (route.name === 'Profile') {
                     iconName = 'person';
-                } else if (route.name === 'CreatePostButton') {
-                    return <CreatePostButton />;
+                } else if (route.name === 'Connection') {
+                    iconName = 'people';
                 }
 
-                return <Icon name={iconName} size={size} color={color} />;
+                return <Ionicons name={iconName} size={size} color={iconColor} style={styles.navItem} />;
             },
             tabBarShowLabel: false, // Hide the labels under icons
         })}
     >
-        <Tab.Screen name="Home" component={HomepageScreen} />
+        <Tab.Screen 
+            name="Home" 
+            component={HomepageScreen} 
+            options={{
+                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Home</Text>, // Custom header title
+                headerTitleAlign: 'left', // Align title to the left
+                headerLeft: null, // No left-aligned icon
+                headerRight: () => (
+                    <View style={{ flexDirection: 'row', marginRight: 10 }}>
+                        <TouchableOpacity onPress={() => {/* Add your message screen navigation here */}} style={{ marginRight: 10 }}>
+                            <Ionicons name="chatbubble-ellipses" size={25} color="black" style={styles.navItem} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {/* Add your side menu toggle function here */}}>
+                            <Ionicons name="menu" size={25} color="black" style={styles.navItem} />
+                        </TouchableOpacity>
+                    </View>
+                ),
+            }} 
+        />
+        <Tab.Screen name="Search" component={SearchScreen} />
         <Tab.Screen
             name="CreatePostButton"
-            component={() => null} // Dummy component to handle the icon only
+            component={EmptyScreen} // Using a named component instead of an inline function
+            options={{
+                tabBarButton: (props) => <CreatePostButton {...props} navigation={navigation} />
+            }}
         />
+        <Tab.Screen name="Connection" component={ConnectionScreen} />
         <Tab.Screen
             name="Profile"
             component={ProfilePageScreen}
@@ -101,7 +122,7 @@ const MainStack = () => (
                 headerShown: true, // Show the header for CreatePostScreen
                 headerLeft: ({ onPress }) => (
                     <TouchableOpacity onPress={onPress}>
-                        <Icon name="arrow-back" size={25} style={{ marginLeft: 15, }} />
+                        <Ionicons name="arrow-back" size={25} style={{ marginLeft: 15 }} />
                     </TouchableOpacity>
                 ),
                 headerTitle: 'Create Post', // Title for CreatePostScreen
@@ -126,5 +147,16 @@ const App = () => (
         </Stack.Navigator>
     </NavigationContainer>
 );
+
+const styles = StyleSheet.create({
+    navItem: {
+        padding: 10,
+    },
+    headerTitle: {
+        fontFamily: 'cursive', // Cursive font style
+        fontSize: 20, // Adjust the font size as needed
+        marginLeft: 15, // Adjust the margin to align with the left side
+    },
+});
 
 export default App;
