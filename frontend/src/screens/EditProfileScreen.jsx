@@ -7,82 +7,7 @@ import { fetchUserField } from "../fetchUserField";
 import Icon from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-
-const styles = StyleSheet.create({
-    container:
-    {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'white',
-
-        //borderColor: 'red',
-        //borderWidth: 2,
-    },
-    backButton:
-    {
-        height: 'fit-content',
-        width: '90%',
-        alignSelf: 'center',
-        marginTop: 10,
-        marginBottom: 5,
-
-        color: 'rgba(0, 0, 0, 0.8)'
-
-        //borderColor: 'red',
-        //borderWidth: 3,
-    },
-    editProfileImageContainer:
-    {
-        backgroundColor: 'white',
-        height: 140,
-        width: '90%',
-        alignSelf: 'center',
-
-        alignItems: 'center',
-        padding: 10,
-        marginBottom: 10,
-
-        borderColor: 'black',
-        borderWidth: 1,
-    },
-    profileImage:
-    {
-        height: 80,
-        width: 80,
-        borderRadius: 40,
-        borderColor: 'lightgray',
-        borderWidth: 2,
-    },
-    editProfileLink:
-    {
-        color: '#6CBCC0',
-        fontWeight: '700',
-        fontSize: 17,
-        marginTop: 10,
-        borderBlockColor: 'black'
-    },
-    editFieldsContainer:
-    {
-        height: 500,
-        width: '90%',
-        alignSelf: 'center',
-        alignItems: 'center',
-
-        borderColor: 'red',
-        borderWidth: 2,
-    },
-    editField:
-    {
-        height: 40,
-        width: '100%',
-        flexDirection: 'row',
-
-        borderColor: 'blue',
-        borderWidth: 2,
-    },
-
-    // Temporary modal testing:
+ /* Temporary modal testing:
 
     modalContainer: {
         flex: 1,
@@ -108,6 +33,83 @@ const styles = StyleSheet.create({
         color: '#6CBCC0',
         fontWeight: '700',
     },
+    */
+
+
+const styles = StyleSheet.create({
+    container:
+    {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'white',
+
+        //borderColor: 'red',
+        //borderWidth: 2,
+    },
+    editProfileImageContainer:
+    {
+        backgroundColor: 'white',
+        height: 140,
+        width: '90%',
+        alignSelf: 'center',
+
+        alignItems: 'center',
+        padding: 10,
+        marginBottom: 10,
+        marginTop: 10,
+
+        borderColor: 'black',
+        borderWidth: 1,
+    },
+    profileImage:
+    {
+        height: 80,
+        width: 80,
+        borderRadius: 40,
+        borderColor: 'lightgray',
+        borderWidth: 2,
+    },
+    editProfileLink:
+    {
+        color: '#6CBCC0',
+        fontWeight: '700',
+        fontSize: 17,
+        marginTop: 10,
+        borderBlockColor: 'black'
+    },
+    bottomContainer:
+    {
+        height: 500,
+        width: '90%',
+        alignSelf: 'center',
+        alignItems: 'center',
+
+        borderColor: 'red',
+        borderWidth: 2,
+    },
+    editFieldContainer:
+    {
+        height: 40,
+        width: '100%',
+        flexDirection: 'row',
+        marginTop: 15,
+        alignItems: 'center',
+
+        borderColor: 'blue',
+        borderWidth: 2,
+    },
+    fieldName: 
+    {
+        width: 'fit-content',
+        height: 'fit-content',
+        fontSize: 17,
+        fontWeight: 'bold',
+
+        borderColor: 'green',
+        borderWidth: 1,
+    },
+
 })
 
 const EditProfileScreen = () => {
@@ -122,7 +124,6 @@ const EditProfileScreen = () => {
 
     return (
         <ScrollView style={styles.container}>
-            <Icon name='chevron-left' size={30} style={styles.backButton}></Icon>
             <View style={styles.editProfileImageContainer}>
                 <Image
                     source={{ uri: userImageURL }}
@@ -130,6 +131,12 @@ const EditProfileScreen = () => {
                 />
                 <TouchableOpacity onPress={() => { setModalVisible(true) }}>
                     <Text style={styles.editProfileLink}>Edit profile image</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.bottomContainer}>
+                <TouchableOpacity activeOpacity={0.5} style={styles.editFieldContainer}>
+                    <Text style={styles.fieldName}>Name</Text>
                 </TouchableOpacity>
             </View>
 
