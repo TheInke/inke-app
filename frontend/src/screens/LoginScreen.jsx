@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ImageBackground} from 'react-native';
 import { login } from '../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN } from '../constants';
@@ -13,6 +13,8 @@ import axios from 'axios';
 
 // Correctly import the image from the local assets folder
 import inkeLogo from '../assets/images/inke_logo.png';
+import SafeSpaceLogo from '../assets/images/SafeSpace_logo.jpg';
+import gradient from '../assets/images/gradient.png';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
@@ -45,22 +47,22 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={inkeLogo} style={styles.logo} />
-            <Text style={styles.title}>Inke</Text>
+            <Image source={SafeSpaceLogo} style={styles.logo} />
+            <Text style={styles.title}>SafeSpace</Text>
 
             <Text style={styles.label}>LOGIN</Text>
 
             <TextInput
                 style={styles.input}
                 placeholder="Username"
-                placeholderTextColor="#d3d3d3"
+                placeholderTextColor="white"
                 value={username}
                 onChangeText={setUsername}
             />
             <TextInput
                 style={styles.input}
                 placeholder="Password"
-                placeholderTextColor="#d3d3d3"
+                placeholderTextColor="white"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -100,13 +102,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#000',    //#000  og: #fff
+        backgroundColor: 'rgba(70, 188, 192, 1)'
     },
     logo: {
-        width: 100, // Make the logo larger
-        height: 150, // Make the logo larger
-        borderRadius: 75, // Make the logo circular
-        marginBottom: -15,
+        width: 120, // Make the logo larger
+        height: 120, // Make the logo larger
+        borderRadius: 60, // Make the logo circular
+        marginBottom: 8,
     },
     title: {
         fontSize: 50,
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 40,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: 'white',
         borderRadius: 5,
         padding: 10,
         marginBottom: 10,
@@ -165,8 +167,9 @@ const styles = StyleSheet.create({
         color: '#fff',   //added
     },
     link: {
-        color: '#007BFF',
-        marginTop: 10,
+        //color: '#007BFF',
+        color: 'white',
+        marginTop: 5,
         textDecorationLine: 'underline',
     },
 });
