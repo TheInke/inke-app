@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
+import { Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard, TouchableWithoutFeedback, Dimensions, Modal } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Video } from 'expo-av';
+
+import stayTuned from '../assets/images/staytuned.png';
 
 const { height, width } = Dimensions.get('window');
 
@@ -15,9 +16,7 @@ export default function CreatePostScreen() {
   const [permission, requestPermission] = useCameraPermissions(); // Camera permission state
   const [media, setMedia] = useState(null); // Media state (image or video)
   const [mediaType, setMediaType] = useState(null); // Media type (image or video)
-  const [selectedGroup, setSelectedGroup] = useState(''); // Selected group state
   const [description, setDescription] = useState(''); // Description state
-  const [uploadOption, setUploadOption] = useState('album'); // Upload option state (album/group)
   const [cameraRollOption, setCameraRollOption] = useState('camera'); // Default to camera
   const [fullScreen, setFullScreen] = useState(true); // Full screen state
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false); // Date picker visibility state
@@ -25,6 +24,8 @@ export default function CreatePostScreen() {
   const [isSchedule, setIsSchedule] = useState(false); // Schedule post state
   const [is24hPost, setIs24hPost] = useState(false); // 24h post state
   const cameraRef = useRef(null); // Reference to camera
+  const [modalVisible, setModalVisible] = useState(false); // State to manage modal visibility
+  const [modalType, setModalType] = useState(''); // Track which button triggered the modal
 
   // Set the maximum date to 7 days from the current date
   const maxDate = new Date();
@@ -105,11 +106,6 @@ export default function CreatePostScreen() {
     setFullScreen(true); // Go back to full screen camera
   };
 
-  // Handle upload option change (album/group)
-  const handleUploadOption = (option) => {
-    setUploadOption(option);
-  };
-
   // Show the date picker modal
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -127,31 +123,56 @@ export default function CreatePostScreen() {
     hideDatePicker();
   };
 
+  // Show the custom modal with the image
+  const showModal = (type) => {
+    setModalType(type);
+    setModalVisible(true);
+  };
+
+  // Handle "OK" button press in the modal
+  const handleOkPress = () => {
+    setModalVisible(false);
+    if (modalType === 'schedule') {
+      setIsSchedule(false); // Deselect the "Schedule Post" button
+    } else if (modalType === '24hPost') {
+      setIs24hPost(false); // Deselect the "24h Post" button
+    }
+  };
+
   // Toggle the schedule post option and reset the date if unchecked
   const toggleSchedule = () => {
     if (isSchedule) {
       setScheduleDate(null); // Reset the schedule date
     }
     setIsSchedule(!isSchedule);
+    showModal('schedule'); // Show the image in the modal
   };
 
   // Toggle the 24h post option
   const toggle24hPost = () => {
     setIs24hPost(!is24hPost);
-  };
-
-  // Calculate expiration date for 24h post
-  const calculateExpirationDate = () => {
-    const currentDate = new Date();
-    if (isSchedule && scheduleDate) {
-      return new Date(scheduleDate.getTime() + 24 * 60 * 60 * 1000);
-    }
-    return new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+    showModal('24hPost'); // Show the image in the modal
   };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={handleOkPress}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <ImageBackground source={stayTuned} style={styles.imageBackground} imageStyle={styles.imageBorderRadius}>
+                <TouchableOpacity style={styles.okButton} onPress={handleOkPress}>
+                  <Text style={styles.okButtonText}>OK</Text>
+                </TouchableOpacity>
+              </ImageBackground>
+            </View>
+          </View>
+        </Modal>
         {fullScreen ? (
           <>
             <View style={styles.fullScreenContainer}>
@@ -204,32 +225,6 @@ export default function CreatePostScreen() {
                   scrollEnabled // Enable scrolling within the text input
                 />
               </View>
-              <TouchableOpacity
-                style={[styles.uploadOptionButton, styles.leftAlignButton]}
-                onPress={() => handleUploadOption('album')}
-              >
-                <Text style={[styles.uploadOptionButtonText, uploadOption === 'album' && styles.uploadOptionButtonTextSelected]}>Post To Album</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.uploadOptionButton, styles.leftAlignButton]}
-                onPress={() => handleUploadOption('group')}
-              >
-                <Text style={[styles.uploadOptionButtonText, uploadOption === 'group' && styles.uploadOptionButtonTextSelected]}>Post To Group</Text>
-              </TouchableOpacity>
-              {uploadOption === 'group' && (
-                <View style={styles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedGroup}
-                    style={styles.groupPicker}
-                    onValueChange={(itemValue, itemIndex) => setSelectedGroup(itemValue)}
-                  >
-                    <Picker.Item label="Select Group" value="" />
-                    <Picker.Item label="Group 1" value="group1" />
-                    <Picker.Item label="Group 2" value="group2" />
-                    <Picker.Item label="Group 3" value="group3" />
-                  </Picker>
-                </View>
-              )}
             </View>
             <View style={styles.scheduleRow}>
               <View style={styles.scheduleContainer}>
@@ -256,12 +251,11 @@ export default function CreatePostScreen() {
                 <Text style={styles.scheduleText}>24h Post</Text>
               </View>
             </View>
-            {scheduleDate && (
-              <Text style={styles.scheduleDateText}>
-                {scheduleDate.toLocaleString()}
-              </Text>
-            )}
-            <DateTimePickerModal
+            {/* 
+            The DateTimePickerModal and the related state have been kept for future use 
+            but are commented out for now since the backend is not ready.
+            */}
+            {/* <DateTimePickerModal
               isVisible={isDatePickerVisible}
               mode="datetime"
               minimumDate={new Date()} // Minimum date set to current date
@@ -272,11 +266,14 @@ export default function CreatePostScreen() {
                 backgroundColor: 'black' // Set the background color to black
               }}
               textColor="white" // Set the text color to white
-            />
+            /> */}
             <TouchableOpacity style={styles.postButton} onPress={() => {
-              const expirationDate = calculateExpirationDate();
-              console.log('Post Expiration Date:', expirationDate);
-              // Add your post submission logic here
+              // Commented out for now, as backend is not ready.
+              // const expirationDate = calculateExpirationDate();
+              // if (expirationDate) {
+              //   console.log('Post Expiration Date:', expirationDate);
+              // }
+              console.log('Post submitted');
             }}>
               <Text style={styles.postButtonText}>{isSchedule ? 'Schedule' : 'Post'}</Text>
             </TouchableOpacity>
@@ -292,6 +289,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '90%',
+    height: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20, // Added border radius
+    overflow: 'hidden', // Ensures image and content respects border radius
+  },
+  imageBackground: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end', // Position the button at the bottom
+    alignItems: 'center', // Center the button horizontally
+  },
+  imageBorderRadius: {
+    borderRadius: 20, // Ensures the image respects the border radius
+  },
+  okButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: 'black',
+    borderRadius: 10,
+    marginBottom: 20, // Add some space from the bottom
+  },
+  okButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   fullScreenContainer: {
     width: '100%',
@@ -370,26 +402,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  uploadOptionButton: {
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 5,
-  },
-  leftAlignButton: {
-    alignItems: 'flex-start',
-  },
-  uploadOptionButtonText: {
-    color: 'gray',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  uploadOptionButtonTextSelected: {
-    color: 'black',
-    fontSize: 25,
-  },
-  pickerContainer: {
-    alignSelf: 'stretch',
-  },
   cancelButton: {
     backgroundColor: 'black',
     padding: 10,
@@ -422,10 +434,6 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     borderBottomWidth: 0,
-  },
-  groupPicker: {
-    height: 50,
-    width: '100%',
   },
   calendarButton: {
     alignSelf: 'center',
@@ -460,4 +468,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
