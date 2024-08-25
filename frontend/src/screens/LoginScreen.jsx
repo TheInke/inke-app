@@ -111,8 +111,8 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.wrapper}>
 
             <LinearGradient
-                colors={['#6CBCC0', '#65DCC0',]}
-                start={[0, 1]} end={[1, 1]}
+                colors={['#5dc8af', '#6CBCC0',]}
+                start={[0.5, 0]} end={[0.5, 1]}
                 style={styles.gradient}>
                     
                 <Image source={SafeSpaceLogo} style={styles.logo} />
