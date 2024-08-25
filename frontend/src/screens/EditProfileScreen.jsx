@@ -129,7 +129,7 @@ const EditProfileScreen = () => {
                     source={{ uri: userImageURL }}
                     style={styles.profileImage}
                 />
-                <TouchableOpacity onPress={() => { setModalVisible(true) }}>
+                <TouchableOpacity onPress={() => { console.log('edit profile image link pressed') }}>
                     <Text style={styles.editProfileLink}>Edit profile image</Text>
                 </TouchableOpacity>
             </View>

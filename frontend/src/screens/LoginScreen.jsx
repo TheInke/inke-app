@@ -13,6 +13,9 @@ const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const [loginError, setLoginError] = useState('');
+    const [errorMargin, setErrorMargin] = useState(0);
+
     /*
     const startValue = useRef(new Animated.Value(1)).current;
     const endValue = useRef(new Animated.Value(0)).current;
@@ -103,9 +106,13 @@ const LoginScreen = ({ navigation }) => {
             // Navigate to the main screen
             navigation.navigate('Main');
         } catch (error) {
-            console.error('Login failed:', error);
+            setLoginError('Username or password incorrect');
+            setErrorMargin(10);
         }
     };
+
+    /* */
+
 
     return (
         <View style={styles.wrapper}>
@@ -114,9 +121,10 @@ const LoginScreen = ({ navigation }) => {
                 colors={['#5dc8af', '#6CBCC0',]}
                 start={[0.5, 0]} end={[0.5, 1]}
                 style={styles.gradient}>
-                    
+
                 <Image source={SafeSpaceLogo} style={styles.logo} />
                 <Text style={styles.title}>SafeSpace</Text>
+                <Text style={styles.betaLabel}>Beta</Text>
 
                 <Text style={styles.label}>LOGIN</Text>
 
@@ -137,6 +145,9 @@ const LoginScreen = ({ navigation }) => {
                     secureTextEntry
                     selectionColor={'white'}
                 />
+                <Text style={[styles.errorMessage, { marginBottom: errorMargin }]}>
+                    {loginError}
+                </Text>
 
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                     <Text style={styles.loginButtonText}>Log In</Text>
@@ -188,14 +199,20 @@ const styles = StyleSheet.create({
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',
-        marginBottom: 20,
+    },
+    betaLabel:
+    {
+        color: '#fff',
+        fontSize: 25,
+        fontWeight: 'bold',
+        marginBottom: 10
     },
     label: {
         fontSize: 18,
         color: 'white',
         fontWeight: 'bold',
         alignSelf: 'flex-start',
-        marginBottom: 10,
+
     },
     input: {
         width: '100%',
@@ -204,8 +221,15 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderRadius: 5,
         padding: 10,
-        marginBottom: 10,
+        marginTop: 10,
         color: 'white',
+    },
+    errorMessage:
+    {
+        color: '#ff4747',
+        alignSelf: 'start',
+        marginTop: 5,
+        fontWeight: '600'
     },
     loginButton: {
         width: '100%',
