@@ -132,7 +132,7 @@ const AccountSettingsScreen = () => {
             <View style={styles.profileCardShadowBox}>
                 {/* gradient background matching SafeSpace theme */}
                 <LinearGradient
-                    colors={['#FFFFFF', 'rgba(200, 235, 225, 1)',]}
+                    colors={['#FFFFFF', 'rgba(160, 235, 225, 1)',]}
                     start={[0, 0]} end={[1, 1]}
                     style={styles.profileCard}>
                     <Image
