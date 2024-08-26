@@ -7,33 +7,96 @@ import { fetchUserField } from "../fetchUserField";
 import Icon from 'react-native-vector-icons/Feather';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
- /* Temporary modal testing:
+/* Temporary modal testing:
 
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'flex-end', // Position the modal at the bottom
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent
+   modalContainer: {
+       flex: 1,
+       justifyContent: 'flex-end', // Position the modal at the bottom
+       alignItems: 'center',
+       backgroundColor: 'rgba(0, 0, 0, 0)', // Fully transparent
 
-    },
-    modalContent: {
-        width: '100%', // Full width
-        padding: 20,
-        backgroundColor: 'white',
-        borderTopLeftRadius: 20, // Rounded top corners
-        borderTopRightRadius: 20,
-        alignItems: 'center',
+   },
+   modalContent: {
+       width: '100%', // Full width
+       padding: 20,
+       backgroundColor: 'white',
+       borderTopLeftRadius: 20, // Rounded top corners
+       borderTopRightRadius: 20,
+       alignItems: 'center',
 
-        borderColor: 'black',
-        borderWidth: 1,
-        borderRadius: 3,
-    },
-    closeModalButton: {
-        marginTop: 20,
-        color: '#6CBCC0',
-        fontWeight: '700',
-    },
-    */
+       borderColor: 'black',
+       borderWidth: 1,
+       borderRadius: 3,
+   },
+   closeModalButton: {
+       marginTop: 20,
+       color: '#6CBCC0',
+       fontWeight: '700',
+   },
+   */
+
+
+const EditProfileScreen = () => {
+
+    const [pfpImageUrl, setPfpImageUrl] = useState(null);
+    const [firstName, setFirstName] = useState(null);
+    const [userLastName, setLastName] = useState(null);
+    const [username, setUsername] = useState(null);
+    const [email, setEmail] = useState(null);
+
+    const [location, setLocation] = useState(null);
+    const [bio, setBio] = useState(null);
+    const [pronouns, setPronouns] = useState(null);
+
+
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const imageURL = await fetchUserField('pfp_image');
+                setPfpImageUrl(imageURL);
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                setError(err);
+            }
+        };
+        fetchData();
+    }, []);
+
+
+    return (
+        <ScrollView style={styles.container}>
+            <View style={styles.editProfileImageContainer}>
+                <Image
+                    source={{ uri: pfpImageUrl }}
+                    style={styles.profileImage}
+                />
+                <TouchableOpacity onPress={() => { console.log('edit profile image link pressed') }}>
+                    <Text style={styles.editProfileLink}>Edit profile image</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.bottomContainer}>
+                <View style={styles.fieldNameContainer}>
+                    <Text style={styles.fieldName}>Name</Text>
+                    <Text style={styles.fieldName}>Username</Text>
+                    <Text style={styles.fieldName}>Pronouns</Text>
+                    
+                    <Text style={styles.fieldName}></Text>
+
+                    <Text style={styles.fieldName}>Email</Text>
+                    <Text style={styles.fieldName}>Location</Text>
+                    
+                    <Text style={styles.fieldName}></Text>
+                    
+                    <Text style={styles.fieldName}>Bio</Text>
+                </View>
+            </View>
+
+        </ScrollView>
+    );
+};
 
 
 const styles = StyleSheet.create({
@@ -82,68 +145,42 @@ const styles = StyleSheet.create({
     {
         height: 500,
         width: '90%',
+        flex: 1,
         alignSelf: 'center',
-        alignItems: 'center',
+        alignItems: 'start',
 
         borderColor: 'red',
         borderWidth: 2,
     },
-    editFieldContainer:
+    fieldNameContainer: 
     {
-        height: 40,
-        width: '100%',
-        flexDirection: 'row',
-        marginTop: 15,
-        alignItems: 'center',
-
-        borderColor: 'blue',
+        flex: 1,
+        width: '30%',
+        borderColor: 'green',
         borderWidth: 2,
     },
-    fieldName: 
+    fieldValueContainer: 
+    {
+        height: 300,
+        width: '30%',
+        borderColor: 'green',
+        borderWidth: 2,
+    },
+    fieldName:
     {
         width: 'fit-content',
         height: 'fit-content',
         fontSize: 17,
+        fontWeight: '600',
+        marginBottom: 30,
+    },
+    fieldValue: 
+    {
+        fontSize: 17,
         fontWeight: 'bold',
-
-        borderColor: 'green',
-        borderWidth: 1,
+        alignSelf: 'center'
     },
 
-})
-
-const EditProfileScreen = () => {
-
-    const [modalVisible, setModalVisible] = useState(false); // State to manage modal visibility
-
-    const userImageURL = fetchUserField('pfp_image');
-    if (userImageURL === false) {
-        console.log('Error fetching user profile image: either user or field does not exist');
-    }
-
-
-    return (
-        <ScrollView style={styles.container}>
-            <View style={styles.editProfileImageContainer}>
-                <Image
-                    source={{ uri: userImageURL }}
-                    style={styles.profileImage}
-                />
-                <TouchableOpacity onPress={() => { console.log('edit profile image link pressed') }}>
-                    <Text style={styles.editProfileLink}>Edit profile image</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity activeOpacity={0.5} style={styles.editFieldContainer}>
-                    <Text style={styles.fieldName}>Name</Text>
-                </TouchableOpacity>
-            </View>
-
-            
-
-        </ScrollView>
-    );
-};
+});
 
 export default EditProfileScreen;
