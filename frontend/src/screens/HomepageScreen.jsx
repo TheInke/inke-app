@@ -72,15 +72,18 @@ const mockPosts = [
         ],
     },
 ];
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { API_URL, ACCESS_TOKEN } from '../constants';
+import { API_URL } from '../constants';
+// We will use AsyncStorage instead
 
 const HomePage = () => {
     const [posts, setPosts] = useState([]);
     const [showCommentsModal, setShowCommentsModal] = useState(false);
+    const [comments, setComments] = useState([]);
     const [selectedPost, setSelectedPost] = useState(null);
     const [commentText, setCommentText] = useState('');
     const [activeTab, setActiveTab] = useState('ForYou');
@@ -90,6 +93,26 @@ const HomePage = () => {
     const lastPressRef = useRef(0);
     const [currentUserProfilePic, setCurrentUserProfilePic] = useState('https://via.placeholder.com/150');
 
+    const [accessToken, setAccessToken] = useState('');
+
+    useEffect(() => {
+        const fetchAccessToken = async () => {
+            try {
+                const token = await AsyncStorage.getItem('ACCESS_TOKEN');
+                if (token !== null) {
+                    setAccessToken(token);
+                } else {
+                    // Handle case where token is not found
+                    console.log('No token found');
+                }
+            } catch (error) {
+                console.error('Error fetching token:', error);
+            }
+        };
+
+        fetchAccessToken();
+    }, []);
+
     useEffect(() => {
         setPosts(mockPosts); // Assuming mockPosts is defined elsewhere
         setCurrentUserProfilePic('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTroSOiSqh5acX6IE2p04232ISBtkG5xREnjQ&s');
@@ -98,13 +121,16 @@ const HomePage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${API_URL}/posts`, {
+                const response = await fetch(`${API_URL}/posts/`, {
                     headers: {
-                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'Authorization': `Bearer ${accessToken}`,
                         'Content-Type': 'application/json',
                     },
                 });
                 const data = await response.json();
+                console.log('successfully fetched posts');
+                
+                // We can do setPost(mockPosts) to replace real API fetch with local posts
                 setPosts(data);
             } catch (error) {
                 console.error('Error fetching posts:', error);
@@ -113,17 +139,52 @@ const HomePage = () => {
         fetchPosts();
     }, []);
 
+    const fetchComments = async (postID) => {
+        try{
+            const response = await fetch(`${API_URL}/posts/${postID}/comments/`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const data = await response.json();
+            return data;
+        }
+        catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchPostComments = async () => {
+          if (selectedPost) {
+            try {
+              const data = await fetchComments(selectedPost.id);
+              setComments(data);  // Assuming `data` is an array of comments
+              console.log(comments);
+            } catch (error) {
+              console.error("Failed to fetch comments:", error);
+              setComments([]);  // Reset comments on error
+            }
+          } else {
+            setComments([]);  // Reset comments if no post is selected
+          }
+        };
+      
+        fetchPostComments();
+      }, [selectedPost]);  // Re-run this effect when selectedPost changes
+
     const handleLike = async (postId) => {
         try {
             const updatedPosts = posts.map((post) =>
                 post.id === postId ? { ...post, isLiked: !post.isLiked } : post
             );
             setPosts(updatedPosts);
-    
-            await fetch(`${API_URL}/posts/${postId}/like`, {
+
+            await fetch(`${API_URL}/posts/${postId}/like/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ isLiked: !updatedPosts.find(post => post.id === postId).isLiked }),
@@ -139,11 +200,11 @@ const HomePage = () => {
                 post.id === postId ? { ...post, isFavorited: !post.isFavorited } : post
             );
             setPosts(updatedPosts);
-    
-            await fetch(`${API_URL}/posts/${postId}/favorite`, {
+
+            await fetch(`${API_URL}/posts/${postId}/favorite/`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ isFavorited: !updatedPosts.find(post => post.id === postId).isFavorited }),
@@ -256,6 +317,24 @@ const HomePage = () => {
         console.log('Search button pressed');
     };
 
+    const handlePostComment = async (postId) => {
+        //console.log(postId);
+        console.log(selectedPost.comments);
+        try {
+            const response = await fetch(`${API_URL}/posts/${postId}/comments/create/`, {
+                // posts/<int:post_id>/comments/create/
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                body: JSON.stringify({ text: commentText }),
+            });
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.tabsContainer}>
@@ -299,11 +378,11 @@ const HomePage = () => {
                                 <View style={styles.divider} />
                             </View>
                             <FlatList
-                                data={selectedPost ? selectedPost.comments : []}
+                                data={comments}
                                 renderItem={({ item }) => (
                                     <View style={styles.commentContainer}>
                                         <Text style={styles.commentText}>
-                                            <Text style={styles.commentUsername}>{item.user}</Text>: {item.text}
+                                            <Text style={styles.commentUsername}>{item.username}</Text>: {item.text}
                                         </Text>
                                     </View>
                                 )}
@@ -319,10 +398,7 @@ const HomePage = () => {
                                 />
                                 <Pressable
                                     style={styles.addCommentButton}
-                                    onPress={() => {
-                                        // Add comment functionality
-                                        setCommentText('');
-                                    }}
+                                    onPress={ () => handlePostComment(selectedPost.id)}
                                 >
                                     <Text style={styles.addCommentButtonText}>Send</Text>
                                 </Pressable>
