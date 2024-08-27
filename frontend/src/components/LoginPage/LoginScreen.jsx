@@ -203,7 +203,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 //import * as AppleAuthentication from 'expo-apple-authentication';
 
 // Correctly import the image from the local assets folder
-import inkeLogo from '../../assets/images/inke_logo.png';
+import ssLogo from '../../assets/images/SafeSpaceLogo.png';
 
 
 const LoginScreen = ({ navigation }) => {
@@ -212,14 +212,9 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async () => {
         try {
-            console.log("Login Data==> ", { username, password });
             const response = await login(username, password);
-            console.log('LOGIN SUCCESS | inke');    // Testing login og: ln16
-
             const accessToken = response.data.accessToken;
             await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
-
-            // Navigate to the main screen or perform other actions
             navigation.navigate('Main');
         } catch (error) {
             console.error('Login failed:', error);
@@ -273,11 +268,12 @@ const LoginScreen = ({ navigation }) => {
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={0}  // Adjust this value if needed
+            keyboardVerticalOffset={0}
         >
             <View style={styles.container}>
-                <Image source={inkeLogo} style={styles.logo} />
-                <Text style={styles.title}>Inke</Text>
+                <Image source={ssLogo} style={styles.logo} />
+                <Text style={styles.title}>SafeSpace</Text>
+                <Text style={styles.beta}>Beta</Text>
 
                 <Text style={styles.label}>LOGIN</Text>
 
@@ -296,22 +292,22 @@ const LoginScreen = ({ navigation }) => {
                     onChangeText={setPassword}
                     secureTextEntry
                 />
-                
+
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                     <Text style={styles.loginButtonText}>Log In</Text>
                 </TouchableOpacity>
 
                 {/*
                 <TouchableOpacity style={styles.socialButton} onPress = {handleGoogleLogin}>
-                    <Icon name="google" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                    <Icon name="google" size={20} color="#fff" style={styles.socialIcon} />
                     <Text style={styles.socialButtonText}>Log in with Google</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.socialButton} onPress = {handleFacebookLogin}>
-                    <Icon name="facebook" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                    <Icon name="facebook" size={20} color="#fff" style={styles.socialIcon} />
                     <Text style={styles.socialButtonText}>Log in with Facebook</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.socialButton} onPress={handleAppleLogin}>
-                    <Icon name="apple" size = {20} color = "#fff" style = {styles.socialIcon}/>
+                <TouchableOpacity style={styles.socialButton} onPress = {handleAppleLogin}>
+                    <Icon name="apple" size={20} color="#fff" style={styles.socialIcon} />
                     <Text style={styles.socialButtonText}>Log in with Apple</Text>
                 </TouchableOpacity>
                 */}
@@ -334,23 +330,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#000',    //#000  og: #fff
+        backgroundColor: '#66D0C5', // Match the background color from the image
     },
     logo: {
-        width: 100, // Make the logo larger
-        height: 150, // Make the logo larger
-        borderRadius: 75, // Make the logo circular
-        marginBottom: -15,
+        width: 200, // Adjust logo size for better fit
+        height: 200, // Adjust logo size for better fit
+        marginBottom: -50,
     },
     title: {
-        fontSize: 50,
-        color: '#fff',  //added
+        fontSize: 40,
+        color: '#fff',
         fontWeight: 'bold',
+    },
+    beta: {
+        fontSize: 20,
+        color: '#fff',
         marginBottom: 20,
     },
     label: {
         fontSize: 18,
-        color: 'white', //added
+        color: '#fff',
         fontWeight: 'bold',
         alignSelf: 'flex-start',
         marginBottom: 10,
@@ -364,20 +363,21 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         color: '#fff',
+        backgroundColor: '#57C2B5', // Slightly darker background to match design
     },
     loginButton: {
         width: '100%',
         height: 40,
-        backgroundColor: '#fff',    //#fff  og: #000
-        borderColor: '#ddd',    //added
+        backgroundColor: '#fff',
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: 20,
     },
     loginButtonText: {
-        color: '#000',  //#000  og: #fff
+        color: '#57C2B5', // Use the same shade for text as the button background color
         fontSize: 16,
+        fontWeight: 'bold',
     },
     socialButton: {
         width: '100%',
@@ -386,26 +386,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: '#fff',
         borderRadius: 5,
         marginBottom: 10,
-        paddingLeft: 10,
+        backgroundColor: '#57C2B5', // Match button color with overall design
     },
     socialIcon: {
         marginRight: 10,
     },
     socialButtonText: {
         fontSize: 16,
-        color: '#fff',   //added
+        color: '#fff',
+        fontWeight: 'bold',
     },
     link: {
-        color: '#007BFF',
+        color: '#fff',
         marginTop: 10,
         textDecorationLine: 'underline',
     },
 });
 
 export default LoginScreen;
-
-
-
