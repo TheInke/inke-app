@@ -78,6 +78,9 @@ import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, T
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { API_URL } from '../constants';
+
+import { fetchWithTokenRefresh } from '../services/api';
+
 // We will use AsyncStorage instead
 
 const HomePage = () => {
@@ -121,15 +124,15 @@ const HomePage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${API_URL}/posts/`, {
+                const response = await fetchWithTokenRefresh(`${API_URL}/posts/`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                         'Content-Type': 'application/json',
                     },
                 });
-                const data = await response.json();
+                const data = await response;
                 console.log('successfully fetched posts');
-                
+
                 // We can do setPost(mockPosts) to replace real API fetch with local posts
                 setPosts(data);
             } catch (error) {
@@ -140,7 +143,7 @@ const HomePage = () => {
     }, []);
 
     const fetchComments = async (postID) => {
-        try{
+        try {
             const response = await fetch(`${API_URL}/posts/${postID}/comments/`, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
@@ -157,22 +160,22 @@ const HomePage = () => {
 
     useEffect(() => {
         const fetchPostComments = async () => {
-          if (selectedPost) {
-            try {
-              const data = await fetchComments(selectedPost.id);
-              setComments(data);  // Assuming `data` is an array of comments
-              console.log(comments);
-            } catch (error) {
-              console.error("Failed to fetch comments:", error);
-              setComments([]);  // Reset comments on error
+            if (selectedPost) {
+                try {
+                    const data = await fetchComments(selectedPost.id);
+                    setComments(data);  // Assuming `data` is an array of comments
+                    console.log(comments);
+                } catch (error) {
+                    console.error("Failed to fetch comments:", error);
+                    setComments([]);  // Reset comments on error
+                }
+            } else {
+                setComments([]);  // Reset comments if no post is selected
             }
-          } else {
-            setComments([]);  // Reset comments if no post is selected
-          }
         };
-      
+
         fetchPostComments();
-      }, [selectedPost]);  // Re-run this effect when selectedPost changes
+    }, [selectedPost]);  // Re-run this effect when selectedPost changes
 
     const handleLike = async (postId) => {
         try {
@@ -398,7 +401,7 @@ const HomePage = () => {
                                 />
                                 <Pressable
                                     style={styles.addCommentButton}
-                                    onPress={ () => handlePostComment(selectedPost.id)}
+                                    onPress={() => handlePostComment(selectedPost.id)}
                                 >
                                     <Text style={styles.addCommentButtonText}>Send</Text>
                                 </Pressable>
@@ -440,11 +443,11 @@ const HomePage = () => {
                 <Pressable onPress={handleSearchPress}>
                     <FontAwesome name="search" size={25} />
                 </Pressable>
-
+ 
                 <Pressable onPress={handleAddPost} style={styles.addPostButton}>
                     <FontAwesome name="plus" size={25} />
                 </Pressable>
-
+ 
                 <Pressable onPress={handleProfilePress}>
                     <Image
                         source={{ uri: currentUserProfilePic }}
@@ -664,3 +667,5 @@ const styles = StyleSheet.create({
 });
 
 export default HomePage;
+
+

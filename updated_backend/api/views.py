@@ -6,15 +6,18 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import api_view
 from . import models, serializers
 
+
 class CreateUserView(generics.CreateAPIView):
     queryset = models.UserProfile.objects.all()
     serializer_class = serializers.UserProfileSerializer
     permission_classes = [permissions.AllowAny]
 
+
 class UserProfileListView(generics.ListAPIView):
     queryset = models.UserProfile.objects.all()
     serializer_class = serializers.UserProfileSerializer
-    permission_classes = [] #[permissions.IsAuthenticated]
+    permission_classes = []  # [permissions.IsAuthenticated]
+
 
 # USER PROFILE
 class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -26,18 +29,28 @@ class UserProfileDetailView(generics.RetrieveUpdateDestroyAPIView):
         obj = super().get_object()
         if obj != self.request.user:
             raise PermissionDenied('Please login to access your profile')
-        
+
         return obj
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = models.Post.objects.all()
     serializer_class = serializers.PostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            # Save the file or perform your desired operation here
+            # For example, saving it to a model instance
+            return Response({"message": "Upload successful"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -46,8 +59,10 @@ class PostViewSet(viewsets.ModelViewSet):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         if instance.user != request.user:
-            raise PermissionDenied("You do not have permission to edit this post.")
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+            raise PermissionDenied(
+                "You do not have permission to edit this post.")
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -55,13 +70,15 @@ class PostViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.user != request.user:
-            raise PermissionDenied("You do not have permission to delete this post.")
+            raise PermissionDenied(
+                "You do not have permission to delete this post.")
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def perform_destroy(self, instance):
         instance.delete()
-        
+
+
 class LikePostView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -69,14 +86,14 @@ class LikePostView(generics.GenericAPIView):
         post_id = self.kwargs.get('post_id')
         post = models.Post.objects.get(id=post_id)
         user = request.user
-        
+
         # Check if the post is already liked by the user
         like = models.Like.objects.filter(post=post, user=user).first()
         if like:
             # Unlike the post
             like.delete()
             return Response({'detail': 'Unliked the post.'}, status=status.HTTP_204_NO_CONTENT)
-        
+
         # Like the post
         like = models.Like.objects.create(post=post, user=user)
         return Response(serializers.LikeSerializer(like).data, status=status.HTTP_201_CREATED)
@@ -90,6 +107,7 @@ class TotalLikesView(generics.GenericAPIView):
         total_likes = models.Like.objects.filter(user=user).count()
         return Response({'total_likes': total_likes}, status=status.HTTP_200_OK)
 
+
 @api_view(['GET'])
 def liked_posts_history(request):
     user = request.user
@@ -99,12 +117,15 @@ def liked_posts_history(request):
     serializer = serializer.PostSerializer(liked_posts, many=True)
 
     return Response(serializer.data)
-    
+
+
 class FavoritePostView(APIView):
     """
     API view for favoriting and unfavoriting posts.
 
+
     This view handles favoriting and unfavoriting posts by authenticated users.
+
 
     Attributes:
         permission_classes (list): The list of permissions required to access this view.
@@ -115,13 +136,16 @@ class FavoritePostView(APIView):
         """
         Handle POST request to favorite a post.
 
+
         Args:
             request (Request): The request object containing user data.
             post_id (int): The ID of the post to be favorited.
             format (str, optional): The format of the response.
 
+
         Returns:
             Response: The response object with success or error message.
+
 
         Raises:
             HTTP_404_NOT_FOUND: If the requested post does not exist.
@@ -132,24 +156,27 @@ class FavoritePostView(APIView):
             post = models.Post.objects.get(id=post_id)
         except models.Post.DoesNotExist:
             return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         # Check if the post is already favorited
         if models.Favorites.objects.filter(user=user, post=post).exists():
             return Response({'error': 'Post already favorited'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         favorite = models.Favorites.objects.create(user=user, post=post)
         return Response({'message': 'Post favorited successfully'}, status=status.HTTP_201_CREATED)
-    
+
     def delete(self, request, post_id):
         """
         Handle DELETE request to remove a post from favorites.
+
 
         Args:
             request (Request): The request object containing user data.
             post_id (int): The ID of the post to be removed from favorites.
 
+
         Returns:
             Response: The response object with success or error message.
+
 
         Raises:
             HTTP_404_NOT_FOUND: If the requested post or favorite does not exist.
@@ -173,7 +200,9 @@ class ListFavoritePostsView(generics.ListAPIView):
     """
     API view for listing favorite posts of a user.
 
+
     This view retrieves and lists all posts favorited by the authenticated user.
+
 
     Attributes:
         serializer_class (Sserializers.erializer): The serializer class used for serializing Post objects.
@@ -186,19 +215,24 @@ class ListFavoritePostsView(generics.ListAPIView):
         """
         Retrieve the queryset ofmodels. favorite posts for the authenticated user.
 
+
         Returns:
             QuerySet: The queryset ofmodels. Post objects favorited by the user.
         """
-        user = self.request.user    #get user
+        user = self.request.user  # get user
         # get all the favorited post ids for a user
-        favorite_posts_ids = models.Favorites.objects.filter(user=user).values_list('post_id', flat=True) 
+        favorite_posts_ids = models.Favorites.objects.filter(
+            user=user).values_list('post_id', flat=True)
         return models.Post.objects.filter(id__in=favorite_posts_ids)
-    
+
+
 class CommentCreateView(generics.CreateAPIView):
     """
     API view for creating a new comment.
 
+
     This view allows authenticated users to create a new comment for a specified post.
+
 
     Attributes:
         serializer_class (Sserializers.erializer): The serializer class used for the comment.
@@ -211,10 +245,12 @@ class CommentCreateView(generics.CreateAPIView):
         """
         Handle POST request to create a new comment.
 
+
         Args:
             request (Request): The request object containing the data.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
+
 
         Returns:
             Response: The response object with the creation status and message.
@@ -226,7 +262,7 @@ class CommentCreateView(generics.CreateAPIView):
             post = models.Post.objects.get(id=post_id)
         except models.Post.DoesNotExist:
             return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-        
+
         models.Comment.objects.create(
             post=post,
             user=request.user,
@@ -234,11 +270,14 @@ class CommentCreateView(generics.CreateAPIView):
         )
         return Response({"detail": "Comment added successfully."}, status=status.HTTP_201_CREATED)
 
+
 class PostCommentsListView(generics.ListAPIView):
     """
     API view for listing comments for a specified post.
 
+
     This view allows anyone to view the comments associated with a specific post.
+
 
     Attributes:
         serializer_class (Sserializers.erializer): The serializer class used for the comments.
@@ -251,20 +290,24 @@ class PostCommentsListView(generics.ListAPIView):
         """
         Retrieve the queryset ofmodels. comments for the specified post.
 
+
         Returns:
             QuerySet: The queryset ofmodels. comments filtered by post ID.
         """
         post_id = self.kwargs['post_id']
         return models.Comment.objects.filter(post_id=post_id)
-    
+
+
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     API view for retrieving, updating, and deleting a comment.
+
 
     This view provides the following actions:
     - Retrieve a specific comment based on post ID and comment ID.
     - Update a specific comment.
     - Delete a specific comment.
+
 
     Attributes:
         queryset (Qmodels.uerySet): The queryset thmodels.at retrieves all comments.
@@ -279,8 +322,10 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         """
         Retrieve a specific comment based on the provided post ID and comment ID.
 
+
         Returns:
             Comment: The comment object if found.
+
 
         Raises:
             Http404: If the comment with the specified post ID and comment ID does not exist.
@@ -291,7 +336,7 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
             return models.Comment.objects.get(post_id=post_id, id=comment_id)
         except models.Comment.DoesNotExist:
             raise Http404("Comment not found.")
-    
+
     def perform_update(self, serializer):
         """
         Save the changes to the comment.
@@ -304,11 +349,14 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         """
         instance.delete()
 
+
 class JournalEntryListCreateView(generics.ListCreateAPIView):
     """
     API view for listing and creating journal entries.
 
+
     This view allows authenticated users to list their own journal entries and create new ones.
+
 
     Attributes:
         serializer_class (Sserializers.erializer): The serializer class used for JournalEntry objects.
@@ -325,11 +373,14 @@ class JournalEntryListCreateView(generics.ListCreateAPIView):
         # Save the journal entry with the authenticated user as the owner
         serializer.save(user=self.request.user)
 
+
 class JournalEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     API view for retrieving, updating, and deleting a journal entry.
 
+
     This view allows authenticated users to retrieve, update, and delete their own journal entries.
+
 
     Attributes:
         serializer_class (Sserializers.erializer): The serializer class used for JournalEntry objects.
@@ -341,7 +392,7 @@ class JournalEntryDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         # Retrieve journal entries belonging to the authenticated user
         return models.JournalEntry.objects.filter(user=self.request.user)
-    
+
 
 # SOCIAL CIRCLE
 class SocialCirclesListCreateView(generics.ListCreateAPIView):
@@ -349,9 +400,11 @@ class SocialCirclesListCreateView(generics.ListCreateAPIView):
     serializer_class = serializers.SocialCirclesSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    #serializes and saves 
+    # serializes and saves
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+
 
 class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = models.SocialCircles.objects.all()
@@ -363,7 +416,8 @@ class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
 
         # Check if the requesting user is the creator of the instance
         if request.user != instance.created_by:
-            raise PermissionDenied("You do not have permission to perform this action.")
+            raise PermissionDenied(
+                "You do not have permission to perform this action.")
 
         self.perform_destroy(instance)
         return self.get_response()

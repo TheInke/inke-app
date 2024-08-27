@@ -6,37 +6,43 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Video } from 'expo-av';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+import { API_URL } from '../constants';
+
+
+import { fetchWithTokenRefresh } from '../services/api';
+
 
 import stayTuned from '../assets/images/staytuned.png';
 
+
 const { height, width } = Dimensions.get('window');
 
+
 export default function CreatePostScreen() {
-  const [facing, setFacing] = useState('back'); // Camera facing state
-  const [permission, requestPermission] = useCameraPermissions(); // Camera permission state
-  const [media, setMedia] = useState(null); // Media state (image or video)
-  const [mediaType, setMediaType] = useState(null); // Media type (image or video)
-  const [description, setDescription] = useState(''); // Description state
-  const [cameraRollOption, setCameraRollOption] = useState('camera'); // Default to camera
-  const [fullScreen, setFullScreen] = useState(true); // Full screen state
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false); // Date picker visibility state
-  const [scheduleDate, setScheduleDate] = useState(null); // Scheduled date state
-  const [isSchedule, setIsSchedule] = useState(false); // Schedule post state
-  const [is24hPost, setIs24hPost] = useState(false); // 24h post state
-  const cameraRef = useRef(null); // Reference to camera
-  const [modalVisible, setModalVisible] = useState(false); // State to manage modal visibility
-  const [modalType, setModalType] = useState(''); // Track which button triggered the modal
+  const [facing, setFacing] = useState('back');
+  const [permission, requestPermission] = useCameraPermissions();
+  const [media, setMedia] = useState(null);
+  const [mediaType, setMediaType] = useState(null);
+  const [description, setDescription] = useState('');
+  const [cameraRollOption, setCameraRollOption] = useState('camera');
+  const [fullScreen, setFullScreen] = useState(true);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState(null);
+  const [isSchedule, setIsSchedule] = useState(false);
+  const [is24hPost, setIs24hPost] = useState(false);
+  const cameraRef = useRef(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalType, setModalType] = useState('');
 
-  // Set the maximum date to 7 days from the current date
-  const maxDate = new Date();
-  maxDate.setDate(maxDate.getDate() + 7);
 
-  // Check if camera permissions are still loading
   if (!permission) {
     return <View />;
   }
 
-  // Check if camera permissions are granted
+
   if (!permission.granted) {
     return (
       <View style={styles.container}>
@@ -48,7 +54,7 @@ export default function CreatePostScreen() {
     );
   }
 
-  // Crop the image to a 3:5 aspect ratio
+
   const cropImage = async (uri) => {
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
@@ -59,7 +65,7 @@ export default function CreatePostScreen() {
     setFullScreen(false);
   };
 
-  // Pick an image or video from the camera roll
+
   const pickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -67,11 +73,12 @@ export default function CreatePostScreen() {
       quality: 1,
     });
 
+
     if (!result.canceled) {
       const pickedAsset = result.assets[0];
       setMediaType(pickedAsset.type);
       if (pickedAsset.type === 'image') {
-        await cropImage(pickedAsset.uri); // Crop the selected image
+        await cropImage(pickedAsset.uri);
       } else {
         setMedia(pickedAsset.uri);
         setFullScreen(false);
@@ -79,20 +86,21 @@ export default function CreatePostScreen() {
     }
   };
 
-  // Take a picture or video using the camera
+
   const captureMedia = async () => {
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [3, 5], // Enforce 3:5 aspect ratio
+      aspect: [3, 5],
       quality: 1,
     });
+
 
     if (!result.canceled) {
       const capturedAsset = result.assets[0];
       setMediaType(capturedAsset.type);
       if (capturedAsset.type === 'image') {
-        await cropImage(capturedAsset.uri); // Crop the captured image
+        await cropImage(capturedAsset.uri);
       } else {
         setMedia(capturedAsset.uri);
         setFullScreen(false);
@@ -100,59 +108,97 @@ export default function CreatePostScreen() {
     }
   };
 
-  // Cancel the selected or captured media
+
   const cancelMedia = () => {
     setMedia(null);
-    setFullScreen(true); // Go back to full screen camera
+    setFullScreen(true);
   };
 
-  // Show the date picker modal
+
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
-  // Hide the date picker modal
+
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
 
-  // Handle date confirmation from the date picker
+
   const handleConfirm = (date) => {
-    console.log("A date has been picked: ", date);
     setScheduleDate(date);
     hideDatePicker();
   };
 
-  // Show the custom modal with the image
+
   const showModal = (type) => {
     setModalType(type);
     setModalVisible(true);
   };
 
-  // Handle "OK" button press in the modal
+
   const handleOkPress = () => {
     setModalVisible(false);
     if (modalType === 'schedule') {
-      setIsSchedule(false); // Deselect the "Schedule Post" button
+      setIsSchedule(false);
     } else if (modalType === '24hPost') {
-      setIs24hPost(false); // Deselect the "24h Post" button
+      setIs24hPost(false);
     }
   };
 
-  // Toggle the schedule post option and reset the date if unchecked
+
+  const handlePostSubmission = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+
+      if (media) {
+        const formData = new FormData();
+
+        // Append the file, setting the name as 'file' to match your backend serializer
+        formData.append('file', {
+          uri: media,               // Local file path
+          type: mediaType === 'image' ? 'image/jpeg' : 'video/mp4',  // MIME type
+          name: mediaType === 'image' ? 'photo.jpg' : 'video.mp4',   // File name
+        });
+        if (!accessToken) {
+          console.error('No access token found, unable to proceed with the request.');
+          return;
+        }
+        const response = await fetchWithTokenRefresh(`${API_URL}/posts/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            // No need to set Content-Type for FormData; it's automatically set
+          },
+          body: formData
+        });
+
+        if (response.status === 201) {
+          console.log('Post created successfully:');
+        } else {
+          console.error('Failed to create post:', response.status);
+        }
+      }
+    }
+    catch (error) {
+      console.error('Error while creating post:', error);
+    }
+
+  };
+
+
+
   const toggleSchedule = () => {
-    if (isSchedule) {
-      setScheduleDate(null); // Reset the schedule date
-    }
     setIsSchedule(!isSchedule);
-    showModal('schedule'); // Show the image in the modal
+    showModal('schedule');
   };
 
-  // Toggle the 24h post option
+
   const toggle24hPost = () => {
     setIs24hPost(!is24hPost);
-    showModal('24hPost'); // Show the image in the modal
+    showModal('24hPost');
   };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -220,9 +266,9 @@ export default function CreatePostScreen() {
                   onChangeText={setDescription}
                   value={description}
                   multiline
-                  numberOfLines={3} // Maximum number of visible lines
-                  maxHeight={60} // Maximum height for the text input
-                  scrollEnabled // Enable scrolling within the text input
+                  numberOfLines={3}
+                  maxHeight={60}
+                  scrollEnabled
                 />
               </View>
             </View>
@@ -251,30 +297,7 @@ export default function CreatePostScreen() {
                 <Text style={styles.scheduleText}>24h Post</Text>
               </View>
             </View>
-            {/* 
-            The DateTimePickerModal and the related state have been kept for future use 
-            but are commented out for now since the backend is not ready.
-            */}
-            {/* <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="datetime"
-              minimumDate={new Date()} // Minimum date set to current date
-              maximumDate={maxDate} // Maximum date set to 7 days from current date
-              onConfirm={handleConfirm}
-              onCancel={hideDatePicker}
-              pickerContainerStyleIOS={{
-                backgroundColor: 'black' // Set the background color to black
-              }}
-              textColor="white" // Set the text color to white
-            /> */}
-            <TouchableOpacity style={styles.postButton} onPress={() => {
-              // Commented out for now, as backend is not ready.
-              // const expirationDate = calculateExpirationDate();
-              // if (expirationDate) {
-              //   console.log('Post Expiration Date:', expirationDate);
-              // }
-              console.log('Post submitted');
-            }}>
+            <TouchableOpacity style={styles.postButton} onPress={handlePostSubmission}>
               <Text style={styles.postButtonText}>{isSchedule ? 'Schedule' : 'Post'}</Text>
             </TouchableOpacity>
           </>
@@ -283,6 +306,7 @@ export default function CreatePostScreen() {
     </TouchableWithoutFeedback>
   );
 }
+
 
 // Styles for the components
 const styles = StyleSheet.create({
@@ -297,28 +321,28 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
-    width: '90%',
+    width: '80%',
     height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 20, // Added border radius
-    overflow: 'hidden', // Ensures image and content respects border radius
+    borderRadius: 20,
+    overflow: 'hidden',
   },
   imageBackground: {
     width: '100%',
     height: '100%',
-    justifyContent: 'flex-end', // Position the button at the bottom
-    alignItems: 'center', // Center the button horizontally
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   imageBorderRadius: {
-    borderRadius: 20, // Ensures the image respects the border radius
+    borderRadius: 20,
   },
   okButton: {
     paddingVertical: 10,
     paddingHorizontal: 30,
     backgroundColor: 'black',
-    borderRadius: 10,
-    marginBottom: 20, // Add some space from the bottom
+    borderRadius: 5,
+    marginBottom: 20,
   },
   okButtonText: {
     color: 'white',
@@ -327,11 +351,11 @@ const styles = StyleSheet.create({
   },
   fullScreenContainer: {
     width: '100%',
-    height: '85%', // Adjusted height
+    height: '85%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: 'black', // Added black border
-    borderWidth: 2, // Adjust border width as needed
+    borderColor: 'black',
+    borderWidth: 2,
   },
   fullScreenCamera: {
     width: '100%',
@@ -360,7 +384,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   buttonContainer: {
-    height: 60, // Adjust height as needed
+    height: 60,
     backgroundColor: 'white',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -430,7 +454,7 @@ const styles = StyleSheet.create({
     color: 'black',
     padding: 0,
     margin: 0,
-    maxHeight: 60, // Maximum height for the text input
+    maxHeight: 60,
   },
   descriptionText: {
     borderBottomWidth: 0,
@@ -447,7 +471,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     borderRadius: 5,
-    marginBottom: 5, // Added bottom margin for the post button
+    marginBottom: 5,
     marginLeft: 10,
     marginRight: 10,
   },
@@ -468,3 +492,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+
+
+
