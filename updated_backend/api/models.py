@@ -42,7 +42,7 @@ class Post(models.Model):
     """
     title = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField(blank=True, null=True)
-    photo = models.ImageField(upload_to='photos/', blank=True, null=True) 
+    file = models.FileField(upload_to='photos/', blank=True, null=True) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')

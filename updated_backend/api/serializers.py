@@ -45,10 +45,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
+    file = serializers.FileField()
 
     class Meta:
         model = models.Post
-        fields = ['id', 'title', 'content', 'photo', 'created_at', 'updated_at', 'user']
+        fields = ['id', 'title', 'content', 'file', 'created_at', 'updated_at', 'user']
     
 # COMMENT SERIALIZER
 class CommentSerializer(serializers.ModelSerializer):

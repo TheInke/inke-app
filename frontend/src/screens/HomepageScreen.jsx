@@ -78,6 +78,9 @@ import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, T
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { API_URL } from '../constants';
+
+import { fetchWithTokenRefresh } from '../services/api';
+
 // We will use AsyncStorage instead
 
 const HomePage = () => {
@@ -121,13 +124,13 @@ const HomePage = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(`${API_URL}/posts/`, {
+                const response = await fetchWithTokenRefresh(`${API_URL}/posts/`, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`,
                         'Content-Type': 'application/json',
                     },
                 });
-                const data = await response.json();
+                const data = await response;
                 console.log('successfully fetched posts');
                 
                 // We can do setPost(mockPosts) to replace real API fetch with local posts
