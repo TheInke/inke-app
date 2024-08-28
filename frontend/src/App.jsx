@@ -13,6 +13,9 @@ import ProfilePageScreen from './screens/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreatePostScreen from './screens/CreatePostScreen';
 import ConnectionScreen from './screens/ConnectionScreen';
+import MessageScreen from './screens/MessageScreen';  // Add this import
+import MenuScreen from './screens/MenuScreen';  // Add this import
+import AccountSettingsScreen from './screens/AccountSettingsScreen';  // Add this import
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -79,10 +82,10 @@ const MainTab = ({ navigation }) => (
                 headerLeft: null, // No left-aligned icon
                 headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 10 }}>
-                        <TouchableOpacity onPress={() => {/* Add your message screen navigation here */}} style={{ marginRight: 10 }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Message')} style={{ marginRight: 10 }}>
                             <Ionicons name="chatbubble-ellipses" size={25} color="black" style={styles.navItem} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {/* Add your side menu toggle function here */}}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
                             <Ionicons name="menu" size={25} color="black" style={styles.navItem} />
                         </TouchableOpacity>
                     </View>
@@ -99,11 +102,20 @@ const MainTab = ({ navigation }) => (
         />
         <Tab.Screen name="Connection" component={ConnectionScreen} />
         <Tab.Screen
-            name="Profile"
-            component={ProfilePageScreen}
+            name="Profile" 
+            component={ProfilePageScreen} 
             options={{
-                tabBarLabel: 'Profile',
-            }}
+                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Profile</Text>, // Custom header title
+                headerTitleAlign: 'center', // Align title to the left
+                headerLeft: null, // No left-aligned icon
+                headerRight: () => (
+                    <View style={{ flexDirection: 'row', marginRight: 10 }}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AccountSettings')} style={{ marginRight: 10 }}>
+                            <Ionicons name="settings" size={25} color="black" style={styles.navItem} />
+                        </TouchableOpacity>
+                    </View>
+                ),
+            }} 
         />
     </Tab.Navigator>
 );
@@ -126,6 +138,27 @@ const MainStack = () => (
                     </TouchableOpacity>
                 ),
                 headerTitle: 'Create Post', // Title for CreatePostScreen
+            }}
+        />
+        <Stack.Screen
+            name="Message"
+            component={MessageScreen} // Add the Message screen
+            options={{
+                headerTitle: 'Messages', // Title for MessageScreen
+            }}
+        />
+        <Stack.Screen
+            name="Menu"
+            component={MenuScreen} // Add the Menu screen
+            options={{
+                headerTitle: 'Menu', // Title for MenuScreen
+            }}
+        />
+        <Stack.Screen
+            name="AccountSettings"
+            component={AccountSettingsScreen} // Add the Account Settings screen
+            options={{
+                headerTitle: 'Account Settings', // Title for AccountSettingsScreen
             }}
         />
     </Stack.Navigator>
