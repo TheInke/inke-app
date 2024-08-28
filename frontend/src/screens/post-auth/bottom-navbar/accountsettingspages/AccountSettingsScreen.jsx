@@ -189,6 +189,7 @@ const AccountSettingsScreen = () => (
                         <Ionicons name="arrow-back" size={25} style={{ marginLeft: 15 }} />
                     </TouchableOpacity>
                 ),
+                
             })}
         />
         <Stack.Screen 
