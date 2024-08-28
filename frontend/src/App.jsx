@@ -159,6 +159,7 @@ const MainStack = () => (
             component={AccountSettingsScreen} // Add the Account Settings screen
             options={{
                 headerTitle: 'Account Settings', // Title for AccountSettingsScreen
+                headerShown: false ,
             }}
         />
     </Stack.Navigator>
