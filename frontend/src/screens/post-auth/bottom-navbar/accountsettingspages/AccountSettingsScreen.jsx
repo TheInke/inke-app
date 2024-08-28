@@ -1,18 +1,18 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, Image, Text } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
-import ClickableOption from "../components/ClickableOption";
+import ClickableOption from "../../../../components/ClickableOption";
 import { useNavigation } from '@react-navigation/native'; 
 import { createStackNavigator } from '@react-navigation/stack';
-import { fetchUserField } from "../services/fetchUserField";
+import { fetchUserField } from "../../../../services/fetchUserField";
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Import the screens
-import AboutSafeSpaceScreen from "./accountsettingspages/AboutSafeSpaceScreen";
-import EditProfileScreen from "./accountsettingspages/EditProfileScreen";
-import NotificationsScreen from "./accountsettingspages/NotificationsScreen";
-import PrivacyAndSecurityScreen from "./accountsettingspages/PrivacyAndSecurityScreen";
-import HelpAndSupportScreen from "./accountsettingspages/HelpAndSupportScreen";
+import AboutSafeSpaceScreen from "./AboutSafeSpaceScreen";
+import EditProfileScreen from "./EditProfileScreen";
+import NotificationsScreen from "./NotificationsScreen";
+import PrivacyAndSecurityScreen from "./PrivacyAndSecurityScreen";
+import HelpAndSupportScreen from "./HelpAndSupportScreen";
 
 const Stack = createStackNavigator();
 
@@ -99,9 +99,9 @@ const AccountSettingsScreenComponent = () => {
     return (
         <View style={styles.container}>
             {/* Back button */}
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            {/* <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={30} style={styles.backButton} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {/* Shadow effect for profile card */}
             <View style={styles.profileCardShadowBox}>

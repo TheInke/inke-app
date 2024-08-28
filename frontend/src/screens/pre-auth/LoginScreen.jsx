@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { login } from '../services/api'; // Import login function from api.js
+import { login } from '../../services/api'; // Import login function from api.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ACCESS_TOKEN } from '../constants';
+import { ACCESS_TOKEN } from '../../constants';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 
@@ -12,7 +12,7 @@ import axios from 'axios';
 //import * as AppleAuthentication from 'expo-apple-authentication';
 
 // Correctly import the image from the local assets folder
-import inkeLogo from '../assets/images/inke_logo.png';
+import inkeLogo from '../../assets/images/inke_logo.png';
 
 const LoginScreen = ({ navigation }) => {
     const [username, setUsername] = useState('');

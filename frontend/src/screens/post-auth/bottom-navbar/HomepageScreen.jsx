@@ -77,9 +77,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { API_URL } from '../constants';
+import { API_URL } from '../../../constants';
 
-import { fetchWithTokenRefresh } from '../services/api';
+import { fetchWithTokenRefresh } from '../../../services/api';
 
 // We will use AsyncStorage instead
 

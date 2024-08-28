@@ -5,17 +5,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import HomepageScreen from './screens/HomepageScreen';
-import LoginScreen from './screens/LoginScreen';
-import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
-import SearchScreen from './screens/SearchScreen';
-import ProfilePageScreen from './screens/ProfilePageScreen';
+import HomepageScreen from './screens/post-auth/bottom-navbar/HomepageScreen';
+import LoginScreen from './screens/pre-auth/LoginScreen';
+import ForgotPasswordScreen from './screens/pre-auth/ForgotPasswordScreen';
+import SearchScreen from './screens/post-auth/bottom-navbar/SearchScreen';
+import ProfilePageScreen from './screens/post-auth/bottom-navbar/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-import CreatePostScreen from './screens/CreatePostScreen';
-import ConnectionScreen from './screens/ConnectionScreen';
-import MessageScreen from './screens/MessageScreen';  // Add this import
-import MenuScreen from './screens/MenuScreen';  // Add this import
-import AccountSettingsScreen from './screens/AccountSettingsScreen';  // Add this import
+import CreatePostScreen from './screens/post-auth/bottom-navbar/CreatePostScreen';
+import ConnectionScreen from './screens/post-auth/bottom-navbar/ConnectionScreen';
+import MessageScreen from './screens/post-auth/homepageFeatures/MessageScreen';  // Add this import
+import MenuScreen from './screens/post-auth/homepageFeatures/MenuScreen';  // Add this import
+import AccountSettingsScreen from './screens/post-auth/bottom-navbar/accountsettingspages/AccountSettingsScreen';  // Add this import
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

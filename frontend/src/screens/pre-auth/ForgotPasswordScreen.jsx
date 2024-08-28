@@ -37,7 +37,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/images/inke_logo.png')} style={styles.logo} />
+            <Image source={require('../../assets/images/inke_logo.png')} style={styles.logo} />
             <Text style={styles.title}>Reset Password</Text>
 
             <Text style={styles.label}>Enter your email address to reset your password</Text>
