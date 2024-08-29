@@ -102,16 +102,6 @@ class LikeSerializer(serializers.ModelSerializer):
         model = models.Like
         fields = ['id', 'user', 'post', 'created_at']
 
-
-# TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
-class ConnectionSerializer(serializers.ModelSerializer):
-    # Template Serializer for Connection model.
-
-    class Meta:
-        model = models.Connection
-        fields = '__all__'
-
-
 # TEMPLATE SERIALIZER. NEED TO DEVELOP STILL
 class SocialCirclesSerializer(serializers.ModelSerializer):
     # Serializer for SocialCircles model.
@@ -229,3 +219,22 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'title', 'text_content', 'image',
                   'video', 'audio', 'created_at', 'updated_at']
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
+
+# Connections serializers: 
+
+class ConnectionsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Connections
+        fields = ['from_user', 'to_user', 'status', 'created_at']
+
+class ConnectionStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Connections
+        fields = ['status']
+        extra_kwargs = {'status': {'required': True}}
+
+class ConnectedUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.UserProfile
+        fields = ['id', 'username', 'first_name', 'last_name']

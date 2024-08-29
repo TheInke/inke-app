@@ -4,7 +4,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import api_view
+from django.contrib.auth import get_user_model
+from django.db.models import Q
 from . import models, serializers
+
+User = get_user_model()
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -424,3 +428,75 @@ class SocialCirclesDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_response(self):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+# Connections:
+
+# 1. Create a connection instance with a POST method
+class CreateConnectionView(generics.CreateAPIView):
+    serializer_class = serializers.ConnectionsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        from_user = self.request.user
+        to_user_id = self.request.data.get('to_user')
+        try:
+            to_user = User.objects.get(id=to_user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User does not exist."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save(from_user=from_user, to_user=to_user, status='pending')
+
+# 2. Accept or reject a connection invite
+class UpdateConnectionStatusView(generics.UpdateAPIView):
+    serializer_class = serializers.ConnectionStatusUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return models.Connections.objects.filter(to_user=self.request.user, status='pending')
+
+    def perform_update(self, serializer):
+        connection = self.get_object()
+        status_choice = self.request.data.get('status')
+        if status_choice not in ['accepted', 'rejected']:
+            return Response({"error": "Invalid status choice."}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+
+# 3. Fetch a user's connections, invites (received), and requests (sent)
+
+class UserInvitesView(generics.ListAPIView):
+    serializer_class = serializers.ConnectionsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return models.Connections.objects.filter(to_user=user, status='pending')
+
+class UserRequestsView(generics.ListAPIView):
+    serializer_class = serializers.ConnectionsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return models.Connections.objects.filter(from_user=user, status='pending')
+
+
+# Returns all connections that the user has (accepted, another term of "friends")
+class ConnectedUsersView(generics.ListAPIView):
+    serializer_class = serializers.ConnectedUsersSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        connections = models.Connections.objects.filter(
+           Q(from_user=user) | Q(to_user=user),
+            status='accepted'
+        )
+        
+        connected_user_ids = set()
+        for connection in connections:
+            if connection.from_user == user:
+                connected_user_ids.add(connection.to_user.id)
+            else:
+                connected_user_ids.add(connection.from_user.id)
+        
+        return models.UserProfile.objects.filter(id__in=connected_user_ids)

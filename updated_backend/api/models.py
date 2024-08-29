@@ -99,7 +99,8 @@ class Like(models.Model):
         return f'{self.user.username} likes {self.post.title}'
 
 
-class Connection(models.Model):
+class Connections(models.Model):
+    
     """
     Represents connections between users.
 
@@ -109,18 +110,10 @@ class Connection(models.Model):
         status (str): Status of the connection request (pending, accepted, rejected).
         created_at (DateTimeField): Timestamp when the connection was created.
     """
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('rejected', 'Rejected'),
-    ]
 
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='sent_connections', on_delete=models.CASCADE)
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='received_connections', on_delete=models.CASCADE)
-    status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default='pending')
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='requests', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invites', on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -128,6 +121,9 @@ class Connection(models.Model):
 
     def __str__(self):
         return f'{self.from_user} to {self.to_user} ({self.status})'
+
+
+
 
 
 class SocialCircles(models.Model):
