@@ -41,8 +41,8 @@ urlpatterns = [
 
     path('connections/create/', views.CreateConnectionView.as_view(), name='create-connection'),  # creates a new connection
     path('connections/update-status/<int:pk>/', views.UpdateConnectionStatusView.as_view(), name='update-connection-status'), # updates status of connection between request user and user_id
-    path('invites/<int:user_id>/', views.UserInvitesView.as_view(), name='user-invites'), # lists the connections the user is invited to
-    path('requests/<int:user_id>/', views.UserRequestsView.as_view(), name='user-requests'), # lists the connections the user has sent out
+    path('connections/invites/', views.UserInvitesView.as_view(), name='user-invites'), # lists the connections the user is invited to
+    path('connections/requests/', views.UserRequestsView.as_view(), name='user-requests'), # lists the connections the user has sent out
     path('connections/connected-users/', views.ConnectedUsersView.as_view(), name='connected-users'), # lists all of the accepted connections of the user
 
 ]
