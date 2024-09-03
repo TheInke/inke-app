@@ -137,7 +137,7 @@ const AccountSettingsScreenComponent = () => {
 const AccountSettingsScreen = () => (
     <Stack.Navigator>
         <Stack.Screen 
-            name="AccountSettings" 
+            name="minAccountSettings" 
             component={AccountSettingsScreenComponent}
             options={{
                 headerTitle: 'Account Settings',

@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import HomepageScreen from './screens/post-auth/bottom-navbar/HomepageScreen';
 import LoginScreen from './screens/pre-auth/LoginScreen';
 import ForgotPasswordScreen from './screens/pre-auth/ForgotPasswordScreen';
+import SignupScreen from './screens/pre-auth/SignupScreen';
 import SearchScreen from './screens/post-auth/bottom-navbar/SearchScreen';
 import ProfilePageScreen from './screens/post-auth/bottom-navbar/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -30,6 +31,11 @@ const AuthStack = () => (
         <Stack.Screen
             name="ForgotPassword"
             component={ForgotPasswordScreen} // Adding ForgotPasswordScreen
+            options={{ headerShown: false }} // Hide the header for the forgot password screen
+        />
+        <Stack.Screen
+            name="Signup"
+            component={SignupScreen} // Adding ForgotPasswordScreen
             options={{ headerShown: false }} // Hide the header for the forgot password screen
         />
     </Stack.Navigator>
