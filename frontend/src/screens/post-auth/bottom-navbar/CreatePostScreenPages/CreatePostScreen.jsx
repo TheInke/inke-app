@@ -9,13 +9,13 @@ import { Video } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-import { API_URL } from '../../../constants';
+import { API_URL } from '../../../../constants';
 
 
-import { fetchWithTokenRefresh } from '../../../services/api';
+import { fetchWithTokenRefresh } from '../../../../services/api';
 
 
-import stayTuned from '../../../assets/images/staytuned.png';
+import stayTuned from '../../../../assets/images/staytuned.png';
 
 
 const { height, width } = Dimensions.get('window');

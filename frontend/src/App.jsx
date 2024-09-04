@@ -5,18 +5,23 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import HomepageScreen from './screens/post-auth/bottom-navbar/HomepageScreen';
+import HomepageScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/HomepageScreen';
 import LoginScreen from './screens/pre-auth/LoginScreen';
 import ForgotPasswordScreen from './screens/pre-auth/ForgotPasswordScreen';
 import SignupScreen from './screens/pre-auth/SignupScreen';
-import SearchScreen from './screens/post-auth/bottom-navbar/SearchScreen';
-import ProfilePageScreen from './screens/post-auth/bottom-navbar/ProfilePageScreen';
+import SearchScreen from './screens/post-auth/bottom-navbar/SearchScreenPages/SearchScreen';
+import ProfilePageScreen from './screens/post-auth/bottom-navbar/ProfilePageScreenPages/ProfilePageScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-import CreatePostScreen from './screens/post-auth/bottom-navbar/CreatePostScreen';
-import ConnectionScreen from './screens/post-auth/bottom-navbar/ConnectionScreen';
-import MessageScreen from './screens/post-auth/homepageFeatures/MessageScreen';  // Add this import
-import MenuScreen from './screens/post-auth/homepageFeatures/MenuScreen';  // Add this import
-import AccountSettingsScreen from './screens/post-auth/bottom-navbar/accountsettingspages/AccountSettingsScreen';  // Add this import
+import CreatePostScreen from './screens/post-auth/bottom-navbar/CreatePostScreenPages/CreatePostScreen';
+import ConnectionScreen from './screens/post-auth/bottom-navbar/ConnectionScreenPages/ConnectionScreen';
+import MessageScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MessageScreen';  // Add this import
+import MenuScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MenuScreen';  // Add this import
+import AccountSettingsScreen from './screens/post-auth/bottom-navbar/AcountSettingsPages/AccountSettingsScreen';  // Add this import
+import MeditationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/MeditationScreen';
+import NotificationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/NotificationScreen';
+import LiveStreamScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/LiveStreamScreen';
+
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -157,8 +162,24 @@ const MainStack = () => (
             name="Menu"
             component={MenuScreen} // Add the Menu screen
             options={{
-                headerTitle: 'Menu', // Title for MenuScreen
+                headerTitle: 'Menu',
+                 // Title for MenuScreen
             }}
+        />
+        <Stack.Screen
+            name="MeditationScreen"
+            component={MeditationScreen}
+            options={{ headerShown: true, title: 'Meditation' }} // Hide header from this screen
+        />
+        <Stack.Screen
+            name="NotificationScreen"
+            component={NotificationScreen}
+            options={{ headerShown: true, title: 'Notifications' }} // Hide header from this screen
+        />
+        <Stack.Screen
+            name="LiveStreamScreen"
+            component={LiveStreamScreen}
+            options={{ headerShown: true, title: 'Live Stream' }} // Hide header from this screen
         />
         <Stack.Screen
             name="AccountSettings"

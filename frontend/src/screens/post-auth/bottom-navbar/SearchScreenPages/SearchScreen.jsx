@@ -615,11 +615,11 @@ export default SearchScreen;
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons, MaterialIcons, FontAwesome, Entypo } from '@expo/vector-icons';
-import article_Img from '../../../assets/images/articleImg.png';
-import vid_Img1 from '../../../assets/images/vidImg1.png';
-import vid_Img2 from '../../../assets/images/vidImg2.png';
-import pc_Img1 from '../../../assets/images/pcImg1.png';
-import pc_Img2 from '../../../assets/images/pcImg2.png';
+import article_Img from '../../../../assets/images/articleImg.png';
+import vid_Img1 from '../../../../assets/images/vidImg1.png';
+import vid_Img2 from '../../../../assets/images/vidImg2.png';
+import pc_Img1 from '../../../../assets/images/pcImg1.png';
+import pc_Img2 from '../../../../assets/images/pcImg2.png';
 
 
 const SearchScreen = ({ navigation }) => {
