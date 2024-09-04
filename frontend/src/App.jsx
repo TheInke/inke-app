@@ -20,7 +20,7 @@ import AccountSettingsScreen from './screens/post-auth/bottom-navbar/AcountSetti
 import MeditationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/MeditationScreen';
 import NotificationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/NotificationScreen';
 import LiveStreamScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/LiveStreamScreen';
-
+import SocialCircleScreen from './screens/post-auth/bottom-navbar/ConnectionScreenPages/SocialCirclePages/SocialCircleScreen';
 
 
 const Stack = createStackNavigator();
@@ -149,6 +149,13 @@ const MainStack = () => (
                     </TouchableOpacity>
                 ),
                 headerTitle: 'Create Post', // Title for CreatePostScreen
+            }}
+        />
+        <Stack.Screen
+            name="SocialCircleScreen"
+            component={SocialCircleScreen} 
+            options={{
+                headerTitle: 'SocialCircle', 
             }}
         />
         <Stack.Screen

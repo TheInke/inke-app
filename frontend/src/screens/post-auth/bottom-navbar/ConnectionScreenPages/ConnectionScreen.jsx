@@ -25,9 +25,20 @@ const dummyConnections = {
         { id: 12, name: 'Alice' },
         { id: 13, name: 'Bob' },
     ],
+    SocialCircles: [
+        { id: 1, name: 'Mentally Well', image: 'path/to/image1' },
+        { id: 2, name: 'Songwriters', image: 'path/to/image2' },
+        { id: 3, name: 'Artists', image: 'path/to/image3' },
+        { id: 4, name: 'Writers', image: 'path/to/image4' },
+        { id: 5, name: 'Photographers', image: 'path/to/image5' },
+        { id: 6, name: 'Travelers', image: 'path/to/image6' },
+        { id: 7, name: 'Gamers', image: 'path/to/image7' },
+        { id: 8, name: 'Coders', image: 'path/to/image8' },
+        { id: 9, name: 'Entrepreneurs', image: 'path/to/image9' },
+    ],
 };
 
-const ConnectionsPage = () => {
+const ConnectionsPage = ({ navigation }) => {
     const [connections, setConnections] = useState([]);
     const [selectedTab, setSelectedTab] = useState('All');
     const [searchQuery, setSearchQuery] = useState('');
@@ -38,36 +49,38 @@ const ConnectionsPage = () => {
 
     const fetchConnections = async () => {
         try {
-            // For now, using dummy data for testing
+            const response = await fetch(`${API_URL}/connections?status=${selectedTab.toLowerCase()}`, {
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setConnections(data);
+            } else {
+                console.warn('Failed to fetch data from API. Using dummy data instead.');
+                const dummyData = dummyConnections[selectedTab] || [];
+                setConnections(dummyData);
+            }
+        } catch (error) {
+            console.error('Error fetching connections from API:', error);
             const dummyData = dummyConnections[selectedTab] || [];
             setConnections(dummyData);
-
-            // Uncomment below code for actual API fetching
-            // const response = await fetch(`${API_URL}/connections?status=${selectedTab.toLowerCase()}`, {
-            //     headers: {
-            //         'Authorization': `Bearer ${ACCESS_TOKEN}`,
-            //         'Content-Type': 'application/json',
-            //     },
-            // });
-            // const data = await response.json();
-            // setConnections(data);
-        } catch (error) {
-            console.error('Error fetching connections:', error);
         }
     };
 
     const handleRemove = async (connectionId) => {
         try {
-            // API call to remove connection
-            // await fetch(`${API_URL}/connections/${connectionId}/delete`, {
-            //     method: 'DELETE',
-            //     headers: {
-            //         'Authorization': `Bearer ${ACCESS_TOKEN}`,
-            //         'Content-Type': 'application/json',
-            //     },
-            // });
+            await fetch(`${API_URL}/connections/${connectionId}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            // For testing, simply log the action
             console.log(`Removed connection with ID: ${connectionId}`);
             fetchConnections();
         } catch (error) {
@@ -77,26 +90,20 @@ const ConnectionsPage = () => {
 
     const handleAccept = async (connectionId) => {
         try {
-            // API call to accept connection
-            // await fetch(`${API_URL}/connections/${connectionId}/accept`, {
-            //     method: 'POST',
-            //     headers: {
-            //         'Authorization': `Bearer ${ACCESS_TOKEN}`,
-            //         'Content-Type': 'application/json',
-            //     },
-            // });
+            await fetch(`${API_URL}/connections/${connectionId}/accept`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            // For testing, simply log the action
             console.log(`Accepted connection with ID: ${connectionId}`);
             fetchConnections();
         } catch (error) {
             console.error('Error accepting connection:', error);
         }
     };
-
-    const filteredConnections = connections.filter(connection =>
-        connection.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
 
     const renderConnectionItem = ({ item }) => (
         <View style={styles.connectionItem}>
@@ -147,6 +154,16 @@ const ConnectionsPage = () => {
         </View>
     );
 
+    const renderSocialCircleItem = ({ item }) => (
+        <TouchableOpacity
+            style={styles.socialCircle}
+            onPress={() => navigation.navigate('SocialCircleScreen', { circleName: item.name })}
+        >
+            <View style={styles.socialCircleImage} />
+            <Text style={styles.socialCircleText}>{item.name}</Text>
+        </TouchableOpacity>
+    );
+
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
@@ -161,32 +178,37 @@ const ConnectionsPage = () => {
             </View>
 
             <View style={styles.tabContainer}>
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'All' && styles.activeTab]}
-                    onPress={() => setSelectedTab('All')}
-                >
-                    <Text style={[styles.tabText, selectedTab === 'All' && styles.activeTabText]}>All</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'Pending' && styles.activeTab]}
-                    onPress={() => setSelectedTab('Pending')}
-                >
-                    <Text style={[styles.tabText, selectedTab === 'Pending' && styles.activeTabText]}>Pending</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tab, selectedTab === 'Sent' && styles.activeTab]}
-                    onPress={() => setSelectedTab('Sent')}
-                >
-                    <Text style={[styles.tabText, selectedTab === 'Sent' && styles.activeTabText]}>Sent</Text>
-                </TouchableOpacity>
+                {['All', 'Pending', 'Sent', 'SocialCircles'].map(tab => (
+                    <TouchableOpacity
+                        key={tab}
+                        style={[styles.tab, selectedTab === tab && styles.activeTab]}
+                        onPress={() => setSelectedTab(tab)}
+                    >
+                        <Text style={[styles.tabText, selectedTab === tab && styles.activeTabText]}>{tab}</Text>
+                    </TouchableOpacity>
+                ))}
             </View>
 
-            <FlatList
-                data={filteredConnections}
-                renderItem={renderConnectionItem}
-                keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={styles.list}
-            />
+            {selectedTab === 'SocialCircles' ? (
+                <FlatList
+                    data={dummyConnections.SocialCircles}
+                    renderItem={renderSocialCircleItem}
+                    keyExtractor={(item) => item.id.toString()}
+                    numColumns={2}
+                    contentContainerStyle={styles.list}
+                    key={selectedTab}
+                />
+            ) : (
+                <FlatList
+                    data={connections.filter(connection =>
+                        connection.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    )}
+                    renderItem={renderConnectionItem}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={styles.list}
+                    key={selectedTab}
+                />
+            )}
         </View>
     );
 };
@@ -307,6 +329,22 @@ const styles = StyleSheet.create({
     removeButtonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    socialCircle: {
+        flex: 1,
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    socialCircleImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#ddd', // Placeholder color; replace with image source
+    },
+    socialCircleText: {
+        marginTop: 5,
+        fontSize: 14,
+        textAlign: 'center',
     },
 });
 
