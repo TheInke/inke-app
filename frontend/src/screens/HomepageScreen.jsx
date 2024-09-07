@@ -80,14 +80,14 @@ import { API_URL, ACCESS_TOKEN } from '../constants';
 
 const HomePage = () => {
     const [posts, setPosts] = useState([]);
-    const [showCommentsModal, setShowCommentsModal] = useState(false);
-    const [selectedPost, setSelectedPost] = useState(null);
-    const [commentText, setCommentText] = useState('');
+    // const [showCommentsModal, setShowCommentsModal] = useState(false);
+    // const [selectedPost, setSelectedPost] = useState(null);
+    // const [commentText, setCommentText] = useState('');
     const [activeTab, setActiveTab] = useState('ForYou');
     const [showFullScreenImage, setShowFullScreenImage] = useState(false);
     const [selectedImageUrl, setSelectedImageUrl] = useState('');
-    const [animations, setAnimations] = useState({});
-    const lastPressRef = useRef(0);
+    // const [animations, setAnimations] = useState({});
+    // const lastPressRef = useRef(0);
     const [currentUserProfilePic, setCurrentUserProfilePic] = useState('https://via.placeholder.com/150');
 
     useEffect(() => {
@@ -113,45 +113,47 @@ const HomePage = () => {
         fetchPosts();
     }, []);
 
-    const handleLike = async (postId) => {
-        try {
-            const updatedPosts = posts.map((post) =>
-                post.id === postId ? { ...post, isLiked: !post.isLiked } : post
-            );
-            setPosts(updatedPosts);
+    // To handle the like functionality, you can use the following code:
+    // const handleLike = async (postId) => {
+    //     try {
+    //         const updatedPosts = posts.map((post) =>
+    //             post.id === postId ? { ...post, isLiked: !post.isLiked } : post
+    //         );
+    //         setPosts(updatedPosts);
     
-            await fetch(`${API_URL}/posts/${postId}/like`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ isLiked: !updatedPosts.find(post => post.id === postId).isLiked }),
-            });
-        } catch (error) {
-            console.error('Error liking post:', error);
-        }
-    };
+    //         await fetch(`${API_URL}/posts/${postId}/like`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${ACCESS_TOKEN}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ isLiked: !updatedPosts.find(post => post.id === postId).isLiked }),
+    //         });
+    //     } catch (error) {
+    //         console.error('Error liking post:', error);
+    //     }
+    // };
 
-    const handleFavorite = async (postId) => {
-        try {
-            const updatedPosts = posts.map((post) =>
-                post.id === postId ? { ...post, isFavorited: !post.isFavorited } : post
-            );
-            setPosts(updatedPosts);
+// To handle the favorite functionality, you can use the following code:
+    // const handleFavorite = async (postId) => {
+    //     try {
+    //         const updatedPosts = posts.map((post) =>
+    //             post.id === postId ? { ...post, isFavorited: !post.isFavorited } : post
+    //         );
+    //         setPosts(updatedPosts);
     
-            await fetch(`${API_URL}/posts/${postId}/favorite`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ isFavorited: !updatedPosts.find(post => post.id === postId).isFavorited }),
-            });
-        } catch (error) {
-            console.error('Error favoriting post:', error);
-        }
-    };
+    //         await fetch(`${API_URL}/posts/${postId}/favorite`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Authorization': `Bearer ${ACCESS_TOKEN}`,
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ isFavorited: !updatedPosts.find(post => post.id === postId).isFavorited }),
+    //         });
+    //     } catch (error) {
+    //         console.error('Error favoriting post:', error);
+    //     }
+    // };
 
     const openFullScreenImage = (imageUrl) => {
         setSelectedImageUrl(imageUrl);
@@ -169,24 +171,25 @@ const HomePage = () => {
         }
     };
 
-    const handlePress = (postId) => {
-        handleLike(postId);
+    // Handle double tap to like
+    // const handlePress = (postId) => {
+    //     handleLike(postId);
 
-        if (!animations[postId]) {
-            const scaleAnim = new Animated.Value(1);
-            setAnimations(prev => ({ ...prev, [postId]: scaleAnim }));
+    //     if (!animations[postId]) {
+    //         const scaleAnim = new Animated.Value(1);
+    //         setAnimations(prev => ({ ...prev, [postId]: scaleAnim }));
 
-            Animated.sequence([
-                Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
-                Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
-            ]).start();
-        } else {
-            Animated.sequence([
-                Animated.timing(animations[postId], { toValue: 1.2, duration: 100, useNativeDriver: true }),
-                Animated.spring(animations[postId], { toValue: 1, friction: 3, useNativeDriver: true }),
-            ]).start();
-        }
-    };
+    //         Animated.sequence([
+    //             Animated.timing(scaleAnim, { toValue: 1.2, duration: 100, useNativeDriver: true }),
+    //             Animated.spring(scaleAnim, { toValue: 1, friction: 3, useNativeDriver: true }),
+    //         ]).start();
+    //     } else {
+    //         Animated.sequence([
+    //             Animated.timing(animations[postId], { toValue: 1.2, duration: 100, useNativeDriver: true }),
+    //             Animated.spring(animations[postId], { toValue: 1, friction: 3, useNativeDriver: true }),
+    //         ]).start();
+    //     }
+    // };
 
     const renderPost = ({ item }) => (
         <View style={styles.postContainer}>
@@ -199,46 +202,19 @@ const HomePage = () => {
             </View>
             {item.imageUrl ? (
                 <Pressable onPress={() => openFullScreenImage(item.imageUrl)}>
-                    <Image source={{ uri: item.imageUrl }} style={styles.postImage} />
+                    <Image 
+                        source={{ uri: item.imageUrl }} 
+                        style={styles.postImage} 
+                        resizeMode="cover"
+                    />
                 </Pressable>
             ) : (
-                <View style={styles.textPostContainer}>
+                <View style={[styles.textPostContainer, { flex: 1 }]}>
                     <Text style={styles.textPostContent}>{item.text}</Text>
                 </View>
             )}
-            <View style={styles.actionsContainer}>
-                <TouchableWithoutFeedback onPress={() => handlePress(item.id)}>
-                    <Animated.View style={{ transform: [{ scale: animations[item.id] || new Animated.Value(1) }] }}>
-                        <FontAwesome
-                            name={item.isLiked ? 'heart' : 'heart-o'}
-                            size={20}
-                            color={item.isLiked ? 'red' : 'black'}
-                        />
-                    </Animated.View>
-                </TouchableWithoutFeedback>
-                <Pressable onPress={() => openCommentsModal(item)}>
-                    <FontAwesome name="comment-o" size={20} color="black" />
-                </Pressable>
-                <Pressable onPress={() => handleFavorite(item.id)}>
-                    <FontAwesome
-                        name={item.isFavorited ? 'bookmark' : 'bookmark-o'}
-                        size={20}
-                        color={item.isFavorited ? 'yellow' : 'black'}
-                    />
-                </Pressable>
-            </View>
         </View>
     );
-
-    const openCommentsModal = (post) => {
-        setSelectedPost(post);
-        setShowCommentsModal(true);
-    };
-
-    const closeCommentsModal = () => {
-        setShowCommentsModal(false);
-        setSelectedPost(null);
-    };
 
     const handleTabPress = (tab) => {
         setActiveTab(tab);
@@ -287,51 +263,6 @@ const HomePage = () => {
                         numColumns={2}
                         columnWrapperStyle={styles.columnWrapper}
                     />
-                    <Modal
-                        animationType="slide"
-                        visible={showCommentsModal}
-                        onRequestClose={closeCommentsModal}
-                        transparent={true}
-                    >
-                        <View style={styles.modalContainer}>
-                            <View style={styles.modalHeader}>
-                                <Text style={styles.modalHeaderText}>Comments</Text>
-                                <View style={styles.divider} />
-                            </View>
-                            <FlatList
-                                data={selectedPost ? selectedPost.comments : []}
-                                renderItem={({ item }) => (
-                                    <View style={styles.commentContainer}>
-                                        <Text style={styles.commentText}>
-                                            <Text style={styles.commentUsername}>{item.user}</Text>: {item.text}
-                                        </Text>
-                                    </View>
-                                )}
-                                keyExtractor={(item, index) => index.toString()}
-                            />
-                            <View style={styles.commentInputContainer}>
-                                <TextInput
-                                    style={styles.commentInput}
-                                    placeholder="Add a comment..."
-                                    placeholderTextColor="#888888"
-                                    value={commentText}
-                                    onChangeText={setCommentText}
-                                />
-                                <Pressable
-                                    style={styles.addCommentButton}
-                                    onPress={() => {
-                                        // Add comment functionality
-                                        setCommentText('');
-                                    }}
-                                >
-                                    <Text style={styles.addCommentButtonText}>Send</Text>
-                                </Pressable>
-                            </View>
-                            <Pressable style={styles.closeModalButton} onPress={closeCommentsModal}>
-                                <Text style={styles.closeModalButtonText}>Close</Text>
-                            </Pressable>
-                        </View>
-                    </Modal>
                     <Modal
                         visible={showFullScreenImage}
                         transparent={true}
@@ -407,24 +338,25 @@ const styles = StyleSheet.create({
         borderBottomColor: '#BFAC98',
     },
     overlay: {
-        flex: 1,
-        padding: 8,
+        padding: 3,
     },
     columnWrapper: {
         justifyContent: 'space-between',
-        marginHorizontal: -15,
-        marginTop: -15,
+        marginHorizontal: -10,
+        marginTop: -7,
+        marginLeft: -5,
     },
     postContainer: {
         flex: 1,
-        margin: 8,
+        margin: 5,
         overflow: 'hidden',
     },
     textPostContainer: {
-        padding: 54,
+        padding: 20,
         backgroundColor: '#1c1c1c',
         width: '100%',
-        maxHeight: 300,
+        minHeight: 250,
+        maxHeight: 250,
         overflow: 'hidden',
         justifyContent: 'center',
     },
@@ -586,5 +518,6 @@ const styles = StyleSheet.create({
         borderColor: '#FFFFFF',
     },
 });
+
 
 export default HomePage;
