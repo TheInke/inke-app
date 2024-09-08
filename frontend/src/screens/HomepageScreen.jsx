@@ -72,11 +72,13 @@ const mockPosts = [
         ],
     },
 ];
+import FavoritesScreen from './FavoritesScreen';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Image, StyleSheet, Modal, Pressable, TextInput, Animated, TouchableWithoutFeedback, FlatList } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { API_URL, ACCESS_TOKEN } from '../constants';
+
 
 const HomePage = () => {
     const [posts, setPosts] = useState([]);
@@ -95,23 +97,23 @@ const HomePage = () => {
         setCurrentUserProfilePic('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTroSOiSqh5acX6IE2p04232ISBtkG5xREnjQ&s');
     }, []);
 
-    useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const response = await fetch(`${API_URL}/posts`, {
-                    headers: {
-                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const data = await response.json();
-                setPosts(data);
-            } catch (error) {
-                console.error('Error fetching posts:', error);
-            }
-        };
-        fetchPosts();
-    }, []);
+    // useEffect(() => {
+    //     const fetchPosts = async () => {
+    //         try {
+    //             const response = await fetch(`${API_URL}/posts`, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${ACCESS_TOKEN}`,
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //             });
+    //             const data = await response.json();
+    //             setPosts(data);
+    //         } catch (error) {
+    //             console.error('Error fetching posts:', error);
+    //         }
+    //     };
+    //     fetchPosts();
+    // }, []);
 
     // To handle the like functionality, you can use the following code:
     // const handleLike = async (postId) => {
@@ -287,9 +289,7 @@ const HomePage = () => {
                 </View>
             )}
             {activeTab === 'Favorites' && (
-                <View style={styles.tabContent}>
-                    <Text>Favorites Content</Text>
-                </View>
+                <FavoritesScreen />
             )}
             <View style={styles.bottomNavigationBar}>
                 <Pressable onPress={handleSearchPress}>
