@@ -8,18 +8,11 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { Video } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 import { API_URL } from '../../../../constants';
-
-
 import { fetchWithTokenRefresh } from '../../../../services/api';
-
-
 import stayTuned from '../../../../assets/images/staytuned.png';
 
-
 const { height, width } = Dimensions.get('window');
-
 
 export default function CreatePostScreen() {
   const [facing, setFacing] = useState('back');
@@ -36,24 +29,19 @@ export default function CreatePostScreen() {
   const cameraRef = useRef(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalType, setModalType] = useState('');
-
+  const [permissionModalVisible, setPermissionModalVisible] = useState(!permission?.granted);
 
   if (!permission) {
     return <View />;
   }
 
+  const requestPermissionWithModal = () => {
+    requestPermission().then(() => setPermissionModalVisible(false));
+  };
 
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to use the camera</Text>
-        <TouchableOpacity style={styles.requestPermissionButton} onPress={requestPermission}>
-          <Text style={styles.requestPermissionButtonText}>Grant Permission</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
+  const handlePermissionModalClose = () => {
+    setPermissionModalVisible(false);
+  };
 
   const cropImage = async (uri) => {
     const manipResult = await ImageManipulator.manipulateAsync(
@@ -65,14 +53,12 @@ export default function CreatePostScreen() {
     setFullScreen(false);
   };
 
-
   const pickMedia = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
     });
-
 
     if (!result.canceled) {
       const pickedAsset = result.assets[0];
@@ -86,7 +72,6 @@ export default function CreatePostScreen() {
     }
   };
 
-
   const captureMedia = async () => {
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -94,7 +79,6 @@ export default function CreatePostScreen() {
       aspect: [3, 5],
       quality: 1,
     });
-
 
     if (!result.canceled) {
       const capturedAsset = result.assets[0];
@@ -108,34 +92,28 @@ export default function CreatePostScreen() {
     }
   };
 
-
   const cancelMedia = () => {
     setMedia(null);
     setFullScreen(true);
   };
 
-
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
 
-
   const hideDatePicker = () => {
     setDatePickerVisibility(false);
   };
-
 
   const handleConfirm = (date) => {
     setScheduleDate(date);
     hideDatePicker();
   };
 
-
   const showModal = (type) => {
     setModalType(type);
     setModalVisible(true);
   };
-
 
   const handleOkPress = () => {
     setModalVisible(false);
@@ -146,7 +124,6 @@ export default function CreatePostScreen() {
     }
   };
 
-
   const handlePostSubmission = async () => {
     try {
       const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
@@ -154,21 +131,21 @@ export default function CreatePostScreen() {
       if (media) {
         const formData = new FormData();
 
-        // Append the file, setting the name as 'file' to match your backend serializer
         formData.append('file', {
-          uri: media,               // Local file path
-          type: mediaType === 'image' ? 'image/jpeg' : 'video/mp4',  // MIME type
-          name: mediaType === 'image' ? 'photo.jpg' : 'video.mp4',   // File name
+          uri: media,
+          type: mediaType === 'image' ? 'image/jpeg' : 'video/mp4',
+          name: mediaType === 'image' ? 'photo.jpg' : 'video.mp4',
         });
+
         if (!accessToken) {
           console.error('No access token found, unable to proceed with the request.');
           return;
         }
+
         const response = await fetchWithTokenRefresh(`${API_URL}/posts/`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${accessToken}`,
-            // No need to set Content-Type for FormData; it's automatically set
           },
           body: formData
         });
@@ -179,30 +156,42 @@ export default function CreatePostScreen() {
           console.error('Failed to create post:', response.status);
         }
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error while creating post:', error);
     }
-
   };
-
-
 
   const toggleSchedule = () => {
     setIsSchedule(!isSchedule);
     showModal('schedule');
   };
 
-
   const toggle24hPost = () => {
     setIs24hPost(!is24hPost);
     showModal('24hPost');
   };
 
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
+        {/* Permission Modal */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={permissionModalVisible}
+          onRequestClose={handlePermissionModalClose}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.permissionModalContainer}>
+              <Text style={styles.permissionModalText}>We need your permission to use the camera</Text>
+              <TouchableOpacity style={styles.permissionButton} onPress={requestPermissionWithModal}>
+                <Text style={styles.permissionButtonText}>Grant Permission</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Existing Modal */}
         <Modal
           animationType="fade"
           transparent={true}
@@ -219,6 +208,8 @@ export default function CreatePostScreen() {
             </View>
           </View>
         </Modal>
+
+        {/* Main Content */}
         {fullScreen ? (
           <>
             <View style={styles.fullScreenContainer}>
@@ -307,7 +298,6 @@ export default function CreatePostScreen() {
   );
 }
 
-
 // Styles for the components
 const styles = StyleSheet.create({
   container: {
@@ -319,6 +309,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  permissionModalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  permissionModalText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  permissionButton: {
+    backgroundColor: 'black',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  permissionButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   modalContainer: {
     width: '80%',
@@ -378,10 +390,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     resizeMode: 'contain',
-  },
-  camera: {
-    flex: 1,
-    width: '100%',
   },
   buttonContainer: {
     height: 60,
@@ -471,7 +479,7 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     borderRadius: 5,
-    marginBottom: 5,
+    marginBottom: 55,
     marginLeft: 10,
     marginRight: 10,
   },
@@ -480,19 +488,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  requestPermissionButton: {
-    backgroundColor: 'black',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  requestPermissionButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
 });
-
-
-
-

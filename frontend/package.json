@@ -24,7 +24,7 @@
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "expo": "~51.0.28",
-    "expo-av": "~14.0.6",
+    "expo-av": "~14.0.7",
     "expo-blur": "~13.0.2",
     "expo-camera": "~15.0.14",
     "expo-face-detector": "~12.7.1",
