@@ -14,14 +14,15 @@ import ProfilePageScreen from './screens/post-auth/bottom-navbar/ProfilePageScre
 import ProtectedRoute from './components/ProtectedRoute';
 import CreatePostScreen from './screens/post-auth/bottom-navbar/CreatePostScreenPages/CreatePostScreen';
 import ConnectionScreen from './screens/post-auth/bottom-navbar/ConnectionScreenPages/ConnectionScreen';
-import MessageScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MessageScreen';  // Add this import
-import MenuScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MenuScreen';  // Add this import
-import AccountSettingsScreen from './screens/post-auth/bottom-navbar/AcountSettingsPages/AccountSettingsScreen';  // Add this import
+import MessageScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MessageScreen';
+import MenuScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/MenuScreen';
+import AccountSettingsScreen from './screens/post-auth/bottom-navbar/AcountSettingsPages/AccountSettingsScreen';
 import MeditationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/MeditationScreen';
 import NotificationScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/NotificationScreen';
 import LiveStreamScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/Menupages/LiveStreamScreen';
 import SocialCircleScreen from './screens/post-auth/bottom-navbar/ConnectionScreenPages/SocialCirclePages/SocialCircleScreen';
-
+import ChatScreen from './screens/post-auth/bottom-navbar/HomepageScreenPages/homepageFeatures/ChatScreen';
+import CreateSocialCircleScreen from './screens/post-auth/bottom-navbar/ConnectionScreenPages/SocialCirclePages/CreateSocialCircleScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,13 +36,13 @@ const AuthStack = () => (
         />
         <Stack.Screen
             name="ForgotPassword"
-            component={ForgotPasswordScreen} // Adding ForgotPasswordScreen
+            component={ForgotPasswordScreen}
             options={{ headerShown: false }} // Hide the header for the forgot password screen
         />
         <Stack.Screen
             name="Signup"
-            component={SignupScreen} // Adding ForgotPasswordScreen
-            options={{ headerShown: false }} // Hide the header for the forgot password screen
+            component={SignupScreen}
+            options={{ headerShown: false }} // Hide the header for the signup screen
         />
     </Stack.Navigator>
 );
@@ -88,9 +89,9 @@ const MainTab = ({ navigation }) => (
             name="Home" 
             component={HomepageScreen} 
             options={{
-                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Home</Text>, // Custom header title
-                headerTitleAlign: 'left', // Align title to the left
-                headerLeft: null, // No left-aligned icon
+                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Home</Text>,
+                headerTitleAlign: 'left',
+                headerLeft: null,
                 headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 10 }}>
                         <TouchableOpacity onPress={() => navigation.navigate('Message')} style={{ marginRight: 10 }}>
@@ -106,19 +107,31 @@ const MainTab = ({ navigation }) => (
         <Tab.Screen name="Search" component={SearchScreen} />
         <Tab.Screen
             name="CreatePostButton"
-            component={EmptyScreen} // Using a named component instead of an inline function
+            component={EmptyScreen}
             options={{
                 tabBarButton: (props) => <CreatePostButton {...props} navigation={navigation} />
             }}
         />
-        <Tab.Screen name="Connection" component={ConnectionScreen} />
+        <Tab.Screen 
+            name="Connection" 
+            component={ConnectionScreen}
+            options={{
+                headerTitle: () => <Text style={[styles.headerTitle, { fontWeight: 'bold' }]}>Connections</Text>,
+                headerTitleAlign: 'center',
+                headerRight: () => (
+                    <TouchableOpacity onPress={() => navigation.navigate('CreateSocialCircle')}>
+                        <Ionicons name="add-circle" size={25} color="black" style={{ marginRight: 15 }} />
+                    </TouchableOpacity>
+                ),
+            }} 
+        />
         <Tab.Screen
             name="Profile" 
             component={ProfilePageScreen} 
             options={{
-                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Profile</Text>, // Custom header title
-                headerTitleAlign: 'center', // Align title to the left
-                headerLeft: null, // No left-aligned icon
+                headerTitle: () => <Text style={[styles.headerTitle, {fontWeight: 'bold' }]}>Profile</Text>,
+                headerTitleAlign: 'center',
+                headerLeft: null,
                 headerRight: () => (
                     <View style={{ flexDirection: 'row', marginRight: 10 }}>
                         <TouchableOpacity onPress={() => navigation.navigate('AccountSettings')} style={{ marginRight: 10 }}>
@@ -142,13 +155,13 @@ const MainStack = () => (
             name="CreatePost"
             component={CreatePostScreen}
             options={{
-                headerShown: true, // Show the header for CreatePostScreen
+                headerShown: true,
                 headerLeft: ({ onPress }) => (
                     <TouchableOpacity onPress={onPress}>
                         <Ionicons name="arrow-back" size={25} style={{ marginLeft: 15 }} />
                     </TouchableOpacity>
                 ),
-                headerTitle: 'Create Post', // Title for CreatePostScreen
+                headerTitle: 'Create Post',
             }}
         />
         <Stack.Screen
@@ -160,40 +173,56 @@ const MainStack = () => (
         />
         <Stack.Screen
             name="Message"
-            component={MessageScreen} // Add the Message screen
+            component={MessageScreen}
             options={{
-                headerTitle: 'Messages', // Title for MessageScreen
+                headerTitle: 'Messages',
             }}
         />
         <Stack.Screen
+            name="Chat"
+            component={ChatScreen}
+            options={({ route }) => ({ title: route.params.name })}
+        />
+        <Stack.Screen
             name="Menu"
-            component={MenuScreen} // Add the Menu screen
+            component={MenuScreen}
             options={{
                 headerTitle: 'Menu',
-                 // Title for MenuScreen
             }}
         />
         <Stack.Screen
             name="MeditationScreen"
             component={MeditationScreen}
-            options={{ headerShown: true, title: 'Meditation' }} // Hide header from this screen
+            options={{ headerShown: true, title: 'Meditation' }}
         />
         <Stack.Screen
             name="NotificationScreen"
             component={NotificationScreen}
-            options={{ headerShown: true, title: 'Notifications' }} // Hide header from this screen
+            options={{ headerShown: true, title: 'Notifications' }}
         />
         <Stack.Screen
             name="LiveStreamScreen"
             component={LiveStreamScreen}
-            options={{ headerShown: true, title: 'Live Stream' }} // Hide header from this screen
+            options={{ headerShown: true, title: 'Live Stream' }}
         />
         <Stack.Screen
             name="AccountSettings"
-            component={AccountSettingsScreen} // Add the Account Settings screen
+            component={AccountSettingsScreen}
             options={{
-                headerTitle: 'Account Settings', // Title for AccountSettingsScreen
-                headerShown: false ,
+                headerTitle: 'Account Settings',
+                headerShown: false,
+            }}
+        />
+        <Stack.Screen
+            name="CreateSocialCircle"
+            component={CreateSocialCircleScreen}
+            options={{
+                headerTitle: 'Create Social Circle',
+                headerLeft: ({ onPress }) => (
+                    <TouchableOpacity onPress={onPress}>
+                        <Ionicons name="arrow-back" size={25} style={{ marginLeft: 15 }} />
+                    </TouchableOpacity>
+                ),
             }}
         />
     </Stack.Navigator>
@@ -221,9 +250,9 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     headerTitle: {
-        fontFamily: 'cursive', // Cursive font style
-        fontSize: 20, // Adjust the font size as needed
-        marginLeft: 15, // Adjust the margin to align with the left side
+        fontFamily: 'cursive',
+        fontSize: 20,
+        marginLeft: 15,
     },
 });
 

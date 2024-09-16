@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { LinearGradient } from 'expo-linear-gradient';
 
-const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
+const ClickableOption = ({
+  iconName,
+  text,
+  onPress,
+  textColor = 'black',
+  iconColor = "rgba(20, 20, 20, 1)",
+}) => (
   <View style={styles.clickableOptionShadowBox}>
     <TouchableOpacity style={styles.clickableOption} onPress={onPress} activeOpacity={0.7}>
       <Icon name={iconName} size={20} color={iconColor} />
@@ -15,11 +20,6 @@ const ClickableOption = ({ iconName, text, onPress, textColor, iconColor }) => (
   </View>
 );
 
-ClickableOption.defaultProps = {
-  textColor: 'black', // Replace 'default-icon' with your preferred default icon name
-  iconColor: "rgba(20, 20, 20, 1)",
-};
-
 const styles = StyleSheet.create({
   clickableOption: {
     flexDirection: 'row',
@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: '90%',
     alignSelf: 'center',
-
     marginTop: 15,
     padding: 10,
     backgroundColor: 'white',
