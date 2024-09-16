@@ -1,22 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Import Ionicons
-
-const messages = [
-  { id: '1', name: 'Eduardo', message: 'Tell me a fun fact.', time: '2 minutes ago', unread: 2 },
-  { id: '2', name: 'Greg', message: 'Can you recommend a good book?', time: '10 minutes ago', unread: 1 },
-  { id: '3', name: 'Angel', message: "What's the weather like today?", time: '35 minutes ago' },
-  { id: '4', name: 'Debra', message: "I don't eat, so I don't have a favorite food.", time: '2 hours ago' },
-  { id: '5', name: 'Darrell', message: 'Why did the scarecrow win an award? Because...', time: '4 hours ago' },
-  { id: '6', name: 'Arlene', message: 'Hi there!', time: '7 hours ago' },
-  { id: '7', name: 'Darlene', message: 'Hello!', time: '12 hours ago' },
-  { id: '8', name: 'Cody', message: 'Did you know...', time: '22 hours ago' },
-  { id: '9', name: 'Leslie', message: 'The capital of France is Paris.', time: '22 hours ago' },
-  { id: '10', name: 'Max', message: 'What genre are you interested in?', time: '3 days ago' },
-];
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const DirectMessageScreen = ({ navigation }) => {
+  const [messages, setMessages] = useState([
+    // Initial dummy data
+    { id: '1', name: 'Eduardo', message: 'Tell me a fun fact.', time: '2 minutes ago', unread: 2 },
+    { id: '2', name: 'Greg', message: 'Can you recommend a good book?', time: '10 minutes ago', unread: 1 },
+    { id: '3', name: 'Angel', message: "What's the weather like today?", time: '35 minutes ago' },
+    { id: '4', name: 'Debra', message: "I don't eat, so I don't have a favorite food.", time: '2 hours ago' },
+    { id: '5', name: 'Darrell', message: 'Why did the scarecrow win an award? Because...', time: '4 hours ago' },
+    { id: '6', name: 'Arlene', message: 'Hi there!', time: '7 hours ago' },
+    { id: '7', name: 'Darlene', message: 'Hello!', time: '12 hours ago' },
+    { id: '8', name: 'Cody', message: 'Did you know...', time: '22 hours ago' },
+    { id: '9', name: 'Leslie', message: 'The capital of France is Paris.', time: '22 hours ago' },
+    { id: '10', name: 'Max', message: 'What genre are you interested in?', time: '3 days ago' },
+  ]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    // Actual API call
+    const fetchMessages = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('https://your-api-endpoint.com/messages'); // Replace with your actual API endpoint
+        const data = await response.json();
+        
+        // Assuming the API returns data in the format you expect
+        setMessages(data);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, []);
 
   const filteredMessages = messages.filter(message =>
     message.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -25,7 +46,7 @@ const DirectMessageScreen = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.messageContainer}
-      onPress={() => navigation.navigate('Chat', { name: item.name })} // Pass the 'name' parameter correctly
+      onPress={() => navigation.navigate('Chat', { name: item.name })}
     >
       <View style={styles.avatarContainer}>
         <Image
@@ -62,12 +83,16 @@ const DirectMessageScreen = ({ navigation }) => {
         />
       </View>
 
-      <FlatList
-        data={filteredMessages}
-        keyExtractor={item => item.id}
-        renderItem={renderItem}
-        style={styles.messageList}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#3b82f6" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={filteredMessages}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
+          style={styles.messageList}
+        />
+      )}
     </View>
   );
 };
