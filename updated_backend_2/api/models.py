@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -194,3 +194,15 @@ class JournalEntry(models.Model):
         upload_to='journal_audios/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class NotificationSettings(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    follow = models.BooleanField(default=False)
+    post_creation = models.BooleanField(default=False)
+    post_like = models.BooleanField(default=False)
+    comment = models.BooleanField(default=False)
+    social_circle = models.BooleanField(default=False)
+    screen_time_alert = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username}'s notification settings"

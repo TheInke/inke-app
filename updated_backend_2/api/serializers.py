@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from . import models
 
+from .models import NotificationSettings
 
 # USER-PROFILE SERIALIZER
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -238,3 +239,8 @@ class ConnectedUsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserProfile
         fields = ['id', 'username', 'first_name', 'last_name']
+
+class NotificationSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotificationSettings
+        fields = ['follow', 'post_creation', 'post_like', 'comment', 'social_circle', 'screen_time_alert']

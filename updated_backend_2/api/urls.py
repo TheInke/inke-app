@@ -45,5 +45,7 @@ urlpatterns = [
     path('connections/requests/', views.UserRequestsView.as_view(), name='user-requests'), # lists the connections the user has sent out
     path('connections/connected-users/', views.ConnectedUsersView.as_view(), name='connected-users'), # lists all of the accepted connections of the user
 
+    #notification settings endpoints
+    path('notification-settings/', views.notification_settings_view, name='notification-settings'),
 ]
 

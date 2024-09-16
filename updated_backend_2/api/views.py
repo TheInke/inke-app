@@ -8,6 +8,9 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from . import models, serializers
 
+from .models import NotificationSettings
+from .serializers import NotificationSettingsSerializer
+
 User = get_user_model()
 
 
@@ -500,3 +503,31 @@ class ConnectedUsersView(generics.ListAPIView):
                 connected_user_ids.add(connection.from_user.id)
         
         return models.UserProfile.objects.filter(id__in=connected_user_ids)
+
+@api_view(['GET', 'POST'])
+def notification_settings_view(request):
+    """
+    Handles the retrieval and updating of notification settings.
+    """
+    # Fetch or create the notification settings for the current user
+    settings, created = NotificationSettings.objects.get_or_create(user=request.user)
+
+    if request.method == 'GET':
+        # Serialize and return the notification settings for the current user
+        serializer = NotificationSettingsSerializer(settings)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        # Update the notification settings with the provided data
+        serializer = NotificationSettingsSerializer(settings, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class NotificationSettingsView(generics.RetrieveUpdateAPIView):
+    serializer_class = NotificationSettingsSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return models.NotificationSettings.objects.get_or_create(user=self.request.user)[0]
