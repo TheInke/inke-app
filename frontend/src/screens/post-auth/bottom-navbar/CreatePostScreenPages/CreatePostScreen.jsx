@@ -11,10 +11,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../../../constants';
 import { fetchWithTokenRefresh } from '../../../../services/api';
 import stayTuned from '../../../../assets/images/staytuned.png';
+import react from 'react';
 
 const { height, width } = Dimensions.get('window');
 
-export default function CreatePostScreen() {
+export default function CreatePostScreen({ navigation }) {
   const [facing, setFacing] = useState('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [media, setMedia] = useState(null);
@@ -135,6 +136,7 @@ export default function CreatePostScreen() {
           uri: media,
           type: mediaType === 'image' ? 'image/jpeg' : 'video/mp4',
           name: mediaType === 'image' ? 'photo.jpg' : 'video.mp4',
+          content: description,
         });
 
         if (!accessToken) {
@@ -151,8 +153,10 @@ export default function CreatePostScreen() {
           body: formData
         });
 
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === undefined) {
           console.log('Post created successfully:');
+          navigation.navigate('Home');
+          
         } else {
           console.error('Failed to create post:', response.status);
         }
