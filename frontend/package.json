@@ -31,6 +31,7 @@
     "expo-image-manipulator": "~12.0.5",
     "expo-image-picker": "^15.0.7",
     "expo-linear-gradient": "~13.0.2",
+    "expo-notifications": "^0.28.16",
     "expo-status-bar": "~1.12.1",
     "jwt-decode": "^4.0.0",
     "react": "18.2.0",

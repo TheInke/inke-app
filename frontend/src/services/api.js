@@ -166,6 +166,38 @@ export const fetchSearchData = async (query) => {
     }
   };
 
+  export const fetchMessages = async () => {
+    try {
+      const response = await fetch('https://your-api-endpoint.com/messages');
+      if (!response.ok) {
+        throw new Error('Failed to fetch messages');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      throw error;
+    }
+  };
+  
+  export const sendMessage = async (message) => {
+    try {
+      const response = await fetch('https://your-api-endpoint.com/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(message),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  };
+
 
 
 api.interceptors.request.use(
