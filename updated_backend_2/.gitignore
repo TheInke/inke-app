@@ -1,6 +1,7 @@
 db.sqlite3
 
-media/photos/
+media/photos/*
+!media/photos/.gitkeep
 
 # Ignore Python bytecode files
 __pycache__/
