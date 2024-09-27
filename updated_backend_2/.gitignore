@@ -1,5 +1,7 @@
 db.sqlite3
 
+updated_backend_2/media/photos/
+
 # Ignore Python bytecode files
 __pycache__/
 *.py[cod]
