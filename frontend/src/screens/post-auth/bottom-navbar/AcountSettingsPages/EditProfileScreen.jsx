@@ -1,29 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TextInput, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchUserField } from '../../../../services/fetchUserField'; // We will fetch USER_ID using this function
+import { API_URL } from '../../../../constants'; // Replace with your actual API URL
 
-const EditProfileScreen = () => {
-  const navigation = useNavigation();
+export default function EditProfileScreen({ navigation }) {
+  const userId = fetchUserField('id');  // Fetching the user ID (assuming 'id' returns USER_ID)
   const [profileImage, setProfileImage] = useState(null);
-  const [name, setName] = useState('Helena Hills');
-  const [username, setUsername] = useState('@username');
-  const [email, setEmail] = useState('name@domain.com');
-  const [links, setLinks] = useState('website.net, mylink.net');
-  const [bio, setBio] = useState('A description of this user.');
-  const [permission, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const [cameraPermission, requestCameraPermission] = ImagePicker.useCameraPermissions();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [links, setLinks] = useState('');
+  const [bio, setBio] = useState('');
 
   useEffect(() => {
-    if (!permission?.granted) {
-      requestPermission();
-    }
-    if (!cameraPermission?.granted) {
-      requestCameraPermission();
-    }
-  }, [permission, cameraPermission]);
+    const fetchUserProfile = async () => {
+      if (userId) {
+        try {
+          const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+          
+          const response = await fetch(`${API_URL}/users/${userId}/`, {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setName(data.first_name || '');
+            setUsername(data.username || '');
+            setEmail(data.email || '');
+            setLinks(data.links || '');
+            setBio(data.bio || '');
+            setProfileImage(data.pfp_image || null);  // Set profile image if available
+          } else {
+            console.error('Failed to fetch profile data');
+          }
+        } catch (error) {
+          console.error('Error fetching profile data:', error);
+        }
+      }
+    };
+
+    fetchUserProfile();
+  }, [userId]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -35,63 +57,59 @@ const EditProfileScreen = () => {
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
     }
-    setModalVisible(false);
   };
 
-  const takePhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
+  const handleSave = async () => {
+    try {
+      const accessToken = await AsyncStorage.getItem('ACCESS_TOKEN');
+      
+      const formData = new FormData();
+      if (profileImage) {
+        formData.append('pfp_image', {
+          uri: profileImage,
+          type: 'image/jpeg',
+          name: 'profile.jpg',
+        });
+      }
 
-    if (!result.canceled) {
-      setProfileImage(result.assets[0].uri);
+      formData.append('first_name', name);
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('links', links);
+      formData.append('bio', bio);
+
+      const response = await fetch(`${API_URL}/users/${userId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log('Profile updated successfully');
+        navigation.goBack();  // Navigate back after saving
+      } else {
+        console.error('Failed to update profile:', response.status);
+      }
+    } catch (error) {
+      console.error('Error while updating profile:', error);
     }
-    setModalVisible(false);
-  };
-
-  const selectImage = () => {
-    setModalVisible(true);
-  };
-
-  const handleSave = () => {
-    // Handle the save logic here (e.g., API call to save the profile data)
-    navigation.goBack(); // Navigate back to the Account Settings screen
   };
 
   return (
-    <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.contentContainer}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <TouchableOpacity style={styles.iconButton} onPress={pickImage}>
-              <MaterialIcons name="photo-library" size={44} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton} onPress={takePhoto}>
-              <MaterialIcons name="camera-alt" size={44} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.modalButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <View style={[styles.profileImageContainer, !profileImage && styles.profileImagePlaceholder]}>
+    <ScrollView style={styles.container}>
+      <View style={styles.profileImageContainer}>
         {profileImage ? (
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
         ) : (
-          <MaterialIcons name="person" size={60} color="white" />
+          <Text>No Image</Text>
         )}
       </View>
-      <TouchableOpacity onPress={selectImage}>
-        <Text style={styles.editProfileText}>Edit profile image</Text>
+
+      <TouchableOpacity onPress={pickImage}>
+        <Text style={styles.editProfileText}>Edit Profile Image</Text>
       </TouchableOpacity>
 
       <View style={styles.inputContainer}>
@@ -102,6 +120,9 @@ const EditProfileScreen = () => {
           onChangeText={setName}
           placeholder="Enter your name"
         />
+      </View>
+
+      <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Username</Text>
         <TextInput
           style={styles.input}
@@ -109,6 +130,9 @@ const EditProfileScreen = () => {
           onChangeText={setUsername}
           placeholder="Enter your username"
         />
+      </View>
+
+      <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Email</Text>
         <TextInput
           style={styles.input}
@@ -117,6 +141,9 @@ const EditProfileScreen = () => {
           placeholder="Enter your email"
           keyboardType="email-address"
         />
+      </View>
+
+      <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Links</Text>
         <TextInput
           style={styles.input}
@@ -124,6 +151,9 @@ const EditProfileScreen = () => {
           onChangeText={setLinks}
           placeholder="Enter your links"
         />
+      </View>
+
+      <View style={styles.inputContainer}>
         <Text style={styles.inputLabel}>Bio</Text>
         <TextInput
           style={[styles.input, styles.bioInput]}
@@ -140,32 +170,24 @@ const EditProfileScreen = () => {
       </TouchableOpacity>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  scrollContainer: {
+  container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  contentContainer: {
     padding: 20,
   },
   profileImageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    alignSelf: 'center',
-    marginBottom: 20,
+    backgroundColor: 'grey',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'hidden',
-  },
-  profileImagePlaceholder: {
-    backgroundColor: 'grey',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
   },
   editProfileText: {
     color: 'blue',
@@ -173,7 +195,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   inputContainer: {
-    marginTop: 20,
+    marginBottom: 20,
   },
   inputLabel: {
     fontSize: 16,
@@ -184,7 +206,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
-    marginBottom: 15,
     borderRadius: 5,
   },
   bioInput: {
@@ -197,42 +218,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 5,
     marginTop: 20,
-    marginBottom: 20, // Ensure button is not too close to the edge
   },
   saveButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContainer: {
-    width: '80%',
-    padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  iconButton: {
-    marginBottom: 20,
-    padding: 10,
-    alignItems: 'center',
-  },
-  modalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginTop: 10,
-    backgroundColor: 'black',
-  },
-  modalButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
 });
 
-export default EditProfileScreen;

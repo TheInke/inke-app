@@ -7,3 +7,6 @@ __pycache__/
 
 media/photos/*
 !media/photos/.gitignore
+
+media/photos_pics/*
+!media/photos_pics/.gitignore
