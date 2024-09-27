@@ -20,6 +20,7 @@ import { API_URL } from "../../../../constants";
 import { fetchWithTokenRefresh } from "../../../../services/api";
 import { fetchUserField } from "../../../../services/fetchUserField";
 
+
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [showCommentsModal, setShowCommentsModal] = useState(false);
@@ -85,7 +86,7 @@ const HomePage = () => {
     }
   };
 
-  // Fetch posts once when accessToken is available
+ 
   useEffect(() => {
     if (accessToken) {
       fetchPosts();
