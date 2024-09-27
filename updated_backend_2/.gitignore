@@ -1,6 +1,6 @@
 db.sqlite3
 
-updated_backend_2/media/photos/
+media/photos/
 
 # Ignore Python bytecode files
 __pycache__/
