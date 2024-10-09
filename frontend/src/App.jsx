@@ -6,7 +6,8 @@ import LoginScreen from './screens/LoginScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
-import PrivacyAndSecurityScreen from './PrivacyAndSecurityScreen';
+import PrivacyAndSecurityScreen from './PrivacySecurityScreen'; // Stack in Account Settings
+import AboutScreen from './AboutScreen'; //Stack in an Account Settings stack navigator
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,6 +52,22 @@ const App = () => (
             />
         </Stack.Navigator>
     </NavigationContainer>
+);
+
+// Account Settings Stack
+const AccountSettingsStack = () => (
+    <Stack.Navigator>
+        <Stack.Screen
+            name="PrivacyAndSecurity"
+            component={PrivacyAndSecurityScreen}
+            options={{ title: 'Privacy & Security' }}
+        />
+        <Stack.Screen
+            name="About"
+            component={AboutScreen}
+            options={{ title: 'About' }}
+        />
+    </Stack.Navigator>
 );
 
 export default App;
