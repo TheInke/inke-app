@@ -6,6 +6,7 @@ import LoginScreen from './screens/LoginScreen';
 import AuthStatusScreen from './screens/AuthStatusScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import PrivacyAndSecurityScreen from './PrivacyAndSecurityScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
